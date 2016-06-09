@@ -1,0 +1,22 @@
+CC=gcc
+CP=cp
+TARGET=game
+SRCS=main.c
+OBJS=$(SRCS:%.c=%.o)
+DEPS=$(SRCS:%.c=%.d)
+CFLAGS= -std=c99 -I../../../src
+LDFLAGS=-L../../../lib -I../../../src -lnanogl -lglfw3 -lmad -lglew -framework OpenGL -framework Foundation -framework IOKit -framework CoreVideo -framework CoreAudio -framework Cocoa -framework AudioUnit -framework AudioToolBox -framework OpenAL
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -MMD $<
+
+clean:
+	rm $(DEPS) $(OBJS) $(TARGET)
+
+-include $(DEPS)
+

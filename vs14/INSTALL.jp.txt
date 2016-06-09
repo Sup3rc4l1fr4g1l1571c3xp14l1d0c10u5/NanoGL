@@ -1,0 +1,30 @@
+--------------------------------------------
+nanogl のコンパイル方法
+--------------------------------------------
+
+1. Visual Studio Community 2015をインストール
+   https://www.visualstudio.com/ja-jp/downloads/download-visual-studio-vs.aspx
+
+   * VS2013を使う場合は, *.vcxprojファイルのツールチェーンバージョンを14から12への変更が必要.
+
+2. 'VS2015 x86 Native Tools Command Promprt' をスタートメニューから開く
+
+3. カレントディレクトリを NanoGL-current/vs14/ に変更
+
+4. 'build-tools.bat' を 'VS2015 x86 Native Tools Command Promprt'上で実行
+   このスクリプトはビルドに必要なツールをダウンロードし、toolsディレクトリに展開する
+
+5. 'build.bat' を 'VS2015 x86 Native Tools Command Promprt'上で実行
+   このスクリプトはNanoGLが依存しているライブラリをダウンロードし、コンパイルする
+   これらのコンパイルが終わると、nanogl.lib がコンパイルされる
+
+6. (オプション) 'build-example.bat' を 'VS2015 x86 Native Tools Command Promprt'上で実行
+   サンプルをコンパイルする.
+
+7. (オプション) CRuby(>= 2.0.0) をインストールしてから 'build-mrb-nanogl.bat'を 'VS2015 x86 Native Tools Command Promprt'上で実行
+   このスクリプトはmrubyのソースコードをダウンロードし、コンパイルする
+   これらのコンパイルが終わると、mrb-nanogl.exe がコンパイルされる
+
+8. (オプション) CRuby(>= 2.0.0) をインストールしてから 'build-rubygem.bat'を 'VS2015 x86 Native Tools Command Promprt'上で実行
+   このスクリプトはcruby用のgemを作成する
+

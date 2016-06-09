@@ -1,0 +1,24 @@
+CC=gcc
+CP=cp
+TARGET=game.exe
+SRCS=main.c
+OBJS=$(SRCS:%.c=%.o)
+DEPS=$(SRCS:%.c=%.d)
+CFLAGS= -mwindows -std=c99 -I../../../src
+LDFLAGS=-L../../../lib -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt
+
+# There is a need to link the libnanogl before linking the libmingw32
+
+all: $(TARGET)
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+%.o: %.c
+	$(CC) $(CFLAGS) -c -MMD $<
+
+clean:
+	rm $(DEPS) $(OBJS) $(TARGET)
+
+-include $(DEPS)
+

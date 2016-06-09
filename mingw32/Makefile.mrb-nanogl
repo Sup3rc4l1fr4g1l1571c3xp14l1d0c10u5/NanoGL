@@ -1,0 +1,64 @@
+#
+# Commands
+#
+CC=gcc
+CD=cd
+CP=cp
+RM=rm -f
+BSDTAR=bsdtar -m
+MKDIR=mkdir -p
+PATCH=patch
+WGET=wget --no-check-certificate
+TARGET=mrb-nanogl.exe
+
+#
+# Directories
+#
+
+CURDIR=$(shell PWD)
+
+PATCH_DIR=$(CURDIR)/../patches
+NANOGL_DIR=$(CURDIR)/../src
+EXAMPLE_BASE_DIR=$(CURDIR)/../example
+LIB_DIR=$(CURDIR)/../lib
+
+DOWNLOAD_DIR=$(CURDIR)/download
+BUILD_DIR=$(CURDIR)/build
+EXAMPLE_DIR=$(CURDIR)/example
+MRBGAME_DIR=$(BUILD_DIR)/mrb-nanogl
+RUBYPKG_DIR=$(CURDIR)/../ruby
+
+SRCS=$(RUBYPKG_DIR)/mruby/src/main.c $(RUBYPKG_DIR)/mruby/src/mrb-nanogl.c
+OBJS=$(SRCS:%.c=%.o)
+CFLAGS= -Wall -g -mwindows -std=c99 -I$(BUILD_DIR)/mruby-1.2.0/include -I$(NANOGL_DIR)
+LDFLAGS=-L$(LIB_DIR) -L$(BUILD_DIR)/mruby-1.2.0/build/host/lib -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt -lmruby -lWs2_32
+
+all: $(CURDIR)/$(TARGET)
+
+$(CURDIR)/$(TARGET): $(SRCS) $(BUILD_DIR)/mruby-1.2.0/build/host/lib/libmruby.a
+	if [ ! -d "$(MRBGAME_DIR)" ] ; then $(MKDIR) $(MRBGAME_DIR) ; fi &&\
+	$(CD) $(MRBGAME_DIR) &&\
+	$(CC) $(CFLAGS) -o $(CURDIR)/$(TARGET) $(SRCS) $(LDFLAGS)
+
+clean:
+	$(RM) $(CURDIR)/$(TARGET) $(BUILD_DIR)/mruby-1.2.0 $(DOWNLOAD_DIR)/mruby-1.2.0.zip:
+
+$(BUILD_DIR)/mruby-1.2.0/build/host/lib/libmruby.a: $(BUILD_DIR)/mruby-1.2.0
+	$(CD) $(BUILD_DIR)/mruby-1.2.0 &&\
+	make
+
+$(BUILD_DIR)/mruby-1.2.0: $(DOWNLOAD_DIR)/mruby-1.2.0.zip $(PATCH_DIR)/mruby-1.2.0-build_conf.patch
+	$(CD) $(BUILD_DIR) &&\
+	$(BSDTAR) \
+		-xf $(DOWNLOAD_DIR)/mruby-1.2.0.zip &&\
+	$(PATCH) -u -p1 < \
+		$(PATCH_DIR)/mruby-1.2.0-build_conf.patch
+
+$(DOWNLOAD_DIR)/mruby-1.2.0.zip:
+	if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
+	cd $(DOWNLOAD_DIR) && \
+	$(WGET) \
+		-O mruby-1.2.0.zip \
+		https://github.com/mruby/mruby/archive/1.2.0.zip
+
+

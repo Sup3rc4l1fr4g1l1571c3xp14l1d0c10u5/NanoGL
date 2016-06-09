@@ -1,0 +1,185 @@
+#
+# Commands
+#
+CC=gcc
+CD=cd
+CP=cp
+BSDTAR=bsdtar -m
+MKDIR=mkdir
+PATCH=patch
+WGET=curl -L
+
+#
+# Directories
+#
+CURDIR=$(shell PWD)
+
+PATCH_DIR=$(CURDIR)/../patches
+NANOGL_DIR=$(CURDIR)/../src/NanoGL
+EXAMPLE_BASE_DIR=$(CURDIR)/../example
+LIB_DIR=$(CURDIR)/../lib
+
+DOWNLOAD_DIR=$(CURDIR)/download
+BUILD_DIR=$(CURDIR)/build
+EXAMPLE_DIR=$(CURDIR)/example
+
+
+###############################################################################
+# rules for build
+###############################################################################
+
+.PHONY: all download extract build copy clean example
+
+all: download extract build copy
+
+###############################################################################
+# download
+###############################################################################
+
+DOWNLOAD_TARGETS=\
+	$(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
+
+download: $(DOWNLOAD_TARGETS)
+
+$(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip:
+	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
+	cd $(DOWNLOAD_DIR) && \
+	$(WGET) \
+		-o nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip \
+		https://github.com/memononen/nanovg/archive/b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
+
+###############################################################################
+# extract
+###############################################################################
+
+EXTRACT_TARGETS=\
+	$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28
+
+extract: $(EXTRACT_TARGETS)
+
+$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28: $(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip $(PATCH_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
+	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
+	cd $(BUILD_DIR) &&\
+	$(BSDTAR) \
+		-xf $(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip &&\
+	cd $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 &&\
+	$(PATCH) -u -p1 < \
+		$(PATCH_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
+
+###############################################################################
+# rules for build
+###############################################################################
+
+BUILD_TARGETS=\
+	$(LIB_DIR)/libnanogl.a 
+
+build: $(BUILD_TARGETS)
+
+$(BUILD_DIR)/libnanovg3.a: $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28
+	@$(CD) $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src &&\
+	$(CC) \
+		$(PLATFORM_CFLAGS) \
+		-DNANOVG_GL3_IMPLEMENTATION \
+		-DUNOFFICIAL_HACK_ENABLE_NEAREST_RESIZE \
+		-DUNOFFICIAL_HACK_ENABLE_TRANSFORM_WORLD \
+		-DUNOFFICIAL_HACK_FILL_COLOR_AFFECTS_THE_IMAGE_PATTERN \
+		-c nanovg.c &&\
+	$(AR) r $(BUILD_DIR)/libnanovg3.a nanovg.o;
+
+$(BUILD_DIR)/nanogl-current:
+	@if [ ! -d "$(BUILD_DIR)/nanogl-current" ] ; then $(MKDIR) $(BUILD_DIR)/nanogl-current ; fi
+
+$(BUILD_DIR)/libnanogl.0.a: $(BUILD_DIR)/nanogl-current
+	@$(CD) $(BUILD_DIR)/nanogl-current &&\
+	$(CC) \
+		-std=c99 -c \
+		-DNANOVG_GL3_IMPLEMENTATION \
+		-DUNOFFICIAL_HACK_ENABLE_NEAREST_RESIZE \
+		-DUNOFFICIAL_HACK_ENABLE_TRANSFORM_WORLD \
+		-DUNOFFICIAL_HACK_FILL_COLOR_AFFECTS_THE_IMAGE_PATTERN \
+		-I$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src \
+		$(NANOGL_DIR)/Start.c \
+		$(NANOGL_DIR)/Sound/Sound.c  \
+		$(NANOGL_DIR)/Sound/SoundChannel/ChannelManager.c \
+		$(NANOGL_DIR)/Sound/SoundChannel/StreamChannel/StreamChannel.c \
+		$(NANOGL_DIR)/Sound/SoundChannel/StreamReader/mp3/mp3_reader.c \
+		$(NANOGL_DIR)/Sound/SoundChannel/StreamReader/null/null_reader.c \
+		$(NANOGL_DIR)/Sound/SoundChannel/StreamReader/ogg/ogg_reader.c \
+		$(NANOGL_DIR)/Sound/SoundChannel/StreamReader/ogg/stb_vorbis.c \
+		$(NANOGL_DIR)/Sound/SoundChannel/StreamReader/wav/wav_reader.c \
+		$(NANOGL_DIR)/Video/Video.c \
+		$(NANOGL_DIR)/Video/nanovg-extra-apis.c \
+		$(NANOGL_DIR)/Video/FpsTimer.c \
+		$(NANOGL_DIR)/Debug/Debug.c \
+		$(NANOGL_DIR)/String/String.c \
+		$(NANOGL_DIR)/System/System.c &&\
+	$(AR) r $(BUILD_DIR)/libnanogl.0.a \
+		./Start.o \
+		./Sound.o \
+		./ChannelManager.o \
+		./StreamChannel.o \
+		./mp3_reader.o \
+		./null_reader.o \
+		./ogg_reader.o \
+		./stb_vorbis.o \
+		./wav_reader.o \
+		./video.o \
+		./FpsTimer.o \
+		./debug.o \
+		./string.o \
+		./system.o \
+		./nanovg-extra-apis.o
+
+$(LIB_DIR)/libnanogl.a: $(BUILD_DIR)/libnanogl.0.a $(BUILD_DIR)/libnanovg3.a
+	@if [ ! -d "$(LIB_DIR)" ] ; then $(MKDIR) $(LIB_DIR) ; fi &&\
+	libtool \
+		-static -o $(LIB_DIR)/libnanogl.a \
+		 $(BUILD_DIR)/libnanogl.0.a \
+		 $(BUILD_DIR)/libnanovg3.a &&\
+	echo "" &&\
+	echo "" &&\
+	echo "Compiling nanogl was succeed." &&\
+	echo "  libnanogl.a : "&&\
+	echo "    $(abspath $(LIB_DIR)/libnanogl.a)" &&\
+	echo "  IncludeDir : "&&\
+	echo "    $(abspath $(NANOGL_DIR))" &&\
+	echo "  Compile: "&&\
+	echo "    gcc -I$(abspath $(NANOGL_DIR)) \\" &&\
+	echo "        -L$(abspath $(LIB_DIR)) \\" &&\
+	echo "        game.c -lnanogl -lglfw3 -lmad -lglew " &&\
+	echo "        -framework OpenGL -framework Foundation " &&\
+	echo "        -framework IOKit -framework CoreVideo " &&\
+	echo "        -framework CoreAudio -framework Cocoa " &&\
+	echo "        -framework AudioUnit -framework AudioToolBox " &&\
+	echo "        -framework OpenAL" &&\
+	echo "" &&\
+	echo "If you want to get an example of use, run 'make example'." &&\
+	echo ""
+
+###############################################################################
+# rules for example
+###############################################################################
+
+example: $(LIB_DIR)/libnanogl.a
+	@if [ ! -d "$(EXAMPLE_DIR)" ] ; then cp -r $(EXAMPLE_BASE_DIR) $(EXAMPLE_DIR) ; fi
+	$(CD) $(EXAMPLE_DIR)/00-Blank && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/01-BasicDraw && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/02-TransformSingle && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/03-TransformMulti && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/04-Image && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/05-Keyboard && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/06-Mouse && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/07-Text && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/08-Sprite && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/09-Sound && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/10-Scene && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/50-15Puzzle && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+	$(CD) $(EXAMPLE_DIR)/51-STG && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
+
+
+###############################################################################
+# rules for clean
+###############################################################################
+
+clean:
+	@rm -rf $(DOWNLOAD_DIR) $(BUILD_DIR) $(LIB_DIR) $(EXAMPLE_DIR)

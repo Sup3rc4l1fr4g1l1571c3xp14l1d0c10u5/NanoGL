@@ -1,0 +1,30 @@
+--------------------------------------------
+How to compile nanogl 
+--------------------------------------------
+
+1. Install Visual Studio Community 2015
+   https://www.visualstudio.com/ja-jp/downloads/download-visual-studio-vs.aspx
+
+   * if you use VS2013, you need to change tool-chain-version in file *.vcxproj.
+
+2. Open 'VS2015 x86 Native Tools Command Promprt' from StartMenu.
+
+3. Change the current directory to NanoGL-current/vs14/
+
+4. Execute 'build-tools.bat' on the 'VS2015 x86 Native Tools Command Promprt'.
+   This script downloads a necessary tool, and develops in a tools directory.
+
+5. Execute 'build.bat' on the 'VS2015 x86 Native Tools Command Promprt'.
+   This script downloads and compiles each library on which I depend.
+   After those have been completed, nanogl.lib is compiled.
+
+6. (Option) Execute 'build-example.bat' on the 'VS2015 x86 Native Tools Command Promprt'.
+   This script compiles each examples.
+
+7. (Option) Install CRuby(>= 2.0.0) and Execute 'build-mrb-nanogl.bat' on the 'VS2015 x86 Native Tools Command Promprt'
+   This script downloads and compiles mruby.
+   After those have been completed, mrb-nanogl.exe is compiled.
+
+8. (Option) Install CRuby(>= 2.0.0) and Execute 'build-rubygem.bat' on the 'VS2015 x86 Native Tools Command Promprt'.
+   This script compiles nanogl-<version>.gem.
+
