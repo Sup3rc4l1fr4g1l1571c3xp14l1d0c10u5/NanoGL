@@ -263,30 +263,8 @@ $(LIB_DIR)/libnanogl.a: $(BUILD_DIR)/libnanogl.a $(BUILD_DIR)/libnanogl.1.a
 	echo "        -L$(abspath $(LIB_DIR)) \\" &&\
 	echo "        game.c -lnanogl" &&\
 	echo "" &&\
-	echo "If you want to get an example of use, run 'make example'." &&\
+	echo "If you want to get an example of use, run 'make -f Makefile.example'." &&\
 	echo ""
-
-
-###############################################################################
-# rules for example
-###############################################################################
-
-example: $(LIB_DIR)/libnanogl.a
-	@if [ ! -d "$(EXAMPLE_DIR)" ] ; then cp -r $(EXAMPLE_BASE_DIR) $(EXAMPLE_DIR) ; fi
-	$(CD) $(EXAMPLE_DIR)/00-Blank && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/01-BasicDraw && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/02-TransformSingle && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/03-TransformMulti && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/04-Image && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/05-Keyboard && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/06-Mouse && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/07-Text && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/08-Sprite && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/09-Sound && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/10-Scene && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/50-15Puzzle && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-	$(CD) $(EXAMPLE_DIR)/51-STG && cp $(EXAMPLE_DIR)/../Makefile.example Makefile && make
-
 
 ###############################################################################
 # rules for clean

@@ -37,6 +37,7 @@ ECHO Build mruby
 %BSDTAR% -xf %PKGDIR%\mruby-1.2.0.zip
 %PATCH% -u -p1 < %PATCH_DIR%\mruby-1.2.0-build_conf.patch
 
+
 %CD% %BUILDDIR%\mruby-1.2.0
 
 ruby ./minirake

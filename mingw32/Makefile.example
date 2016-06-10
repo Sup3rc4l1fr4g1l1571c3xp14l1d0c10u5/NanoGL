@@ -1,24 +1,22 @@
 CC=gcc
 CP=cp
-TARGET=game.exe
-SRCS=main.c
-OBJS=$(SRCS:%.c=%.o)
-DEPS=$(SRCS:%.c=%.d)
-CFLAGS= -mwindows -std=c99 -I../../../src
-LDFLAGS=-L../../../lib -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt
+MKDIR=mkdir
+SRCS=$(wildcard ../Example/*.c)
+TARGET=$(subst ../Example,./Example,$(SRCS:%.c=%.exe))
+CFLAGS= -mwindows -std=c99 -I../src
+LDFLAGS=-L../lib -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt
 
-# There is a need to link the libnanogl before linking the libmingw32
+all: ./Example $(TARGET)
 
-all: $(TARGET)
+./Example:
+	if [ ! -d ./Example ] ; then $(MKDIR) ./Example ; fi &&\
+	if [ ! -d ./Example/Sound ] ; then $(CP) -rf ../Example/Sound ./Example; fi &&\
+	if [ ! -d ./Example/Image ] ; then $(CP) -rf ../Example/Image ./Example ; fi &&\
+	if [ ! -d ./Example/Font ] ; then $(CP) -rf ../Example/Font ./Example ; fi
 
-$(TARGET): $(OBJS)
+./Example/%.exe: ../Example/%.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-%.o: %.c
-	$(CC) $(CFLAGS) -c -MMD $<
-
 clean:
-	rm $(DEPS) $(OBJS) $(TARGET)
-
--include $(DEPS)
+	rm $(TARGET)
 
