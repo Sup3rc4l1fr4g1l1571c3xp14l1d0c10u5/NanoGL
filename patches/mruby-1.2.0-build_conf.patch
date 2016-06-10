@@ -1,7 +1,18 @@
 diff -uprN ./mruby-1.2.0/build_config.rb mruby-1.2.0-patched/build_config.rb
 --- ./mruby-1.2.0/build_config.rb	2016-06-06 21:08:24 +0900
 +++ mruby-1.2.0-patched/build_config.rb	2016-06-06 21:08:07 +0900
-@@ -19,6 +19,20 @@
+@@ -4,6 +4,10 @@
+   # Gets set by the VS command prompts.
+   if ENV['VisualStudioVersion'] || ENV['VSINSTALLDIR']
+     toolchain :visualcpp
++    conf.cc.flags = conf.cc.flags.map { |x| x - ["/MD"] }
++    conf.cc.flags << "/MT"
++    conf.cxx.flags = conf.cxx.flags.map { |x| x - ["/MD"] }
++    conf.cxx.flags << "/MT"
+   else
+     toolchain :gcc
+   end
+@@ -19,6 +23,20 @@
    # conf.gem :github => 'masuidrive/mrbgems-example', :checksum_hash => '76518e8aecd131d047378448ac8055fa29d974a9'
    # conf.gem :git => 'git@github.com:masuidrive/mrbgems-example.git', :branch => 'master', :options => '-v'
  
