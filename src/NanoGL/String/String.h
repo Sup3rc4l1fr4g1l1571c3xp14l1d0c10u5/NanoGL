@@ -2,6 +2,7 @@
 
 #include "../config.h"
 #include <stdarg.h>
+#include <stddef.h>
 
 /**
  * •¶š—ñƒf[ƒ^Œ^

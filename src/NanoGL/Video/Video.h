@@ -573,6 +573,11 @@ extern const struct __tagVideoAPI {
 	float(*RadToDeg)(float rad);
 
 	/**
+	 * @brief CreateImageのUTF8版
+	 */
+	int(*CreateImageUTF8)(const char* filename, enum ImageFlags imageFlags);
+
+	/**
 	 * @brief 画像データをファイルから読み込む（対応する形式はJPG, PNG, TGA, BMP, PSD, GIF, HDR, PIC）
 	 * @param filename 画像ファイルのファイルパス
 	 * @param imageFlags 画像を描画で用いる際のオプションを enum ImageFlags のゼロ個以上の組み合わせで指定
@@ -841,6 +846,11 @@ extern const struct __tagVideoAPI {
 	void(*Stroke)(void);
 
 	/**
+	 * @brief CreateFontのUTF8版
+	 */
+	int(*CreateFontUTF8)(const char* name, const char* filename);
+
+	/**
 	 * @brief TrueType形式のフォントをTTFファイル filename から読み込み、フォント名に名前 name を割り当てる
 	 * @param name 読み込んだフォントに割り当てる名前
 	 * @param filename 読み込むTTF形式のフォントファイル
@@ -848,6 +858,11 @@ extern const struct __tagVideoAPI {
 	 * @retval >=  0 読み込んだフォントに割り当てられるフォントID
 	 */
 	int(*CreateFont)(const char* name, const char* filename);
+
+	/**
+	 * @brief CreateFontMemのUTF8版
+	 */
+	int(*CreateFontMemUTF8)(const char* name, unsigned char* data, int ndata, int freeData);
 
 	/**
 	 * @brief TrueType形式のフォントデータ data をメモリから読み込み、フォント名に名前 name を割り当てる
@@ -859,6 +874,11 @@ extern const struct __tagVideoAPI {
 	 * @retval >=  0 読み込んだフォントに割り当てられるフォントID
 	 */
 	int(*CreateFontMem)(const char* name, unsigned char* data, int ndata, int freeData);
+
+	/**
+	 * @brief FindFontのUTF8版
+	 */
+	int(*FindFontUTF8)(const char* name);
 
 	/**
 	 * @brief 既に読み込んだフォントの中から名前が name のものを探す
@@ -903,6 +923,11 @@ extern const struct __tagVideoAPI {
 	* @param font 描画に使うフォントのフォントID
 	*/
 	void(*FontFaceId)(int font);
+
+	/**
+	* @brief Video.FontFace()関数のUTF8専用版
+	*/
+	void(*FontFaceUTF8)(const char* font);
 
 	/**
 	* @brief 文字の描画に使うフォントをフォント名で指定する

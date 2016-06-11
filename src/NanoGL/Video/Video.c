@@ -27,6 +27,34 @@ static NVGcontext *nvgContext;
 
 #if defined(_WIN32)
 typedef char utf8_t;
+static char *utf82sjis(const utf8_t *pUtf8Str, const utf8_t *pEnd) {
+	// Convert UTF8 to WideChar(UTF-16)
+	int nUtf8ByteCount = pEnd - pUtf8Str;
+	int nUtf16WordCount = MultiByteToWideChar(CP_UTF8, 0, pUtf8Str, nUtf8ByteCount, NULL, 0);
+	wchar_t *pUtf16Str = calloc(nUtf16WordCount + 1, sizeof(wchar_t));
+	if (pUtf16Str == NULL) { return NULL; }
+	if (MultiByteToWideChar(CP_UTF8, 0, pUtf8Str, nUtf8ByteCount, pUtf16Str, nUtf16WordCount) != nUtf16WordCount) {
+		free(pUtf16Str);
+		return NULL;
+	}
+
+	// Convert WideChar(UTF-16) to UShiftJIS(CP923)
+	int nConvBytes = WideCharToMultiByte(CP_ACP, 0, pUtf16Str, -1, NULL, 0, NULL, NULL);
+	char *pSjisStr = calloc(nConvBytes + 1, sizeof(char));
+	if (pSjisStr == NULL) {
+		free(pUtf16Str);
+		return false;
+	}
+	if (WideCharToMultiByte(CP_ACP, 0, pUtf16Str, -1, pSjisStr, nConvBytes, NULL, NULL) != nConvBytes) {
+		free(pUtf16Str);
+		free(pSjisStr);
+		return false;
+	}
+
+	free(pUtf16Str);
+
+	return pSjisStr;
+}
 static utf8_t *sjis2utf8(const char *pSjisStr, const char *pEnd) {
 	// Convert ShiftJIS(CP923) to WideChar(UTF-16)
 	int nConvBytes = pEnd == NULL ? -1 : (pEnd - pSjisStr);
@@ -169,9 +197,9 @@ static void Video_SetWindowTitle(const char *title)
 #if defined(_WIN32)
 	if (IsContainsNotAscii(title,NULL))
 	{
-		utf8_t *utf8str = sjis2utf8(title, NULL);
-		glfwSetWindowTitle(glfwWindow, utf8str);
-		free(utf8str);
+		utf8_t *utf8title = sjis2utf8(title, NULL);
+		glfwSetWindowTitle(glfwWindow, utf8title);
+		free(utf8title);
 	} else
 	{
 		glfwSetWindowTitle(glfwWindow, title);
@@ -439,13 +467,67 @@ static float Video_RadToDeg(float rad) {
 	return nvgRadToDeg(rad);
 }
 
+static int Video_CreateImageUTF8_(const char* filename, int imageFlags) {
+	if (filename == NULL)
+	{
+		Debug.PrintError("The argument `filename` is NULL.");
+		return 0;
+	}
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(filename, NULL))
+	{
+		char *sjisfilename = utf82sjis(filename, NULL);
+		ret = nvgCreateImage(nvgContext, sjisfilename, imageFlags);
+		if (ret == 0)
+		{
+			Debug.PrintError("Failed to load image file %s. File is not exist, or not supported format.", sjisfilename);
+		}
+		free(sjisfilename);
+	}
+	else
+	{
+		ret = nvgCreateImage(nvgContext, filename, imageFlags);
+	}
+#else
+	ret = nvgCreateImage(nvgContext, filename, imageFlags);
+#endif
+	if (ret == 0)
+	{
+		Debug.PrintError("Failed to load image file %s. File is not exist, or not supported format.", filename);
+		return 0;
+	}
+	return ret;
+}
+
+static int Video_CreateImageUTF8(const char* filename, enum ImageFlags imageFlags) {
+	Debug.PushBanner("**Error in Video.CreateImageUTF8");
+	int ret = Video_CreateImageUTF8_(filename, imageFlags);
+	Debug.PopBanner();
+	return ret;
+}
+
 static int Video_CreateImage_(const char* filename, int imageFlags) {
 	if (filename == NULL)
 	{
 		Debug.PrintError("The argument `filename` is NULL.");
 		return 0;
 	}
-	int ret = nvgCreateImage(nvgContext, filename, imageFlags);
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(filename, NULL))
+	{
+		utf8_t *utf8filename = sjis2utf8(filename, NULL);
+		ret = nvgCreateImage(nvgContext, utf8filename, imageFlags);
+		free(utf8filename);
+	}
+	else
+	{
+		ret = nvgCreateImage(nvgContext, filename, imageFlags);
+	}
+#else
+	ret = nvgCreateImage(nvgContext, filename, imageFlags);
+#endif
 	if (ret == 0)
 	{
 		Debug.PrintError("Failed to load image file %s. File is not exist, or not supported format.", filename);
@@ -627,6 +709,49 @@ static void Video_Stroke(void) {
 	nvgStroke(nvgContext);
 }
 
+static int Video_CreateFontUTF8_(const char* name, const char* filename) {
+	if (filename == NULL)
+	{
+		Debug.PrintError("The argument `filename` is NULL.");
+		return -1;
+	}
+	if (name == NULL)
+	{
+		Debug.PrintError("The argument `name` is NULL.");
+		return -1;
+	}
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(name, NULL) || IsContainsNotAscii(filename, NULL))
+	{
+		char *sjisname = utf82sjis(name, NULL);
+		char *sjisfilename = utf82sjis(filename, NULL);
+		ret = nvgCreateFont(nvgContext, sjisname, sjisfilename);
+		free(sjisname);
+		free(sjisfilename);
+	}
+	else
+	{
+		ret = nvgCreateFont(nvgContext, name, filename);
+	}
+#else
+	ret = nvgCreateFont(nvgContext, name, filename);
+#endif
+	if (ret == -1)
+	{
+		Debug.PrintError("Failed to load font file %s. File is not exist, or not supported format.", filename);
+		return -1;
+	}
+	return ret;
+}
+
+static int Video_CreateFontUTF8(const char* name, const char* filename) {
+	Debug.PushBanner("**Error in Video.CreateFontUTF8");
+	int ret = Video_CreateFontUTF8_(name, filename);
+	Debug.PopBanner();
+	return ret;
+}
+
 static int Video_CreateFont_(const char* name, const char* filename) {
 	if (filename == NULL)
 	{
@@ -638,7 +763,23 @@ static int Video_CreateFont_(const char* name, const char* filename) {
 		Debug.PrintError("The argument `name` is NULL.");
 		return -1;
 	}
-	int ret = nvgCreateFont(nvgContext, name, filename);
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(name, NULL) || IsContainsNotAscii(filename, NULL))
+	{
+		utf8_t *utf8name = sjis2utf8(name, NULL);
+		utf8_t *utf8filename = sjis2utf8(filename, NULL);
+		ret = nvgCreateFont(nvgContext, utf8name, utf8filename);
+		free(utf8name);
+		free(utf8filename);
+	}
+	else
+	{
+		ret = nvgCreateFont(nvgContext, name, filename);
+	}
+#else
+	ret = nvgCreateFont(nvgContext, name, filename);
+#endif
 	if (ret == -1)
 	{
 		Debug.PrintError("Failed to load font file %s. File is not exist, or not supported format.", filename);
@@ -650,6 +791,52 @@ static int Video_CreateFont_(const char* name, const char* filename) {
 static int Video_CreateFont(const char* name, const char* filename) {
 	Debug.PushBanner("**Error in Video.CreateFont");
 	int ret = Video_CreateFont_(name, filename);
+	Debug.PopBanner();
+	return ret;
+}
+
+static int Video_CreateFontMemUTF8_(const char* name, unsigned char* data, int ndata, int freeData) {
+	if (name == NULL)
+	{
+		Debug.PrintError("The argument `name` is NULL.");
+		return -1;
+	}
+	if (data == NULL)
+	{
+		Debug.PrintError("The argument `data` is NULL.");
+		return -1;
+	}
+	if (ndata <= 0)
+	{
+		Debug.PrintError("The argument `ndata` is less than or equal to 0.");
+		return -1;
+	}
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(name, NULL))
+	{
+		char *sjisname = utf82sjis(name, NULL);
+		ret = nvgCreateFontMem(nvgContext, sjisname, data, ndata, freeData);
+		free(sjisname);
+	}
+	else
+	{
+		ret = nvgCreateFontMem(nvgContext, name, data, ndata, freeData);
+	}
+#else
+	ret = nvgCreateFontMem(nvgContext, name, data, ndata, freeData);
+#endif
+	if (ret == -1)
+	{
+		Debug.PrintError("Failed to load font data. Bad arguments or unsupported format data.");
+		return -1;
+	}
+	return ret;
+}
+
+static int Video_CreateFontMemUTF8(const char* name, unsigned char* data, int ndata, int freeData) {
+	Debug.PushBanner("**Error in Video.CreateFontMemUTF8");
+	int ret = Video_CreateFontMemUTF8_(name, data, ndata, freeData);
 	Debug.PopBanner();
 	return ret;
 }
@@ -670,7 +857,21 @@ static int Video_CreateFontMem_(const char* name, unsigned char* data, int ndata
 		Debug.PrintError("The argument `ndata` is less than or equal to 0.");
 		return -1;
 	}
-	int ret = nvgCreateFontMem(nvgContext, name, data, ndata, freeData);
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(name, NULL))
+	{
+		utf8_t *utf8name = sjis2utf8(name, NULL);
+		ret = nvgCreateFontMem(nvgContext, utf8name, data, ndata, freeData);
+		free(utf8name);
+	}
+	else
+	{
+		ret = nvgCreateFontMem(nvgContext, name, data, ndata, freeData);
+	}
+#else
+	ret = nvgCreateFontMem(nvgContext, name, data, ndata, freeData);
+#endif
 	if (ret == -1)
 	{
 		Debug.PrintError("Failed to load font data. Bad arguments or unsupported format data.");
@@ -686,6 +887,37 @@ static int Video_CreateFontMem(const char* name, unsigned char* data, int ndata,
 	return ret;
 }
 
+static int Video_FindFontUTF8_(const char* name) {
+	if (name == NULL)
+	{
+		Debug.PrintError("The argument `name` is NULL.");
+		return -1;
+	}
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(name, NULL))
+	{
+		char *sjisname = utf82sjis(name, NULL);
+		ret = nvgFindFont(nvgContext, sjisname);
+		free(sjisname);
+	}
+	else
+	{
+		ret = nvgFindFont(nvgContext, name);
+	}
+#else
+	ret = nvgFindFont(nvgContext, name);
+#endif
+	return ret;
+}
+
+static int Video_FindFontUTF8(const char* name) {
+	Debug.PushBanner("**Error in Video.FindFontUTF8");
+	int ret = Video_FindFontUTF8_(name);
+	Debug.PopBanner();
+	return ret;
+}
+
 static int Video_FindFont_(const char* name) {
 	if (name == NULL)
 	{
@@ -697,7 +929,21 @@ static int Video_FindFont_(const char* name) {
 
 static int Video_FindFont(const char* name) {
 	Debug.PushBanner("**Error in Video.FindFont");
-	int ret = Video_FindFont_(name);
+	int ret;
+#if defined(_WIN32)
+	if (IsContainsNotAscii(name, NULL))
+	{
+		utf8_t *utf8name = sjis2utf8(name, NULL);
+		ret = Video_FindFont_(utf8name);
+		free(utf8name);
+	}
+	else
+	{
+		ret = Video_FindFont_(name);
+	}
+#else
+	ret = Video_FindFont_(name);
+#endif
 	Debug.PopBanner();
 	return ret;
 }
@@ -726,8 +972,25 @@ static void Video_FontFaceId(int font) {
 	nvgFontFaceId(nvgContext, font);
 }
 
-static void Video_FontFace(const char* font) {
+static void Video_FontFaceUTF8(const char* font) {
 	nvgFontFace(nvgContext, font);
+}
+
+static void Video_FontFace(const char* font) {
+#if defined(_WIN32)
+	if (IsContainsNotAscii(font, NULL))
+	{
+		utf8_t *utf8font = sjis2utf8(font, NULL);
+		nvgFontFace(nvgContext, utf8font);
+		free(utf8font);
+	}
+	else
+	{
+		nvgFontFace(nvgContext, font);
+	}
+#else
+	nvgFontFace(nvgContext, font);
+#endif
 }
 
 static float Video_TextUTF8(float x, float y, const char* utf8str, const char* end) {
@@ -1147,6 +1410,7 @@ const struct __tagVideoAPI Video = {
 	Video_TransformPoint,
 	Video_DegToRad,
 	Video_RadToDeg,
+	Video_CreateImageUTF8,
 	Video_CreateImage,
 	Video_CreateImageMem,
 	Video_CreateImageRGBA,
@@ -1178,8 +1442,11 @@ const struct __tagVideoAPI Video = {
 	Video_Circle,
 	Video_Fill,
 	Video_Stroke,
+	Video_CreateFontUTF8,
 	Video_CreateFont,
+	Video_CreateFontMemUTF8,
 	Video_CreateFontMem,
+	Video_FindFontUTF8,
 	Video_FindFont,
 	Video_FontSize,
 	Video_FontBlur,
@@ -1187,6 +1454,7 @@ const struct __tagVideoAPI Video = {
 	Video_TextLineHeight,
 	Video_TextAlign,
 	Video_FontFaceId,
+	Video_FontFaceUTF8,
 	Video_FontFace,
 	Video_TextUTF8,
 	Video_Text,

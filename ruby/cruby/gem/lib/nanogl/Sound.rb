@@ -8,6 +8,7 @@ module NanoGL
       class VTable < FFI::Struct
         layout :Initialize, callback([], :bool),
                :Finalize, callback([], :void),
+               :ChannelCreateUTF8, callback([:int, :string], :bool),
                :ChannelCreate, callback([:int, :string], :bool),
                :ChannelFree, callback([:int], :bool),
                :ChannelPlay, callback([:int, :bool], :bool),
@@ -29,7 +30,7 @@ module NanoGL
       end
 
       def ChannelCreate(channelId, path)
-        VTABLE[:ChannelCreate].call(channelId, path)
+        VTABLE[:ChannelCreateUTF8].call(channelId, path)
       end
 
       def ChannelFree(channelId)

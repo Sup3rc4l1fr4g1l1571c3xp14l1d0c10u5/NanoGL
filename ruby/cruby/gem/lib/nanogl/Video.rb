@@ -236,6 +236,7 @@ module NanoGL
                :TransformPoint, callback([VideoImpl::Float.by_ref, VideoImpl::Float.by_ref, VideoImpl::Matrix.by_ref, :float, :float], :void),
                :DegToRad, callback([:float], :float),
                :RadToDeg, callback([:float], :float),
+               :CreateImageUTF8, callback([:string, ImageFlag], :int),
                :CreateImage, callback([:string, ImageFlag], :int),
                :CreateImageMem, callback([ImageFlag, :buffer_in, :int], :int),
                :CreateImageRGBA, callback([:int, :int, ImageFlag, :buffer_in], :int),
@@ -269,8 +270,11 @@ module NanoGL
                :Fill, callback([], :void),
                :Stroke, callback([], :void),
 
+               :CreateFontUTF8, callback([:string, :string], :int),
                :CreateFont, callback([:string, :string], :int),
+               :CreateFontMemUTF8, callback([:string, :buffer_in, :int, :pointer], :int),
                :CreateFontMem, callback([:string, :buffer_in, :int, :pointer], :int),
+               :FindFontUTF8, callback([:string], :int),
                :FindFont, callback([:string], :int),
                :FontSize, callback([:float], :void),
                :FontBlur, callback([:float], :void),
@@ -279,13 +283,14 @@ module NanoGL
 
                :TextAlign, callback([Align], :void),
                :FontFaceId, callback([:int], :void),
+               :FontFaceUTF8, callback([:string], :void),
                :FontFace, callback([:string], :void),
 
                :TextUTF8, callback([:float, :float, :string, :pointer], :float),
                :Text, callback([:float, :float, :string, :pointer], :float),
 
-               :TextBoxUTF8, callback([:float, :float, :string, :pointer], :void),
-               :TextBox, callback([:float, :float, :string, :pointer], :void),
+               :TextBoxUTF8, callback([:float, :float, :float, :string, :pointer], :void),
+               :TextBox, callback([:float, :float, :float, :string, :pointer], :void),
 
                :TextBoundsUTF8, callback([:float, :float, :string, :pointer, VideoImpl::Float4.by_ref], :float),
                :TextBounds, callback([:float, :float, :string, :pointer, VideoImpl::Float4.by_ref], :float),
@@ -919,7 +924,7 @@ module NanoGL
       # @retval   > 0 画像ID
       #
       def CreateImage(filename, imageFlags)
-        VTABLE[:CreateImage].call(filename, imageFlags)
+        VTABLE[:CreateImageUTF8].call(filename, imageFlags)
       end
 
       #
@@ -1251,7 +1256,7 @@ module NanoGL
       # @retval >=  0 読み込んだフォントに割り当てられるフォントID
       #
       def CreateFont(name, filename)
-        VTABLE[:CreateFont].call(name, filename)
+        VTABLE[:CreateFontUTF8].call(name, filename)
       end
 
       #
@@ -1263,7 +1268,7 @@ module NanoGL
       #
       def CreateFontMem(name, data)
         pData = FFI::MemoryPointer.from_string(data)
-        VTABLE[:CreateFontMem].call(name, pData, data.length, nil)
+        VTABLE[:CreateFontMemUTF8].call(name, pData, data.length, nil)
       end
 
       #
@@ -1273,7 +1278,7 @@ module NanoGL
       # @retval >=  0 見つかったフォントに割り当てられているフォントID
       #
       def FindFont(name)
-        VTABLE[:FindFont].call(name)
+        VTABLE[:FindFontUTF8].call(name)
       end
 
       #
@@ -1329,7 +1334,7 @@ module NanoGL
       # @param font 描画に使うフォントのフォント名
       #
       def FontFace(font)
-        VTABLE[:FontFace].call(font)
+        VTABLE[:FontFaceUTF8].call(font)
       end
 
       #
@@ -1351,7 +1356,7 @@ module NanoGL
       # @param string 描画する文字列
       #
       def TextBox(x, y, breakRowWidth, string)
-        VTABLE[:TextBoxUTF8].call(x, y, breakRowWidth, string)
+        VTABLE[:TextBoxUTF8].call(x, y, breakRowWidth, string, nil)
       end
 
       #

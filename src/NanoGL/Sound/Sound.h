@@ -20,6 +20,11 @@ extern const struct __tagSoundAPI {
 	void(*Finalize)(void);
 
 	/**
+	 * @brief ChannelCreateのUTF8版
+	 */
+	bool (*ChannelCreateUTF8)(int channelId, const char*path);
+
+	/**
 	 * @brief 音楽ファイル(wavかmp3)を path から読み取り チャンネル channelId 番に割り当てる。
 	 * @param channelId 割当先のチャンネル番号
 	 * @param path 読み込む音楽ファイルのパス

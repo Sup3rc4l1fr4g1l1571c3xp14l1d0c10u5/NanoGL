@@ -513,9 +513,7 @@ static mrb_value mrb_NanoGL_Video_CreateImage(mrb_state *mrb, mrb_value self) {
 	mrb_int nfilename;
 	mrb_int imageFlags;
 	mrb_get_args(mrb, "si", &filename, &nfilename, &imageFlags);
-	char *lfilename = mrb_locale_from_utf8(filename, nfilename);
-	int id = Video.CreateImage(lfilename, imageFlags);
-	mrb_locale_free(lfilename);
+	int id = Video.CreateImageUTF8(filename, imageFlags);
 	return mrb_fixnum_value(id);
 }
 
@@ -776,11 +774,7 @@ static mrb_value mrb_NanoGL_Video_CreateFont(mrb_state *mrb, mrb_value self) {
 	char *name, *filename;
 	mrb_int nname, nfilename;
 	mrb_get_args(mrb, "ss", &name, &nname, &filename, &nfilename);
-	char *lname = mrb_locale_from_utf8(name, nname);
-	char *lfilename = mrb_locale_from_utf8(filename, nfilename);
-	int n = Video.CreateFont(lname, lfilename);
-	mrb_locale_free(lname);
-	mrb_locale_free(lfilename);
+	int n = Video.CreateFontUTF8(name, filename);
 	return mrb_fixnum_value(n);
 }
 
@@ -790,9 +784,7 @@ static mrb_value mrb_NanoGL_Video_CreateFontMem(mrb_state *mrb, mrb_value self) 
 	unsigned char *data;
 	mrb_int nname, ndata;
 	mrb_get_args(mrb, "ss", &name, &nname, &data, &ndata);
-	char *lname = mrb_locale_from_utf8(name, nname);
-	int n = Video.CreateFontMem(lname, data, ndata, 0);
-	mrb_locale_free(name);
+	int n = Video.CreateFontMemUTF8(name, data, ndata, 0);
 	return mrb_fixnum_value(n);
 }
 
@@ -802,9 +794,7 @@ static mrb_value mrb_NanoGL_Video_FindFont(mrb_state *mrb, mrb_value self) {
 	mrb_int nname;
 
 	mrb_get_args(mrb, "s", &name, &nname);
-	char *lfilename = mrb_locale_from_utf8(name, nname);
-	int n = Video.FindFont(name);
-	mrb_locale_free(lfilename);
+	int n = Video.FindFontUTF8(name);
 
 	return mrb_fixnum_value(n);
 }
@@ -863,9 +853,7 @@ static mrb_value mrb_NanoGL_Video_FontFace(mrb_state *mrb, mrb_value self) {
 	mrb_int nfont;
 
 	mrb_get_args(mrb, "s", &font, &nfont);
-	char *lfont = mrb_locale_from_utf8(font, nfont);
-	Video.FontFace(lfont);
-	mrb_locale_free(lfont);
+	Video.FontFaceUTF8(font);
 	return mrb_nil_value();
 }
 
@@ -1382,9 +1370,7 @@ static mrb_value mrb_NanoGL_Sound_ChannelCreate(mrb_state *mrb, mrb_value self) 
 	mrb_int nfilepath;
 	mrb_get_args(mrb, "is", &channelId, &filepath, &nfilepath);
 
-	char *lfilepath = mrb_locale_from_utf8(filepath, nfilepath);
-	mrb_bool n = Sound.ChannelCreate(channelId, lfilepath);
-	mrb_locale_free(lfilepath);
+	mrb_bool n = Sound.ChannelCreateUTF8(channelId, filepath);
 
 	return mrb_bool_value(n);
 }

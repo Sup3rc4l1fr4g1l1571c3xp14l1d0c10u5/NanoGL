@@ -46,21 +46,21 @@ ECHO Extract archive
 
 %BSDTAR% -xf %PKGDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
 %PATCH% -d .\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 -u -p1 < %PATCHDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
-%MV% .\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 %BUILDDIR%
+%MV% .\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 %BUILDDIR%\
 
 %BSDTAR% -xf %PKGDIR%\glew-1.13.0.zip 
-%MV% .\glew-1.13.0 %BUILDDIR%
+%MV% .\glew-1.13.0 %BUILDDIR%\
 
 %BSDTAR% -xf %PKGDIR%\glfw-3.1.2.zip
-%MV% .\glfw-3.1.2 %BUILDDIR%
+%MV% .\glfw-3.1.2 %BUILDDIR%\
 
 %BSDTAR% -xf %PKGDIR%\openal-soft-1.17.2.tar.bz2
-%MV% .\openal-soft-1.17.2 %BUILDDIR%
+%MV% .\openal-soft-1.17.2 %BUILDDIR%\
 
 %BSDTAR% -xf %PKGDIR%\libmad-0.15.1b.tar.gz
 %CP% ".\libmad-0.15.1b\msvc++\config.h" ".\libmad-0.15.1b\config.h"
 %CP% ".\libmad-0.15.1b\msvc++\mad.h" ".\libmad-0.15.1b\mad.h"
-%MV% .\libmad-0.15.1b %BUILDDIR%
+%MV% .\libmad-0.15.1b %BUILDDIR%\
 
 ECHO Build library.
 
