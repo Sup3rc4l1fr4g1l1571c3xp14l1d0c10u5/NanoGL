@@ -23,7 +23,7 @@ set LIB=%ProgramFiles(x86)%\Windows Kits\10\lib\%UCRTVersion%\ucrt\x86;%LIB%
 
 ECHO Copy rubygem Packages
 
-%MKDIR% %BUILDDIR%cruby
+%MKDIR% %BUILDDIR%\cruby
 
 %XCP% %BASEDIR%..\ruby\cruby\* %BUILDDIR%\cruby\
 
