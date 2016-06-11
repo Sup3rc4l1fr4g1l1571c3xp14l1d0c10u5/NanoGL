@@ -144,6 +144,14 @@ static mrb_value mrb_NanoGL_Video_GetTime(mrb_state *mrb, mrb_value self) {
 	return mrb_float_value(mrb, t);
 }
 
+static mrb_value mrb_NanoGL_Video_Sleep(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_float sec;
+	mrb_get_args(mrb, "f", &sec);
+	double sleeptime = Video.Sleep((double)sec);
+	return mrb_float_value(mrb, (mrb_float)sleeptime);
+}
+
 static mrb_value mrb_NanoGL_Video_SetClearColor(mrb_state *mrb, mrb_value self) {
 	(void)self;
 	mrb_value color;
@@ -1005,6 +1013,7 @@ static void mrb_nanogl_videomodule_install(mrb_state *mrb, struct RClass *parent
 	mrb_define_module_function(mrb, mNanoGL_Video, "SetSize", mrb_NanoGL_Video_SetSize, MRB_ARGS_REQ(2));
 	mrb_define_module_function(mrb, mNanoGL_Video, "Drawing", mrb_NanoGL_Video_Drawing, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Video, "GetTime", mrb_NanoGL_Video_GetTime, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "Sleep", mrb_NanoGL_Video_Sleep, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "SetClearColor", mrb_NanoGL_Video_SetClearColor, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "Save", mrb_NanoGL_Video_Save, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Video, "Restore", mrb_NanoGL_Video_Restore, MRB_ARGS_NONE());
@@ -1353,7 +1362,7 @@ static mrb_value mrb_NanoGL_FrameRate_GetCPUPower(mrb_state *mrb, mrb_value self
 	return mrb_fixnum_value(rate);
 }
 
-static void mrb_nanogl_framerate_install(mrb_state *mrb, struct RClass *parent)
+static void mrb_nanogl_frameratemodule_install(mrb_state *mrb, struct RClass *parent)
 {
 	struct RClass *mNanoGL_FrameRate = mrb_define_module_under(mrb, parent, "FrameRate");
 	mrb_define_module_function(mrb, mNanoGL_FrameRate, "SetFrameRate", mrb_NanoGL_FrameRate_SetFrameRate, MRB_ARGS_REQ(1));
@@ -1414,6 +1423,23 @@ static void mrb_nanogl_soundmodule_install(mrb_state *mrb, struct RClass *parent
 	mrb_define_module_function(mrb, mNanoGL_Sound, "ChannelStop", mrb_NanoGL_Sound_ChannelStop, MRB_ARGS_REQ(1));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// NanoGL.System
+////////////////////////////////////////////////////////////////////////////////
+
+static mrb_value mrb_NanoGL_System_Quit(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	(void)mrb;
+	System.Quit();
+	return mrb_nil_value();
+}
+
+static void mrb_nanogl_systemmodule_install(mrb_state *mrb, struct RClass *parent)
+{
+	struct RClass *mNanoGL_System = mrb_define_module_under(mrb, parent, "System");
+	mrb_define_module_function(mrb, mNanoGL_System, "Quit", mrb_NanoGL_System_Quit, MRB_ARGS_NONE());
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 // gem init
 //////////////////////////////////////////////////////////////////////////////////
@@ -1436,8 +1462,10 @@ void mrb_nanogl_gem_init(mrb_state* mrb)
 	mrb_nanogl_soundmodule_install(mrb, mNanoGL);
 	
 	// NanoGL.FrameRate
-	mrb_nanogl_framerate_install(mrb, mNanoGL);
+	mrb_nanogl_frameratemodule_install(mrb, mNanoGL);
 
+	// NanoGL.System
+	mrb_nanogl_systemmodule_install(mrb, mNanoGL);
 }
 
 void mrb_nanogl_gem_final(mrb_state *mrb) {	
