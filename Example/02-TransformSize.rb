@@ -57,31 +57,31 @@ Video.Draw do
 	# このライブラリでは行列の持ち方の関係で上記の １→２→３→４ を行う場合、には４→３→２→１の順で行う必要があります。
 
 	# 図形を定義
-	Path do
+	Video.Path do
 		# 変形のリセット
-		ResetTransform()
+		Video.ResetTransform()
 
 		# ３秒で１回転するように現在の回転角度をプログラム起動からの経過時間で算出
-		degree = 360.0 * GetTime() / 3.0
+		degree = 360.0 * Video.GetTime() / 3.0
 
 		# 角度に合わせて大きさが変化するようにsin関数でスケールを算出
-		scale = Math.sin(DegToRad(degree)) * 0.5 + 1.0
+		scale = Math.sin(Video.DegToRad(degree)) * 0.5 + 1.0
 
-		Translate(256, 256)			# 4の処理
-		Rotate(DegToRad(degree))	# 3の処理
-		Scale(scale, scale)			# 2の処理
-		Translate(-256, -256)		# 1の処理
+		Video.Translate(256, 256)			# 4の処理
+		Video.Rotate(Video.DegToRad(degree))	# 3の処理
+		Video.Scale(scale, scale)			# 2の処理
+		Video.Translate(-256, -256)		# 1の処理
 
 		# 正方形を配置する。
 		# 図形変形が適用されるため画面中央に回転した四角形が配置される
-		Rect(256 - 64, 256 - 64, 128, 128)
+		Video.Rect(256 - 64, 256 - 64, 128, 128)
 	end
 	
 
 	# 塗りつぶしで用いる色を 赤255, 緑0, 青0, 不透明度255 に設定
-	FillColor([255, 0, 0, 255]);
+	Video.FillColor([255, 0, 0, 255]);
 
 	# 図形を描く
-	Fill()
+	Video.Fill()
 end
 

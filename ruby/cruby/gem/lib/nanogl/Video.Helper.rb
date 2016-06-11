@@ -6,7 +6,7 @@ module NanoGL
         if block_given?
           loop do
             self.Drawing()
-            instance_eval(&block) 
+            yield
           end
         else
           self.Drawing()
@@ -15,7 +15,7 @@ module NanoGL
 
       def Path(&block)
         self.BeginPath()
-        instance_eval(&block) if block_given?
+        yield if block_given?
         self.ClosePath()
       end
 

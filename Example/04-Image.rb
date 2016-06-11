@@ -20,6 +20,6 @@ image = Video.CreateImage("./image/Image.png", 0)
 
 # XVˆ—
 Video.Draw do
-	DrawImage(image, 0, 0, width, height, 256-64, 256-64, 128, 128, 0, 1.0)
+	Video.DrawImage(image, 0, 0, width, height, 256-64, 256-64, 128, 128, 0, 1.0)
 end
 

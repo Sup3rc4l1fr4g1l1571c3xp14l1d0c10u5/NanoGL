@@ -64,12 +64,12 @@ Video.Draw do
 	end
 
 	# ‰æ‘œˆÊ’u(x,y)‚É•ÏŒ`‚İ‚Å•`‰æ‚·‚é
-	Path do
-		Reset()
-		Translate(x, y)
-		Rotate(DegToRad(degree))
-		Scale(scale, scale)
-		DrawImage(image, 0, 0, width, height, -64, -64, 128, 128, 0, 1)
+	Video.Path do
+		Video.Reset()
+		Video.Translate(x, y)
+		Video.Rotate(Video.DegToRad(degree))
+		Video.Scale(scale, scale)
+		Video.DrawImage(image, 0, 0, width, height, -64, -64, 128, 128, 0, 1)
 	end
 end
 

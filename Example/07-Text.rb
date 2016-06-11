@@ -25,10 +25,10 @@ Video.Draw do
 	# プログラムを起動してからの経過時間を表示する
 
 	# テキスト描画は図形ではないのでFillColor命令でテキスト色を指定してからテキスト描画命令を用いる
-	FontSize(48);								# フォントの大きさを高さ48ptに設定
-	FillColor([0, 0, 255, 255]);	# テキストの色を緑色に設定
-	TextAlign(Video::AlignFlags::ALIGN_CENTER | Video::AlignFlags::ALIGN_MIDDLE);	# 基準位置に文字列の縦横中心がくるように設定
-	Text(512 / 2, 512 / 2, sprintf("現在 %3.3f 秒経過", Video.GetTime()));
+	Video.FontSize(48);								# フォントの大きさを高さ48ptに設定
+	Video.FillColor([0, 0, 255, 255]);	# テキストの色を緑色に設定
+	Video.TextAlign(Video::AlignFlags::ALIGN_CENTER | Video::AlignFlags::ALIGN_MIDDLE);	# 基準位置に文字列の縦横中心がくるように設定
+	Video.Text(512 / 2, 512 / 2, sprintf("現在 %3.3f 秒経過", Video.GetTime()));
 end
 
 

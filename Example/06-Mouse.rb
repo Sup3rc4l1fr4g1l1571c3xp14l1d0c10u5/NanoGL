@@ -31,10 +31,10 @@ Video.Draw do
 	end
 
 	# マウスのカーソル位置に四角形を表示する
-	Path do
-		Rect(x - 25, y - 25, 50, 50);
+	Video.Path do
+		Video.Rect(x - 25, y - 25, 50, 50);
 	end
-	FillColor(color)
-	Fill()
+	Video.FillColor(color)
+	Video.Fill()
 end
 
