@@ -20,13 +20,13 @@ diff -uprN ./mruby-1.2.0/build_config.rb mruby-1.2.0-patched/build_config.rb
 +  conf.gem :git => 'https://github.com/iij/mruby-tempfile' do |g|
 +    if ENV['VisualStudioVersion'] || ENV['VSINSTALLDIR']
 +      p Dir.pwd
-+      sh "patch -p1 < ../../../patches/mruby-tempfile-vc14.patch"
++      sh "patch -N -p1 < ../../../patches/mruby-tempfile-vc14.patch"
 +    end
 +  end
 +  conf.gem :git => 'https://github.com/iij/mruby-require' do |g|
 +    if ENV['VisualStudioVersion'] || ENV['VSINSTALLDIR']
 +      p Dir.pwd
-+      sh "patch -p1 < ../../../patches/mruby-require-vc14.patch"
++      sh "patch -N -p1 < ../../../patches/mruby-require-vc14.patch"
 +    end
 +  end
 +
