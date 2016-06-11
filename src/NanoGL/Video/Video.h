@@ -178,6 +178,13 @@ extern const struct __tagVideoAPI {
 	double(*GetTime)(void);
 
 	/**
+	 * @brief src秒スリープする
+	 * @src  スリープ秒数(小数部分でミリ秒単位のスリープが可能)
+	 * @return 実際のスリープ経過秒数
+	 */
+	double(*Sleep)(double sec);
+
+	/**
 	 * @brief Video.Drawing()が画面消去に用いる色を color に設定する
 	 * @param color  設定する色
 	 */

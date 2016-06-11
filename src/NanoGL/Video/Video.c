@@ -1,5 +1,9 @@
 #if defined(_WIN32)
 #include <windows.h>
+#define msleep(x) Sleep(x)
+#elif defined(__APPLE__)
+#include <unistd.h>
+#define msleep(x) usleep((x)*(1000))
 #endif
 #include <gl/glew.h>
 #include <GLFW/glfw3.h>
@@ -225,6 +229,15 @@ static bool Video_Drawing(void) {
 static double Video_GetTime(void)
 {
 	return glfwGetTime();
+}
+
+static double Video_Sleep(double sec)
+{
+	double start = glfwGetTime();
+	int ms = (int)(sec * 1000);
+	msleep(ms);
+	double end = glfwGetTime();
+	return end - start;
 }
 
 static void Video_SetFrameRate(unsigned int fps)
@@ -1088,6 +1101,7 @@ const struct __tagVideoAPI Video = {
 	Video_SetSize,
 	Video_Drawing,
 	Video_GetTime,
+	Video_Sleep,
 	Video_SetClearColor,
 	Video_BeginFrame,
 	Video_CancelFrame,
