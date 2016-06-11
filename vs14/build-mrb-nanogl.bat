@@ -25,7 +25,9 @@ ECHO Download mruby Packages
 
 %MKDIR% %PKGDIR%
 
+IF NOT EXIST %PKGDIR%\mruby-1.2.0.zip (
 %WGET% -O %PKGDIR%\mruby-1.2.0.zip https://github.com/mruby/mruby/archive/1.2.0.zip
+)
 
 ECHO Extract mruby archive
 
@@ -36,7 +38,6 @@ ECHO Build mruby
 %CD% %BUILDDIR%
 %BSDTAR% -xf %PKGDIR%\mruby-1.2.0.zip
 %PATCH% -u -p1 < %PATCH_DIR%\mruby-1.2.0-build_conf.patch
-
 
 %CD% %BUILDDIR%\mruby-1.2.0
 

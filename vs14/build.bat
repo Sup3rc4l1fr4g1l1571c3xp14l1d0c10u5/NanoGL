@@ -18,18 +18,27 @@ set NANOGLDIR=%BASEDIR%..\src
 set LIBDIR=%BASEDIR%..\lib
 
 ECHO Download Packages
-
 %MKDIR% %PKGDIR%
 
+IF NOT EXIST %PKGDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip (
 %WGET% -O %PKGDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip https://github.com/memononen/nanovg/archive/b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
+)
 
+IF NOT EXIST %PKGDIR%\glew-1.13.0.zip (
 %WGET% -O %PKGDIR%\glew-1.13.0.zip https://sourceforge.net/projects/glew/files/glew/1.13.0/glew-1.13.0.zip/download
+)
 
+IF NOT EXIST %PKGDIR%\glfw-3.1.2.zip (
 %WGET% -O %PKGDIR%\glfw-3.1.2.zip https://sourceforge.net/projects/glfw/files/glfw/3.1.2/glfw-3.1.2.zip/download
+)
 
+IF NOT EXIST %PKGDIR%\openal-soft-1.17.2.tar.bz2 (
 %WGET% -O %PKGDIR%\openal-soft-1.17.2.tar.bz2 http://kcat.strangesoft.net/openal-releases/openal-soft-1.17.2.tar.bz2
+)
 
+IF NOT EXIST %PKGDIR%\libmad-0.15.1b.tar.gz (
 %WGET% -O %PKGDIR%\libmad-0.15.1b.tar.gz https://sourceforge.net/projects/mad/files/libmad/0.15.1b/libmad-0.15.1b.tar.gz/download
+)
 
 ECHO Extract archive
 
