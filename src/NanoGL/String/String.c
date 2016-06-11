@@ -1,5 +1,4 @@
 #if defined(_WIN32)
-#include <windows.h>
 #elif defined(__APPLE__)
 #define _strdup(x) strdup(x)
 #define strcat_s(_Destination,_SizeInBytes,_Source) strcat(_Destination,_Source)
