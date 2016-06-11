@@ -79,9 +79,13 @@ NanoGL_Initialize() {
 module NanoGL\n \
 	module Video\n \
 		def self.Draw(&block)\n \
-			loop do\n \
+			if block_given?\n \
+				loop do\n \
+					self.Drawing()\n \
+					yield if block_given?\n \
+				end\n \
+			else\n \
 				self.Drawing()\n \
-				yield if block_given?\n \
 			end\n \
 		end\n \
 		def self.Path(&block)\n \
@@ -100,6 +104,20 @@ class << self\n \
 		else\n \
 			original_require(s)\n \
 		end\n \
+	end\n \
+	def require_relative(s)\n \
+		begin\n \
+			cur = Dir.pwd\n \
+			original_require(s)\n \
+		ensure\n \
+			Dir.chdir(cur)\n \
+		end\n \
+	end\n \
+	def sleep(sec)\n \
+		Video.Sleep(sec)\n \
+	end\n \
+	def exit\n \
+		System.Quit\n \
 	end\n \
 end\n \
 ";

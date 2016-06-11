@@ -3,9 +3,13 @@ module NanoGL
     class << self
 
       def Draw(&block)
-        loop do
+        if block_given?
+          loop do
+            self.Drawing()
+            instance_eval(&block) 
+          end
+        else
           self.Drawing()
-          instance_eval(&block) if block_given?
         end
       end
 
