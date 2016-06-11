@@ -29,6 +29,9 @@ else
   NanoGL::System.SetQuitHandler do 
     NanoGL::Sound.Finalize()
     NanoGL::Video.Finalize()
-    Kernel.exit
+  end
+  Kernel.at_exit do 
+    NanoGL::Sound.Finalize()
+    NanoGL::Video.Finalize()
   end
 end
