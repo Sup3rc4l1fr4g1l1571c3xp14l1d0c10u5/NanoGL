@@ -11,14 +11,13 @@ Gem::Specification.new do |spec|
 
   spec.summary       = %q{NanoGL bindings}
   spec.description   = %q{A Ruby bindings of NanoGL.}
-  spec.homepage      = "http://whelp.0t0.jp/"
+  spec.homepage      = "https://github.com/Sup3rc4l1fr4g1l1571c3xp14l1d0c10u5/NanoGL"
 
   spec.files         = %w(Gemfile nanogl.gemspec README.md Rakefile) + Dir.glob("{exe,lib,src}/*") + Dir.glob("{lib}/nanogl/*")
   spec.require_paths = ["lib"]
 
-#  spec.required_ruby_version = '>= 2.2.3'
   spec.required_ruby_version = '>= 2.0.0'
+  spec.add_dependency "rake", "~> 10.0"
+  spec.add_dependency 'ffi', '>= 1.9.10'
   spec.add_development_dependency "bundler", "~> 1.10"
-  spec.add_development_dependency "rake", "~> 10.0"
-  spec.add_development_dependency 'ffi', '>= 1.9.10'
 end
