@@ -26,8 +26,8 @@ NanoGL ではいくつかのオープンソースプロジェクトを用いています。
     * nanogl-win32.zip をダウンロードする
     * nanogl-win32.zip を展開する
     * nanogl-win32 フォルダを開く
-    * MinGW32 を利用している場合
-      * bash を起動して ./nanogl-win32/mingw に移動
+    * MinGW32/MSYS を利用している場合
+      * msys.bat を起動して ./nanogl-win32/mingw に移動
       * make -f Makefile.example と入力するとサンプルのコンパイルが行われます。
     * VisualStudio 2015 を利用している場合
       * VS2015 x86 Native Tools Command Prompt を起動して ./nanogl-win32/vs14 に移動
@@ -41,15 +41,28 @@ NanoGL ではいくつかのオープンソースプロジェクトを用いています。
 
 ビルドには以下の環境が必要です
 
-  * gcc version 4.7.2 (rubenvb-4.7.2-release) Thread model: win32
-    * 絶対に 4.9.x 系の gcc を使わないでください。gcc自体のバグで不正なコードが生成されます。だから嫌なのよ gcc は。
-  * libavrt (gcc4.9.x系のmingw32から引っこ抜いて使う)
+  * MSYS 1.0.11
+    * https://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/msys-1.0.11/msysCORE-1.0.11-bin.tar.gz
+    * 追加で以下のパッケージが必要です
+      * https://sourceforge.net/projects/mingw/files/MSYS/Base/gettext/gettext-0.18.1.1-1/libintl-0.18.1.1-1-msys-1.0.17-dll-8.tar.lzma
+      * https://sourceforge.net/projects/mingw/files/MSYS/Base/libiconv/libiconv-1.14-1/libiconv-1.14-1-msys-1.0.17-dll-2.tar.lzma
+      * https://sourceforge.net/projects/mingw/files/MSYS/Base/xz/xz-4.999.9beta_20100401-1/liblzma-4.999.9beta_20100401-1-msys-1.0.13-dll-1.tar.gz
+      * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libxml2/libxml2-2.7.6-1/libxml2-2.7.6-1-msys-1.0.13-dll-2.tar.lzma
+      * https://sourceforge.net/projects/mingw/files/MSYS/Extension/zlib/zlib-1.2.7-1/zlib-1.2.7-1-msys-1.0.17-dll.tar.lzma
+  * gcc version 4.8.5 (thread:win32 exception:sjlj)
+    * http://nbtelecom.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/4.8.5/threads-win32/sjlj/i686-4.8.5-release-win32-sjlj-rt_v4-rev0.7z
   * cmake (GLFW3 と OpenAL のコンパイルに必要です。)
+    * https://cmake.org/files/v3.6/cmake-3.6.0-rc1-win32-x86.zip
   * wget (利用しているオープンソースパッケージの取得に必要です)
+    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/wget/wget-1.12-1/wget-1.12-1-msys-1.0.13-bin.tar.lzma
+    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/openssl/openssl-1.0.0-1/libopenssl-1.0.0-1-msys-1.0.13-dll-100.tar.lzma
   * patch (いくつかの修正パッチの適用に必要です。)
+    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/patch/patch-2.6.1-1/patch-2.6.1-1-msys-1.0.13-bin.tar.lzma
   * bsdtar (ダウンロードしたパッケージの展開に利用します。.)
+    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libarchive/libarchive-2.8.3-1/libarchive-2.8.3-1-msys-1.0.13-dll-2.tar.lzma
+    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libarchive/libarchive-2.8.3-1/bsdtar-2.8.3-1-msys-1.0.13-bin.tar.lzma
 
-MinGW/MSYS の bash.exe を開いて以下を実行します。
+msys.bat を開いて以下を実行します。
 
 ```sh
 $ bsdtar -m -xf nanogl-current.zip
@@ -112,7 +125,8 @@ gem をビルドしてインストールすることでCRubyからNanoGLが利用可能になります。
 利用には以下の環境が必要です
 
   * CRuby (>= 2.0) 
-  * gem ffi 
+  * gem bundler
+  * gem ffi
 
 ### MinGW32 or MacOS X
 
@@ -121,7 +135,7 @@ Terminal.app を開き、各OS向けディレクトリで以下を実行します。
 ```sh
 $ make -f Makefile.rubygem
 $ gem install -l nanogl-<version>.gem
-$ ruby ../ruby/example/00-blank.rb
+$ ruby ../example/00-blank.rb
 ```sh
 
 ### VisualStudio
@@ -131,34 +145,63 @@ $ ruby ../ruby/example/00-blank.rb
 ```sh
 > build-mrb-nanogl.bat
 > gem install -l nanogl-<version>.gem
-> ruby ../ruby/example/00-blank.rb
+> ruby ../example/00-blank.rb
 ```
 
 ## mrubyで使う場合
 
-  * Install CRuby (>= 2.0)
+  * CRuby (>=2.0)
+  * bison
+  * flex
 
-### MinGW32 or MacOS X
+### MinGW32 
+
+ビルドには以下の環境が必要です
+
+  * bison
+    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/bison/bison-2.4.2-1/bison-2.4.2-1-msys-1.0.13-bin.tar.lzma
+    * 追加で以下のパッケージが必要です
+      * https://sourceforge.net/projects/mingw/files/MSYS/Extension/m4/m4-1.4.16-2/m4-1.4.16-2-msys-1.0.17-bin.tar.lzma
+  * flex
+    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/flex/flex-2.5.35-2/flex-2.5.35-2-msys-1.0.13-bin.tar.lzma
+
+msys.bat を開いて以下を実行します。
+
+```sh
+$ make -f Makefile.mrb-nanogl
+$ ./mrb-nanogl ../example/00-blank.rb
+```sh
+
+### MacOS X
 
 Terminal.app を開き、各OS向けディレクトリで以下を実行します。
 
 ```sh
 $ make -f Makefile.mrb-nanogl
-$ ./mrb-nanogl ../ruby/example/00-blank.rb
+$ ./mrb-nanogl ../example/00-blank.rb
 ```sh
 
 ### VisualStudio
+
+ビルドには以下の環境が必要です
+
+  * GnuWin32に含まれるbison, flex (build-tools.batで自動的にtoolsディレクトリにセットアップされます)
+    * bison (mrubyのコンパイルに必要です)
+      * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-bin.zip
+      * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-dep.zip
+    * flex (mrubyのコンパイルに必要です)
+      * http://gnuwin32.sourceforge.net/downlinks/flex-bin-zip.php
 
 スタートメニューから`VS2015 x86 Native Tools Command Prompt` を開いてVS14向けディレクトリで以下を実行します。
 
 ```sh
 > build-mrb-nanogl.bat
-> mrb-nanogl.exe ../ruby/mruby/example/00-blank.rb
+> mrb-nanogl.exe ../example/00-blank.rb
 ```
 
 # ライセンス
 
-  * 上記オープンソースプロジェクトの成果物を除く、NanoGLソースコードとexampleフォルダの作例は NYSL Version 0.9982 です。
+  * NanoGLが利用しているオープンソースプロジェクト成果物やライブラリを除く、NanoGLソースコードとexampleフォルダの作例は NYSL Version 0.9982 です。
   * OpenALやlibmadがGPL2 ライセンスのため、NanoGLをスタティックリンクした実行ファイルは GPL2 ライセンスになります。ご注意ください。
 
 # 予定
