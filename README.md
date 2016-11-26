@@ -6,8 +6,9 @@ NanoGL ‚ÍƒvƒƒOƒ‰ƒ~ƒ“ƒO‰ŠwŽÒŒü‚¯‚ÌƒVƒ“ƒvƒ‹‚ÈƒQ[ƒ€ƒvƒƒOƒ‰ƒ~ƒ“ƒO—pƒtƒŒ[ƒ€ƒ[ƒ
 
   - ƒRƒ“ƒpƒCƒ‹‚â”z•z‚ªŽèŒy‚Å—eˆÕ
   - IDE‚Ì—˜—p‚ð‘O’ñ‚Æ‚µ‚Ä®—‚³‚ê‚½API
-  - ‚³‚³‚â‚©‚È‚ª‚çƒNƒƒXƒvƒ‰ƒbƒgƒtƒH[ƒ€‘Î‰ž
-  - ‚æ‚­‚ ‚éƒQ[ƒ€‚ÌŽÀ‘•—á‚ð’ñ‹Ÿ
+  - ‚³‚³‚â‚©‚È‚ª‚çƒNƒƒXƒvƒ‰ƒbƒgƒtƒH[ƒ€(Windows/MacOSX)‘Î‰ž
+  - ŠwK‚ÌŽQlŒü‚¯‚É‚æ‚­‚ ‚éƒQ[ƒ€‚ÌŽÀ‘•—á‚ð’ñ‹Ÿ
+  - CRuby, mruby ‚Å‚Ì—˜—p‚ª‰Â”\
 
 ## —˜—p‹Zp
 
@@ -212,4 +213,7 @@ $ ./mrb-nanogl ../example/00-blank.rb
     * ƒ_ƒCƒiƒ~ƒbƒNƒŠƒ“ƒN”Å‚Ìì¬
     * MP3ƒfƒR[ƒ_‚ð“ÆŽ©ŽÀ‘•‚à‚µ‚­‚Í”pŽ~
     * libsoundio‚âportaudio“™‚Ì”ñGPLƒ‰ƒCƒuƒ‰ƒŠ‚Ö‚ÌˆÚs
+  * Linuxƒvƒ‰ƒbƒgƒtƒH[ƒ€‚Ö‚Ì‘Î‰ž
+  * Š”Ž®‰ïŽÐ‚Ü‚¿‚Ã‚­‚èŽO‘é‚ª”­s‚µ‚Ä‚¢‚éuƒIƒuƒWƒFƒNƒgŽwŒüŒ¾ŒêuRubyƒvƒƒOƒ‰ƒ~ƒ“ƒO“ü–åvƒeƒLƒXƒgi‰SŽÒ—pjv‚Ö‚Ì‘Î‰ž
+    * —˜—p‚·‚é‚±‚Æ‚É‚È‚é dxruby on nanogl ‚Ìdxruby‘Î‰ž“x‚ðŒüã
 
