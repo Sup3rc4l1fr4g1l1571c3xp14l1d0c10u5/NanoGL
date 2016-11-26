@@ -30,7 +30,7 @@ IF NOT EXIST UnzipExample.exe (
 ECHO "Download and building unzip tool."
 !NWGET! Unzip.cs https://github.com/yallie/unzip/raw/49e5f9f0ff612581d473b9f062f1db4820cf20d3/Unzip.cs
 !NWGET! UnzipExample.cs https://github.com/yallie/unzip/raw/49e5f9f0ff612581d473b9f062f1db4820cf20d3/UsageExample.cs
-%windir%\Microsoft.NET\Framework\v3.5\csc.exe Unzip.cs UnzipExample.cs
+!CSC! Unzip.cs UnzipExample.cs
 ) else (
 ECHO "UnzipExample.exe is exists."
 )

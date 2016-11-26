@@ -10,53 +10,12 @@
 #include <AL/alc.h>
 #endif
 #include "./SoundChannel/ChannelManager.h"
-
+#include "../String/CharCodeHelper.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-#if defined(_WIN32)
-#include <windows.h>
-typedef char utf8_t;
-static char *utf82sjis(const utf8_t *pUtf8Str, const utf8_t *pEnd) {
-	// Convert UTF8 to WideChar(UTF-16)
-	int nUtf8ByteCount = pEnd - pUtf8Str;
-	int nUtf16WordCount = MultiByteToWideChar(CP_UTF8, 0, pUtf8Str, nUtf8ByteCount, NULL, 0);
-	wchar_t *pUtf16Str = calloc(nUtf16WordCount + 1, sizeof(wchar_t));
-	if (pUtf16Str == NULL) { return NULL; }
-	if (MultiByteToWideChar(CP_UTF8, 0, pUtf8Str, nUtf8ByteCount, pUtf16Str, nUtf16WordCount) != nUtf16WordCount) {
-		free(pUtf16Str);
-		return NULL;
-	}
 
-	// Convert WideChar(UTF-16) to UShiftJIS(CP923)
-	int nConvBytes = WideCharToMultiByte(CP_ACP, 0, pUtf16Str, -1, NULL, 0, NULL, NULL);
-	char *pSjisStr = calloc(nConvBytes + 1, sizeof(char));
-	if (pSjisStr == NULL) {
-		free(pUtf16Str);
-		return false;
-	}
-	if (WideCharToMultiByte(CP_ACP, 0, pUtf16Str, -1, pSjisStr, nConvBytes, NULL, NULL) != nConvBytes) {
-		free(pUtf16Str);
-		free(pSjisStr);
-		return false;
-	}
-
-	free(pUtf16Str);
-
-	return pSjisStr;
-}
-
-static bool IsContainsNotAscii(const char *str, const char *end)
-{
-	while (str != end && *str != '\0')
-	{
-		if (!isascii(*str++)) { return true; }
-	}
-	return false;
-}
-
-#endif
 
 static ALCdevice* alDevice;
 static ALCcontext* alContext;
@@ -124,7 +83,7 @@ static bool Sound_Channel_CreateUTF8_(int channelId, const char*path) {
 #if !defined(_WIN32)
 	ret = ChannelManager.CreateFromFile(channelId, path);
 #else
-	if (IsContainsNotAscii(path,NULL))
+	if (is_contains_not_ascii(path,NULL))
 	{
 		char *sjispath = utf82sjis(path, NULL);
 		ret = ChannelManager.CreateFromFile(channelId, sjispath);

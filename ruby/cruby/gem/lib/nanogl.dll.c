@@ -38,6 +38,11 @@ const struct __tagSystemAPI *GetSystemVTable(void) {
 	return &System;
 }
 
+__declspec(dllexport) 
+const struct __tagDialogAPI *GetDialogVTable(void) {
+	return &Dialog;
+}
+
 void start(void) {
 	/* this is dummy */
 }

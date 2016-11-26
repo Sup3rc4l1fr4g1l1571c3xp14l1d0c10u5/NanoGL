@@ -2,7 +2,7 @@ CC=gcc
 CP=cp
 MKDIR=mkdir
 DLL=nanogl.dll
-VERSION=0.1.0
+VERSION=0.2.0
 GEM=nanogl-$(VERSION).gem
 SRC=nanogl.dll.c
 
@@ -14,7 +14,7 @@ RUBYSRC_DIR=$(CURDIR)/../ruby/cruby
 GEM_DIR=$(BUILDDIR)/cruby/gem
 
 CFLAGS= -shared -m32 -std=c99 -I$(NANOGL_DIR)
-LDFLAGS=-L$(LIB_DIR) -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt
+LDFLAGS=-L$(LIB_DIR) -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt -lComdlg32
 
 all: $(GEM)
 

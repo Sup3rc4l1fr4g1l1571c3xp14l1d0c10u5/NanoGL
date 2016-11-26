@@ -216,6 +216,8 @@ $(BUILD_DIR)/libnanogl.0.a: $(BUILD_DIR)/nanogl-current
 		$(NANOGL_DIR)/Video/FpsTimer.c \
 		$(NANOGL_DIR)/Debug/Debug.c \
 		$(NANOGL_DIR)/String/String.c \
+		$(NANOGL_DIR)/String/CharCodeHelper.c \
+		$(NANOGL_DIR)/Dialog/Dialog.windows.c \
 		$(NANOGL_DIR)/System/System.c \
 		-l glew32 &&\
 	$(AR) r $(BUILD_DIR)/libnanogl.0.a \
@@ -232,7 +234,9 @@ $(BUILD_DIR)/libnanogl.0.a: $(BUILD_DIR)/nanogl-current
 		./FpsTimer.o \
 		./debug.o \
 		./string.o \
+		./CharCodeHelper.o \
 		./system.o \
+		./dialog.windows.o \
 		./nanovg-extra-apis.o
 
 $(BUILD_DIR)/libnanogl.1.a: $(BUILD_DIR)/libnanogl.0.a $(BUILD_DIR)/libOpenAL32.a $(BUILD_DIR)/libglfw3.a $(BUILD_DIR)/libglew32.a $(BUILD_DIR)/libmad.a $(BUILD_DIR)/libnanovg3.a

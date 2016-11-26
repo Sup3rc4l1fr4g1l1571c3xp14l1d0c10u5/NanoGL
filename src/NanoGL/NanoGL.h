@@ -9,6 +9,7 @@
 #include "String/String.h"
 #include "Debug/Debug.h"
 #include "System/System.h"
+#include "Dialog/Dialog.h"
 
 #include <stddef.h>
 

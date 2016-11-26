@@ -21,7 +21,7 @@ How to compile nanogl
 6. (Option) Execute 'build-example.bat' on the 'VS2015 x86 Native Tools Command Promprt'.
    This script compiles each examples.
 
-7. (Option) Install CRuby(>= 2.0.0) and Execute 'build-mrb-nanogl.bat' on the 'VS2015 x86 Native Tools Command Promprt'
+7. (Option) Install CRuby(>= 2.0.0), Git client and Execute 'build-mrb-nanogl.bat' on the 'VS2015 x86 Native Tools Command Promprt'
    This script downloads and compiles mruby.
    After those have been completed, mrb-nanogl.exe is compiled.
 

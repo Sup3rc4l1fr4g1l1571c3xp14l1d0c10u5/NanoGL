@@ -1426,6 +1426,57 @@ static void mrb_nanogl_systemmodule_install(mrb_state *mrb, struct RClass *paren
 	mrb_define_module_function(mrb, mNanoGL_System, "Quit", mrb_NanoGL_System_Quit, MRB_ARGS_NONE());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// NanoGL.Dialog
+////////////////////////////////////////////////////////////////////////////////
+
+static mrb_value mrb_NanoGL_Dialog_OpenFileDialog(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	char *prompt;
+	int promptlen;
+	char *message;
+	int messagelen;
+	string_t path;
+
+	mrb_get_args(mrb, "ss", &prompt, &promptlen, &message, &messagelen);
+
+	path = Dialog.OpenFileDialogUTF8(prompt, message);
+	if (path.c_str == NULL) {
+		return mrb_nil_value();
+	} else {
+		mrb_value v = mrb_str_new_cstr(mrb, path.c_str);
+		String.Free(path);
+		return v;
+	}
+}
+
+static mrb_value mrb_NanoGL_Dialog_SaveFileDialog(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	char *prompt;
+	int promptlen;
+	char *message;
+	int messagelen;
+	string_t path;
+
+	mrb_get_args(mrb, "ss", &prompt, &promptlen, &message, &messagelen);
+
+	path = Dialog.SaveFileDialogUTF8(prompt, message);
+	if (path.c_str == NULL) {
+		return mrb_nil_value();
+	} else {
+		mrb_value v = mrb_str_new_cstr(mrb, path.c_str);
+		String.Free(path);
+		return v;
+	}
+}
+
+static void mrb_nanogl_dialogmodule_install(mrb_state *mrb, struct RClass *parent)
+{
+	struct RClass *mNanoGL_Dialog = mrb_define_module_under(mrb, parent, "Dialog");
+	mrb_define_module_function(mrb, mNanoGL_Dialog, "OpenFileDialog", mrb_NanoGL_Dialog_OpenFileDialog, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Dialog, "SaveFileDialog", mrb_NanoGL_Dialog_SaveFileDialog, MRB_ARGS_REQ(2));
+}
+
 //////////////////////////////////////////////////////////////////////////////////
 // gem init
 //////////////////////////////////////////////////////////////////////////////////
@@ -1452,6 +1503,9 @@ void mrb_nanogl_gem_init(mrb_state* mrb)
 
 	// NanoGL.System
 	mrb_nanogl_systemmodule_install(mrb, mNanoGL);
+
+	// NanoGL.Dialog
+	mrb_nanogl_dialogmodule_install(mrb, mNanoGL);
 }
 
 void mrb_nanogl_gem_final(mrb_state *mrb) {	

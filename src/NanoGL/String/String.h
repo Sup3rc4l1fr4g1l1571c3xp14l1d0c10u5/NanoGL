@@ -13,6 +13,11 @@ typedef struct __tagString {
 } string_t;
 
 /**
+ * utf8‚ð–¾Ž¦“I‚ÉŽ¦‚µ‚½‚¢‚Æ‚«‚ÌŒ^
+ */
+typedef char utf8_t;
+
+/**
  * @brief •¶Žš—ñ
  */
 extern const struct __tagStringAPI {

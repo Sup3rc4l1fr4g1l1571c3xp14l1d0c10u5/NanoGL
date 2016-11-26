@@ -18,11 +18,19 @@ static bool SystemIsRunning = false;
 static void __NullHandler(void) {}
 
 #if defined(_MSC_VER)
+#define NORETURN __declspec(noreturn)
 #pragma comment(linker, "/alternatename:___InitializeHandler=___DefaultInitializeHandler")
 #pragma comment(linker, "/alternatename:___FinalizeHandler=___DefaultFinalizeHandler")
 extern void(* const __InitializeHandler)(void);
 extern void(* const __FinalizeHandler)(void);
+#elif defined(__llvm__)
+#define NORETURN __attribute__((noreturn))
+#pragma weak __InitializeHandler = __DefaultInitializeHandler
+#pragma weak __FinalizeHandler = __DefaultFinalizeHandler
+//extern void(* const __InitializeHandler)(void);
+//extern void(* const __FinalizeHandler)(void);
 #elif defined(__GNUC__)
+#define NORETURN __declspec(noreturn)
 extern void(* const __InitializeHandler)(void) __attribute__((weak, alias ("__DefaultInitializeHandler")));
 extern void(* const __FinalizeHandler)(void) __attribute__((weak, alias("__DefaultFinalizeHandler")));
 #endif
@@ -30,7 +38,7 @@ void(*__DefaultInitializeHandler)(void) = __NullHandler;
 void(*__DefaultFinalizeHandler)(void) = __NullHandler;
 
 static QuitHandler _UserQuitHandler = NULL;
-__declspec(noreturn)
+NORETURN
 static void System_QuitHandlerExit(int dummy);
 static void (*_QuitHandler)(int) = System_QuitHandlerExit;
 
@@ -51,13 +59,13 @@ static const char **_CommandLineArgV;
 
 static jmp_buf jmp;
 
-__declspec(noreturn) 
+NORETURN
 static void System_QuitHandler(int dummy) {
 	(void)dummy;
 	longjmp(jmp, 1);
 }
 
-__declspec(noreturn) 
+NORETURN
 static void System_QuitHandlerExit(int dummy) {
 	exit(dummy);
 }

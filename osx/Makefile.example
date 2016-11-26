@@ -4,7 +4,7 @@ MKDIR=mkdir
 SRCS=$(wildcard ../Example/*.c)
 TARGET=$(subst ../Example,./Example,$(SRCS:%.c=%.exe))
 CFLAGS= -std=c99 -I../src
-LDFLAGS=-L../lib -lnanogl -lglfw3 -lmad -lglew -framework OpenGL -framework Foundation -framework IOKit -framework CoreVideo -framework CoreAudio -framework Cocoa -framework AudioUnit -framework AudioToolBox -framework OpenAL
+LDFLAGS=-L../lib -lnanogl -lglfw3 -lmad -lglew -framework OpenGL -framework Foundation -framework IOKit -framework CoreVideo -framework CoreAudio -framework Cocoa -framework AudioUnit -framework AudioToolBox -framework OpenAL -framework AppKit
 
 all: ./Example $(TARGET)
 

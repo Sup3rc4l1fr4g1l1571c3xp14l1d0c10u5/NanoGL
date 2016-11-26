@@ -32,6 +32,7 @@ pause
 %CP% %BASEDIR%example.vcxproj %BASEDIR%08-Sprite.vcxproj
 %CP% %BASEDIR%example.vcxproj %BASEDIR%09-Sound.vcxproj
 %CP% %BASEDIR%example.vcxproj %BASEDIR%10-Scene.vcxproj
+%CP% %BASEDIR%example.vcxproj %BASEDIR%11-Dialog.vcxproj
 %CP% %BASEDIR%example.vcxproj %BASEDIR%50-15Puzzle.vcxproj
 %CP% %BASEDIR%example.vcxproj %BASEDIR%51-STG.vcxproj
 
@@ -46,6 +47,7 @@ msbuild %BASEDIR%07-Text.vcxproj /p:Configuration=Release /p:Platform=x86
 msbuild %BASEDIR%08-Sprite.vcxproj /p:Configuration=Release /p:Platform=x86
 msbuild %BASEDIR%09-Sound.vcxproj /p:Configuration=Release /p:Platform=x86
 msbuild %BASEDIR%10-Scene.vcxproj /p:Configuration=Release /p:Platform=x86
+msbuild %BASEDIR%11-Dialog.vcxproj /p:Configuration=Release /p:Platform=x86
 msbuild %BASEDIR%50-15Puzzle.vcxproj /p:Configuration=Release /p:Platform=x86
 msbuild %BASEDIR%51-STG.vcxproj /p:Configuration=Release /p:Platform=x86
 

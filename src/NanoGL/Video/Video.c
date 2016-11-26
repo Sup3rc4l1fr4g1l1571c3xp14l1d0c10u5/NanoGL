@@ -20,80 +20,11 @@
 #include "../Debug/Debug.h"
 #include "../System/System.h"
 #include "../String/String.h"
+#include "../String/CharCodeHelper.h"
 #include "../Math/Math.h"
 
 static GLFWwindow *glfwWindow;
 static NVGcontext *nvgContext;
-
-#if defined(_WIN32)
-typedef char utf8_t;
-static char *utf82sjis(const utf8_t *pUtf8Str, const utf8_t *pEnd) {
-	// Convert UTF8 to WideChar(UTF-16)
-	int nUtf8ByteCount = pEnd - pUtf8Str;
-	int nUtf16WordCount = MultiByteToWideChar(CP_UTF8, 0, pUtf8Str, nUtf8ByteCount, NULL, 0);
-	wchar_t *pUtf16Str = calloc(nUtf16WordCount + 1, sizeof(wchar_t));
-	if (pUtf16Str == NULL) { return NULL; }
-	if (MultiByteToWideChar(CP_UTF8, 0, pUtf8Str, nUtf8ByteCount, pUtf16Str, nUtf16WordCount) != nUtf16WordCount) {
-		free(pUtf16Str);
-		return NULL;
-	}
-
-	// Convert WideChar(UTF-16) to UShiftJIS(CP923)
-	int nConvBytes = WideCharToMultiByte(CP_ACP, 0, pUtf16Str, -1, NULL, 0, NULL, NULL);
-	char *pSjisStr = calloc(nConvBytes + 1, sizeof(char));
-	if (pSjisStr == NULL) {
-		free(pUtf16Str);
-		return false;
-	}
-	if (WideCharToMultiByte(CP_ACP, 0, pUtf16Str, -1, pSjisStr, nConvBytes, NULL, NULL) != nConvBytes) {
-		free(pUtf16Str);
-		free(pSjisStr);
-		return false;
-	}
-
-	free(pUtf16Str);
-
-	return pSjisStr;
-}
-static utf8_t *sjis2utf8(const char *pSjisStr, const char *pEnd) {
-	// Convert ShiftJIS(CP923) to WideChar(UTF-16)
-	int nConvBytes = pEnd == NULL ? -1 : (pEnd - pSjisStr);
-	int nUtf16WordCount = MultiByteToWideChar(CP_ACP, 0, pSjisStr, nConvBytes, NULL, 0);
-	wchar_t *pUtf16Str = calloc(nUtf16WordCount + 1, sizeof(wchar_t));
-	if (pUtf16Str == NULL) { return NULL; }
-	if (MultiByteToWideChar(CP_ACP, 0, pSjisStr, nConvBytes, pUtf16Str, nUtf16WordCount) != nUtf16WordCount) {
-		free(pUtf16Str);
-		return NULL;
-	}
-
-	// Convert WideChar(UTF-16) to ShiftJIS(CP923)
-	int nUtf8WordCount = WideCharToMultiByte(CP_UTF8, 0, pUtf16Str, -1, NULL, 0, NULL, NULL);
-	utf8_t *pUtf8Str = calloc(nUtf8WordCount + 1, sizeof(utf8_t));
-	if (pUtf8Str == NULL) {
-		free(pUtf16Str);
-		return false;
-	}
-	if (WideCharToMultiByte(CP_UTF8, 0, pUtf16Str, -1, pUtf8Str, nUtf8WordCount, NULL, NULL) != nUtf8WordCount) {
-		free(pUtf16Str);
-		free(pUtf8Str);
-		return false;
-	}
-
-	free(pUtf16Str);
-
-	return pUtf8Str;
-}
-
-static bool IsContainsNotAscii(const char *str, const char *end)
-{
-	while (str != end && *str != '\0')
-	{
-		if (!isascii(*str++)) { return true; }
-	}
-	return false;
-}
-
-#endif
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1800)
 # define inline __inline
@@ -195,7 +126,7 @@ static void Video_SetWindowTitleUTF8(const char *title)
 static void Video_SetWindowTitle(const char *title)
 {
 #if defined(_WIN32)
-	if (IsContainsNotAscii(title,NULL))
+	if (is_contains_not_ascii(title,NULL))
 	{
 		utf8_t *utf8title = sjis2utf8(title, NULL);
 		glfwSetWindowTitle(glfwWindow, utf8title);
@@ -475,7 +406,7 @@ static int Video_CreateImageUTF8_(const char* filename, int imageFlags) {
 	}
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(filename, NULL))
+	if (is_contains_not_ascii(filename, NULL))
 	{
 		char *sjisfilename = utf82sjis(filename, NULL);
 		ret = nvgCreateImage(nvgContext, sjisfilename, imageFlags);
@@ -515,7 +446,7 @@ static int Video_CreateImage_(const char* filename, int imageFlags) {
 	}
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(filename, NULL))
+	if (is_contains_not_ascii(filename, NULL))
 	{
 		utf8_t *utf8filename = sjis2utf8(filename, NULL);
 		ret = nvgCreateImage(nvgContext, utf8filename, imageFlags);
@@ -722,7 +653,7 @@ static int Video_CreateFontUTF8_(const char* name, const char* filename) {
 	}
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(name, NULL) || IsContainsNotAscii(filename, NULL))
+	if (is_contains_not_ascii(name, NULL) || is_contains_not_ascii(filename, NULL))
 	{
 		char *sjisname = utf82sjis(name, NULL);
 		char *sjisfilename = utf82sjis(filename, NULL);
@@ -765,7 +696,7 @@ static int Video_CreateFont_(const char* name, const char* filename) {
 	}
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(name, NULL) || IsContainsNotAscii(filename, NULL))
+	if (is_contains_not_ascii(name, NULL) || is_contains_not_ascii(filename, NULL))
 	{
 		utf8_t *utf8name = sjis2utf8(name, NULL);
 		utf8_t *utf8filename = sjis2utf8(filename, NULL);
@@ -813,7 +744,7 @@ static int Video_CreateFontMemUTF8_(const char* name, unsigned char* data, int n
 	}
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(name, NULL))
+	if (is_contains_not_ascii(name, NULL))
 	{
 		char *sjisname = utf82sjis(name, NULL);
 		ret = nvgCreateFontMem(nvgContext, sjisname, data, ndata, freeData);
@@ -859,7 +790,7 @@ static int Video_CreateFontMem_(const char* name, unsigned char* data, int ndata
 	}
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(name, NULL))
+	if (is_contains_not_ascii(name, NULL))
 	{
 		utf8_t *utf8name = sjis2utf8(name, NULL);
 		ret = nvgCreateFontMem(nvgContext, utf8name, data, ndata, freeData);
@@ -895,7 +826,7 @@ static int Video_FindFontUTF8_(const char* name) {
 	}
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(name, NULL))
+	if (is_contains_not_ascii(name, NULL))
 	{
 		char *sjisname = utf82sjis(name, NULL);
 		ret = nvgFindFont(nvgContext, sjisname);
@@ -931,7 +862,7 @@ static int Video_FindFont(const char* name) {
 	Debug.PushBanner("**Error in Video.FindFont");
 	int ret;
 #if defined(_WIN32)
-	if (IsContainsNotAscii(name, NULL))
+	if (is_contains_not_ascii(name, NULL))
 	{
 		utf8_t *utf8name = sjis2utf8(name, NULL);
 		ret = Video_FindFont_(utf8name);
@@ -978,7 +909,7 @@ static void Video_FontFaceUTF8(const char* font) {
 
 static void Video_FontFace(const char* font) {
 #if defined(_WIN32)
-	if (IsContainsNotAscii(font, NULL))
+	if (is_contains_not_ascii(font, NULL))
 	{
 		utf8_t *utf8font = sjis2utf8(font, NULL);
 		nvgFontFace(nvgContext, utf8font);
@@ -1016,7 +947,7 @@ static float Video_Text(float x, float y, const char* string, const char* end) {
 		goto EXIT;
 	}
 #if defined(_WIN32)
-	if (IsContainsNotAscii(string,end))
+	if (is_contains_not_ascii(string,end))
 	{
 		utf8_t *utf8str = sjis2utf8(string, end);
 		ret = Video_TextUTF8(x, y, utf8str, NULL);
@@ -1053,7 +984,7 @@ static void Video_TextBox(float x, float y, float breakRowWidth, const char* str
 		goto EXIT;
 	}
 #if defined(_WIN32)
-	if (IsContainsNotAscii(string, end))
+	if (is_contains_not_ascii(string, end))
 	{
 		utf8_t *utf8str = sjis2utf8(string, end);
 		Video_TextBoxUTF8(x, y, breakRowWidth, utf8str, NULL);
@@ -1103,7 +1034,7 @@ static float Video_TextBounds(float x, float y, const char* string, const char* 
 		goto EXIT;
 	}
 #if defined(_WIN32)
-	if (IsContainsNotAscii(string, end))
+	if (is_contains_not_ascii(string, end))
 	{
 		utf8_t *utf8str = sjis2utf8(string, end);
 		ret = Video_TextBoundsUTF8(x, y, utf8str, NULL, bounds);
@@ -1151,7 +1082,7 @@ static void Video_TextBoxBounds(float x, float y, float breakRowWidth, const cha
 		goto EXIT;
 	}
 #if defined(_WIN32)
-	if (IsContainsNotAscii(string, end))
+	if (is_contains_not_ascii(string, end))
 	{
 		utf8_t *utf8str = sjis2utf8(string, end);
 		Video_TextBoxBoundsUTF8(x, y, breakRowWidth, utf8str, NULL, bounds);
@@ -1211,7 +1142,7 @@ static int Video_TextGlyphPositions(float x, float y, const char* string, const 
 		goto EXIT;
 	}
 #if defined(_WIN32)
-	if (IsContainsNotAscii(string, end))
+	if (is_contains_not_ascii(string, end))
 	{
 		utf8_t *utf8str = sjis2utf8(string, end);
 		ret = nvgTextGlyphPositions(nvgContext, x, y, utf8str, NULL, (NVGglyphPosition*)positions, maxPositions);
@@ -1280,7 +1211,7 @@ static int Video_TextBreakLines(const char* string, const char* end, float break
 		goto EXIT;
 	}
 #if defined(_WIN32)
-	if (IsContainsNotAscii(string, end))
+	if (is_contains_not_ascii(string, end))
 	{
 		utf8_t *utf8str = sjis2utf8(string, end);
 		ret = Video_TextBreakLinesUTF8(utf8str, NULL, breakRowWidth, rows, maxRows);

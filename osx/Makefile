@@ -113,6 +113,9 @@ $(BUILD_DIR)/libnanogl.0.a: $(BUILD_DIR)/nanogl-current
 		$(NANOGL_DIR)/Debug/Debug.c \
 		$(NANOGL_DIR)/String/String.c \
 		$(NANOGL_DIR)/System/System.c &&\
+	$(CC) \
+		-c -arch x86_64 \
+		$(NANOGL_DIR)/Dialog/Dialog.macosx.m &&\
 	$(AR) r $(BUILD_DIR)/libnanogl.0.a \
 		./Start.o \
 		./Sound.o \
@@ -128,6 +131,7 @@ $(BUILD_DIR)/libnanogl.0.a: $(BUILD_DIR)/nanogl-current
 		./debug.o \
 		./string.o \
 		./system.o \
+		./Dialog.macosx.o \
 		./nanovg-extra-apis.o
 
 $(LIB_DIR)/libnanogl.a: $(BUILD_DIR)/libnanogl.0.a $(BUILD_DIR)/libnanovg3.a
@@ -151,7 +155,7 @@ $(LIB_DIR)/libnanogl.a: $(BUILD_DIR)/libnanogl.0.a $(BUILD_DIR)/libnanovg3.a
 	echo "        -framework IOKit -framework CoreVideo " &&\
 	echo "        -framework CoreAudio -framework Cocoa " &&\
 	echo "        -framework AudioUnit -framework AudioToolBox " &&\
-	echo "        -framework OpenAL" &&\
+	echo "        -framework OpenAL -framework AppKit" &&\
 	echo "" &&\
 	echo "If you want to get an example of use, run 'make -f Makefile.example'." &&\
 	echo ""

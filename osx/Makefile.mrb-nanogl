@@ -28,7 +28,7 @@ MRBGAME_DIR=$(BUILD_DIR)/mrb-nanogl
 SRCS=$(CURDIR)/../ruby/mruby/src/main.c $(CURDIR)/../ruby/mruby/src/mrb-nanogl.c
 OBJS=$(SRCS:%.c=%.o)
 CFLAGS= -std=c99 -I$(BUILD_DIR)/mruby-1.2.0/include -I$(NANOGL_DIR)
-LDFLAGS=-L$(LIB_DIR) -L$(BUILD_DIR)/mruby-1.2.0/build/host/lib -lmruby -lnanogl -lglfw3 -lmad -lglew -framework OpenGL -framework Foundation -framework IOKit -framework CoreVideo -framework CoreAudio -framework Cocoa -framework AudioUnit -framework AudioToolBox -framework OpenAL
+LDFLAGS=-L$(LIB_DIR) -L$(BUILD_DIR)/mruby-1.2.0/build/host/lib -lmruby -lnanogl -lglfw3 -lmad -lglew -framework OpenGL -framework Foundation -framework IOKit -framework CoreVideo -framework CoreAudio -framework Cocoa -framework AudioUnit -framework AudioToolBox -framework OpenAL -framework AppKit
 
 all: $(CURDIR)/$(TARGET)
 

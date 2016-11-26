@@ -44,6 +44,15 @@
     <ClCompile Include="..\src\NanoGL\Sound\SoundChannel\StreamReader\ogg\stb_vorbis.c">
       <Filter>Sound\SoundChannel\StreamReader\ogg</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\NanoGL\Dialog\Dialog.h">
+      <Filter>Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NanoGL\Dialog\Dialog.windows.c">
+      <Filter>Dialog</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\NanoGL\String\CharCodeHelper.c">
+      <Filter>String</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\NanoGL\Sound\SoundChannel\ChannelManager.h">
@@ -94,6 +103,9 @@
     <ClInclude Include="..\src\NanoGL\Video\Video.h">
       <Filter>Video</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\NanoGL\String\CharCodeHelper.h">
+      <Filter>String</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Sound">
@@ -134,6 +146,9 @@
     </Filter>
     <Filter Include="Video">
       <UniqueIdentifier>{726887cd-e0ca-4788-ada1-a3e93c426308}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Dialog">
+      <UniqueIdentifier>{2f6db6a6-9528-4bff-893f-5ef7313812f9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

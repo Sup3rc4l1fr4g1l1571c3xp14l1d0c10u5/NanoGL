@@ -136,7 +136,7 @@ Terminal.app を開き、各OS向けディレクトリで以下を実行します。
 $ make -f Makefile.rubygem
 $ gem install -l nanogl-<version>.gem
 $ ruby ../example/00-blank.rb
-```sh
+```
 
 ### VisualStudio
 
@@ -150,27 +150,27 @@ $ ruby ../example/00-blank.rb
 
 ## mrubyで使う場合
 
-  * CRuby (>=2.0)
-  * bison
-  * flex
-
 ### MinGW32 
 
 ビルドには以下の環境が必要です
 
+  * CRuby (>= 2.0)
+    * https://rubyinstaller.org/
   * bison
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/bison/bison-2.4.2-1/bison-2.4.2-1-msys-1.0.13-bin.tar.lzma
     * 追加で以下のパッケージが必要です
       * https://sourceforge.net/projects/mingw/files/MSYS/Extension/m4/m4-1.4.16-2/m4-1.4.16-2-msys-1.0.17-bin.tar.lzma
   * flex
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/flex/flex-2.5.35-2/flex-2.5.35-2-msys-1.0.13-bin.tar.lzma
-
+  * git for windows
+    * https://git-for-windows.github.io/
+ 
 msys.bat を開いて以下を実行します。
 
 ```sh
 $ make -f Makefile.mrb-nanogl
 $ ./mrb-nanogl ../example/00-blank.rb
-```sh
+```
 
 ### MacOS X
 
@@ -179,12 +179,14 @@ Terminal.app を開き、各OS向けディレクトリで以下を実行します。
 ```sh
 $ make -f Makefile.mrb-nanogl
 $ ./mrb-nanogl ../example/00-blank.rb
-```sh
+```
 
 ### VisualStudio
 
 ビルドには以下の環境が必要です
 
+  * CRuby (>= 2.0)
+    * https://rubyinstaller.org/
   * GnuWin32に含まれるbison, flex (build-tools.batで自動的にtoolsディレクトリにセットアップされます)
     * bison (mrubyのコンパイルに必要です)
       * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-bin.zip

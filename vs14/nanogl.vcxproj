@@ -18,6 +18,7 @@
     <ClCompile Include="..\src\NanoGL\Sound\SoundChannel\StreamReader\ogg\ogg_reader.c" />
     <ClCompile Include="..\src\NanoGL\Sound\SoundChannel\StreamReader\ogg\stb_vorbis.c" />
     <ClCompile Include="..\src\NanoGL\Sound\SoundChannel\StreamReader\wav\wav_reader.c" />
+    <ClCompile Include="..\src\NanoGL\String\CharCodeHelper.c" />
     <ClCompile Include="..\src\NanoGL\System\System.c" />
     <ClCompile Include="..\src\NanoGL\Debug\Debug.c" />
     <ClCompile Include="..\src\NanoGL\Sound\Sound.c" />
@@ -26,6 +27,7 @@
     <ClCompile Include="..\src\NanoGL\Video\FpsTimer.c" />
     <ClCompile Include="..\src\NanoGL\Video\nanovg-extra-apis.c" />
     <ClCompile Include="..\src\NanoGL\Video\Video.c" />
+    <ClCompile Include="..\src\NanoGL\Dialog\Dialog.windows.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\NanoGL\Debug\Debug.h" />
@@ -39,11 +41,13 @@
     <ClInclude Include="..\src\NanoGL\Sound\SoundChannel\StreamReader\ogg\ogg_reader.h" />
     <ClInclude Include="..\src\NanoGL\Sound\SoundChannel\StreamReader\StreamReader.h" />
     <ClInclude Include="..\src\NanoGL\Sound\SoundChannel\StreamReader\wav\wav_reader.h" />
+    <ClInclude Include="..\src\NanoGL\String\CharCodeHelper.h" />
     <ClInclude Include="..\src\NanoGL\String\String.h" />
     <ClInclude Include="..\src\NanoGL\System\System.h" />
     <ClInclude Include="..\src\NanoGL\Video\FpsTimer.h" />
     <ClInclude Include="..\src\NanoGL\Video\nanovg-extra-apis.h" />
     <ClInclude Include="..\src\NanoGL\Video\Video.h" />
+    <ClCompile Include="..\src\NanoGL\Dialog\Dialog.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C03D1695-0536-452B-91E7-30A257845FDB}</ProjectGuid>
