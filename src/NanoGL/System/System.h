@@ -14,6 +14,14 @@ static void Finalize(void); \
 extern void(* const __FinalizeHandler)(void) = Finalize;\
 static void Finalize(void) 
 
+#elif defined(__llvm__)
+
+#define NanoGL_Initialize() \
+void __attribute__((weak)) __InitializeHandler(void)
+    
+#define NanoGL_Finalize() \
+void __attribute__((weak)) __FinalizeHandler(void)
+
 #elif defined(__GNUC__)
 #define NanoGL_Initialize() \
 static void Initialize(void); \

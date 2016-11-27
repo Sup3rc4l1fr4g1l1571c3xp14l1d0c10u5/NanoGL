@@ -23,19 +23,19 @@ static void __NullHandler(void) {}
 #pragma comment(linker, "/alternatename:___FinalizeHandler=___DefaultFinalizeHandler")
 extern void(* const __InitializeHandler)(void);
 extern void(* const __FinalizeHandler)(void);
+void(*__DefaultInitializeHandler)(void) = __NullHandler;
+void(*__DefaultFinalizeHandler)(void) = __NullHandler;
 #elif defined(__llvm__)
 #define NORETURN __attribute__((noreturn))
-#pragma weak __InitializeHandler = __DefaultInitializeHandler
-#pragma weak __FinalizeHandler = __DefaultFinalizeHandler
-//extern void(* const __InitializeHandler)(void);
-//extern void(* const __FinalizeHandler)(void);
+void __attribute__((weak)) __InitializeHandler(void) {}
+void __attribute__((weak)) __FinalizeHandler(void) {}
 #elif defined(__GNUC__)
 #define NORETURN __declspec(noreturn)
 extern void(* const __InitializeHandler)(void) __attribute__((weak, alias ("__DefaultInitializeHandler")));
 extern void(* const __FinalizeHandler)(void) __attribute__((weak, alias("__DefaultFinalizeHandler")));
-#endif
 void(*__DefaultInitializeHandler)(void) = __NullHandler;
 void(*__DefaultFinalizeHandler)(void) = __NullHandler;
+#endif
 
 static QuitHandler _UserQuitHandler = NULL;
 NORETURN
