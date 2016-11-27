@@ -23,7 +23,7 @@ module NanoGL
       end
 
       def SaveFileDialog(prompt,message)
-        VTABLE[:OpenFileDialogUTF8].call(prompt,message)
+        VTABLE[:SaveFileDialogUTF8].call(prompt,message)
       end
     end
   end
