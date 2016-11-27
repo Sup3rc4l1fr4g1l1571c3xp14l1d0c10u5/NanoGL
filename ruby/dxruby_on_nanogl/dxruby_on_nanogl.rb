@@ -3,7 +3,6 @@
 #
 
 require 'nanogl'
-require 'Open3'
 
 class Window
   @@width = 800
@@ -68,21 +67,21 @@ class Window
     end
   end
 
-  # ファイル開くダイアログ(MacOSX専用)
+  # ファイル開くダイアログ
   def self.open_filename(filter, caption)
-    ret = Open3.capture3('osascript -e "POSIX path of (choose file)"')
-    if ret[2].success?
-      return ret[0]
+    ret = NanoGL::Dialog.OpenFileDialog(caption,"")
+    if ret != nil
+      return ret
     else
       return ""
     end
   end
 
-  # ファイル保存ダイアログ(MacOSX専用)
+  # ファイル保存ダイアログ
   def self.save_filename(filter, caption)
-    ret = Open3.capture3('osascript -e "POSIX path of (choose file name)"')
-    if ret[2].success?
-      return ret[0]
+    ret = NanoGL::Dialog.SaveFileDialog(caption,"")
+    if ret != nil
+      return ret
     else
       return ""
     end
