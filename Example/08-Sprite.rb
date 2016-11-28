@@ -13,9 +13,9 @@ class Ball
 	def initialize(x,y,sx,sy)
 		if @@image == nil
 			# プログラムの置いてあるディレクトリを基準として
-			# image フォルダ内の ball.png というファイルを読み込み、画像IDを img_ballに設定する
+			# Image フォルダ内の ball.png というファイルを読み込み、画像IDを img_ballに設定する
 			# 画像オプションは指定しないので 0 を入れる
-			@@image = Video.CreateImage("./image/ball.png", 0)
+			@@image = Video.CreateImage("./Image/ball.png", 0)
 
 			# 画像サイズを取得して変数 width と 変数 height に入れる
 			(@@width, @@height) = Video.ImageSize(@@image)

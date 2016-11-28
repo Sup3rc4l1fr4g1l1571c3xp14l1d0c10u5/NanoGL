@@ -13,8 +13,8 @@ void start(void)
 	Video.SetClearColor(Video.RGBA(128, 128, 255, 255));
 
 	// プログラムの置いてあるディレクトリを基準として
-	// fontフォルダ内のIPAexfont00301フォルダからipaexg.ttfというフォントファイルを読み込み、"font"という名前を付ける
-	Video.CreateFont("font", "./font/IPAexfont00301/ipaexg.ttf");
+	// Fontフォルダ内のIPAexfont00301フォルダからipaexg.ttfというフォントファイルを読み込み、"font"という名前を付ける
+	Video.CreateFont("font", "./Font/IPAexfont00301/ipaexg.ttf");
 
 	// 読み込んだフォントを現在利用するフォントに設定
 	Video.FontFace("font");

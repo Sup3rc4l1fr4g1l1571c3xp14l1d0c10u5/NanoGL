@@ -1588,14 +1588,14 @@ def start()
   reset_game_datas()
 
   # 画像の読み込み
-  Image.img_player = Video.CreateImage("./image/player.png", 0)
-  Image.img_shot_l = Video.CreateImage("./image/shot_l.png", 0)
-  Image.img_shot_r = Video.CreateImage("./image/shot_r.png", 0)
-  Image.img_enemy_s0 = Video.CreateImage("./image/enemy_s0.png", 0)
-  Image.img_enemy_s1 = Video.CreateImage("./image/enemy_s1.png", 0)
-  Image.img_enemy_m0 = Video.CreateImage("./image/enemy_m.png", 0)
-  Image.img_enemy_boss1 = Video.CreateImage("./image/enemy_boss1.png", 0)
-  Image.img_enemy_shot = Video.CreateImage("./image/enemy_shot.png", 0)
+  Image.img_player = Video.CreateImage("./Image/player.png", 0)
+  Image.img_shot_l = Video.CreateImage("./Image/shot_l.png", 0)
+  Image.img_shot_r = Video.CreateImage("./Image/shot_r.png", 0)
+  Image.img_enemy_s0 = Video.CreateImage("./Image/enemy_s0.png", 0)
+  Image.img_enemy_s1 = Video.CreateImage("./Image/enemy_s1.png", 0)
+  Image.img_enemy_m0 = Video.CreateImage("./Image/enemy_m.png", 0)
+  Image.img_enemy_boss1 = Video.CreateImage("./Image/enemy_boss1.png", 0)
+  Image.img_enemy_shot = Video.CreateImage("./Image/enemy_shot.png", 0)
 
   # 音源の読み込み
   Sound.ChannelCreate(0, "./Sound/explod.wav")

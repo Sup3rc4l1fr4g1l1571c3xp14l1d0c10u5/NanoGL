@@ -1,6 +1,6 @@
-#include <nanogl/nanogl.h>
+#include <NanoGL/NanoGL.h>
 
-#if defined(__APPLE__)
+#if defined(__APPLE__) || defined(__linux__)
 #define __declspec(x)
 #endif
 

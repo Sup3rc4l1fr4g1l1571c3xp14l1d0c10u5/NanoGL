@@ -1,0 +1,22 @@
+CC=gcc
+CP=cp
+MKDIR=mkdir
+SRCS=$(wildcard ../Example/*.c)
+TARGET=$(subst ../Example,./Example,$(SRCS:%.c=%.exe))
+CFLAGS= -std=c99 -I../src
+LDFLAGS=-L../lib -lnanogl -lglfw -lmad -lm -lGL -lGLEW -lopenal -lpthread
+
+all: ./Example $(TARGET)
+
+./Example:
+	if [ ! -d ./Example ] ; then $(MKDIR) ./Example ; fi &&\
+	if [ ! -d ./Example/Sound ] ; then $(CP) -rf ../Example/Sound ./Example; fi &&\
+	if [ ! -d ./Example/Image ] ; then $(CP) -rf ../Example/Image ./Example ; fi &&\
+	if [ ! -d ./Example/Font ] ; then $(CP) -rf ../Example/Font ./Example ; fi
+
+./Example/%.exe: ../Example/%.c
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+clean:
+	rm $(TARGET)
+

@@ -1,5 +1,5 @@
 #if defined(_WIN32)
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 #define _strdup(x) strdup(x)
 #define strcat_s(_Destination,_SizeInBytes,_Source) strcat(_Destination,_Source)
 #endif

@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "../string/string.h"
+#include "../String/String.h"
 
 /**
  * @brief 基本的なダイアログ

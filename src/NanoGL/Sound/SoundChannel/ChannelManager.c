@@ -22,7 +22,7 @@ typedef struct __tagChannelManagerInstance
 	uintptr_t threadHandle;
 	HANDLE hEventProgressThreadIsTerminateRequest;
 	HANDLE hEventProgressThreadIsTerminated;
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 	pthread_t thread;
 	bool flagProgressThreadIsTerminateRequest;
 #endif
@@ -34,7 +34,7 @@ static ChannelManagerInstance manager;
 static CRITICAL_SECTION cs;
 #define LOCK()   do { EnterCriticalSection( &cs ); } while(0)
 #define UNLOCK() do { LeaveCriticalSection( &cs ); } while(0)
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 static pthread_mutex_t mutex;
 #define LOCK()   do { pthread_mutex_lock( &mutex ); } while(0)
 #define UNLOCK() do { pthread_mutex_unlock( &mutex ); } while(0)
@@ -63,7 +63,7 @@ static unsigned int __stdcall ProgressThreadProc(void *arg)
 	_endthreadex(0);
 	return 0;
 }
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 static void *ProgressThreadProc(void *arg)
 {
 	(void)arg;
@@ -94,7 +94,7 @@ static bool ChannelManager_Initialize(void)
 	}
 #if defined(_WIN32)
 	InitializeCriticalSection(&cs);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 	pthread_mutex_init( &mutex, NULL);
 #endif
 
@@ -106,7 +106,7 @@ static bool ChannelManager_Initialize(void)
 	manager.hEventProgressThreadIsTerminated = CreateEvent(NULL, true, false, NULL);
 	manager.hEventProgressThreadIsTerminateRequest = CreateEvent(NULL, true, false, NULL);
 	manager.threadHandle = _beginthreadex(NULL, 0, ProgressThreadProc, NULL, 0, NULL);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 	manager.flagProgressThreadIsTerminateRequest = false;
 	pthread_create(&manager.thread , NULL , ProgressThreadProc , NULL);
 #endif
@@ -125,7 +125,7 @@ static void ChannelManager_Finalize(void)
 #if defined(_WIN32)
 	SetEvent(manager.hEventProgressThreadIsTerminateRequest);
 	WaitForSingleObject(manager.hEventProgressThreadIsTerminated, INFINITE);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 	LOCK();
 	manager.flagProgressThreadIsTerminateRequest = true;
 	UNLOCK();
@@ -142,7 +142,7 @@ static void ChannelManager_Finalize(void)
 	}
 #if defined(_WIN32)
 	DeleteCriticalSection(&cs);
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__)
 	pthread_mutex_destroy( &mutex );
 #endif
 	memset(&manager, 0, sizeof(manager));

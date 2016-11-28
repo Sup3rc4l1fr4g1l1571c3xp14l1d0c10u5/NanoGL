@@ -1,7 +1,7 @@
 #if defined(_WIN32)
 #include <windows.h>
 #define msleep(x) Sleep(x)
-#elif defined(__APPLE__)
+#elif defined(__APPLE__) || defined(__linux__) 
 #include <unistd.h>
 #define msleep(x) usleep((x)*(1000))
 #endif

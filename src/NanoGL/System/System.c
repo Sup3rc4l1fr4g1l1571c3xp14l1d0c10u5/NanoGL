@@ -30,7 +30,11 @@ void(*__DefaultFinalizeHandler)(void) = __NullHandler;
 void __attribute__((weak)) __InitializeHandler(void) {}
 void __attribute__((weak)) __FinalizeHandler(void) {}
 #elif defined(__GNUC__)
+#if defined(__MINGW32__)
 #define NORETURN __declspec(noreturn)
+#else
+#define NORETURN __attribute__((noreturn))
+#endif
 extern void(* const __InitializeHandler)(void) __attribute__((weak, alias ("__DefaultInitializeHandler")));
 extern void(* const __FinalizeHandler)(void) __attribute__((weak, alias("__DefaultFinalizeHandler")));
 void(*__DefaultInitializeHandler)(void) = __NullHandler;

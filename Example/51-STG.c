@@ -1142,13 +1142,13 @@ void start(void)
 	reset_game_datas();
 
 	// ‰æ‘œ‚Ì“Ç‚İ‚İ
-	img_player = Video.CreateImage("./image/player.png", 0);
-	img_shot_l = Video.CreateImage("./image/shot_l.png", 0);
-	img_shot_r = Video.CreateImage("./image/shot_r.png", 0);
-	img_enemy_s0 = Video.CreateImage("./image/enemy_s0.png", 0);
-	img_enemy_s1 = Video.CreateImage("./image/enemy_s1.png", 0);
-	img_enemy_m0 = Video.CreateImage("./image/enemy_m.png", 0);
-	img_enemy_shot = Video.CreateImage("./image/enemy_shot.png", 0);
+	img_player = Video.CreateImage("./Image/player.png", 0);
+	img_shot_l = Video.CreateImage("./Image/shot_l.png", 0);
+	img_shot_r = Video.CreateImage("./Image/shot_r.png", 0);
+	img_enemy_s0 = Video.CreateImage("./Image/enemy_s0.png", 0);
+	img_enemy_s1 = Video.CreateImage("./Image/enemy_s1.png", 0);
+	img_enemy_m0 = Video.CreateImage("./Image/enemy_m.png", 0);
+	img_enemy_shot = Video.CreateImage("./Image/enemy_shot.png", 0);
 
 	// ‰¹Œ¹‚Ì“Ç‚İ‚İ
 	Sound.ChannelCreate(0, "./Sound/explod.wav");

@@ -230,10 +230,10 @@ Video.SetSize(512, 512)
 Video.SetWindowTitle("[Example] 50-15Puzzle")
 
 # 効果音をロード
-Sound.ChannelCreate(0, "./sound/beep.mp3")
+Sound.ChannelCreate(0, "./Sound/beep.mp3")
 
 # TrueTypeフォントをロードして"ipa"という名前を割り当て
-Video.CreateFont("ipa", "./font/IPAexfont00301/ipaexg.ttf")
+Video.CreateFont("ipa", "./Font/IPAexfont00301/ipaexg.ttf")
 # 名前"ipa"を指定して描画に使用するフォントに指定
 Video.FontFace("ipa")
 

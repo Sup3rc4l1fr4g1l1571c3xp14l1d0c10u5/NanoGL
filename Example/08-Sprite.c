@@ -22,9 +22,9 @@ void start(void)
 	Video.SetWindowTitle("[Example] 08-Sprite");
 
 	// プログラムの置いてあるディレクトリを基準として
-	// image フォルダ内の ball.png というファイルを読み込み、画像IDを img_ballに設定する
+	// Image フォルダ内の ball.png というファイルを読み込み、画像IDを img_ballに設定する
 	// 画像オプションは指定しないので 0 を入れる
-	int img_ball = Video.CreateImage("./image/ball.png", 0);
+	int img_ball = Video.CreateImage("./Image/ball.png", 0);
 
 	// 画像サイズを取得して変数 width と 変数 height に入れる
 	int width, height;

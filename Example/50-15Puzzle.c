@@ -244,15 +244,15 @@ void start(void)
 	Video.SetWindowTitle("[Example] 50-15Puzzle");
 
 	// 効果音をロード
-	Sound.ChannelCreate(0, "./sound/beep.mp3");
+	Sound.ChannelCreate(0, "./Sound/beep.mp3");
 	
 	// TrueTypeフォントをロードして"ipa"という名前を割り当て
-	Video.CreateFont("ipa", "./font/IPAexfont00301/ipaexg.ttf");
+	Video.CreateFont("ipa", "./Font/IPAexfont00301/ipaexg.ttf");
 	// 名前"ipa"を指定して描画に使用するフォントに指定
 	Video.FontFace("ipa");
 
 	// 画像ファイルを読み込み、サイズを取得
-	imageId = Video.CreateImage("./image/Image.png", IMAGE_RESIZE_NEAREST);
+	imageId = Video.CreateImage("./Image/Image.png", IMAGE_RESIZE_NEAREST);
 	Video.ImageSize(imageId, &imageWidth, &imageHeight);
 
 	// 盤面作成
