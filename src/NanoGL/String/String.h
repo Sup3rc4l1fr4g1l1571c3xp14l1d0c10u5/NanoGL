@@ -45,13 +45,39 @@ extern const struct __tagStringAPI {
 	string_t(*FormatTextV)(const char *format, va_list args);
 
 	/**
-	* @brief str1にstr2を連結するした結果を返す。
-	* @param str1 連結先の文字列。関数中で破棄されるため、この関数の呼出し後では使用できない
+	* @brief str1にstr2を連結した結果を返す。
+	* @param str1 連結先の文字列
 	* @param str2 連結する文字列。
 	* @return 連結結果の文字列。不要になったらString.Free()で破棄すること。
 	*/
-	string_t(*Join)(string_t str1, const char *str2);
+	string_t(*Join)(const char *str1, const char *str2);
 
+	/**
+	* @brief Joinと同様の動作を行うがstr1を更新する。
+	* @param str1 連結先の文字列の参照
+	* @param str2 連結する文字列。
+	* @return str1
+	*/
+	string_t*(*JoinDirect)(string_t *str1, const char *str2);
+
+	/**
+	* @brief target中の部分文字列fromをtoに置き換える。
+	* @param target 対象の文字列。
+	* @param from 置換対象の部分文字列
+	* @param to   置換後の部分文字列
+	* @return 置換結果の文字列。不要になったらString.Free()で破棄すること。
+	*/
+	string_t (*Replace)(const char *target, const char *from, const char *to);
+
+	/**
+	* @brief Replaceと同様の動作を行うがtargetを更新する。
+	* @param target 処理対象の文字列の参照
+	* @param from 置換対象の部分文字列
+	* @param to   置換後の部分文字列
+	* @return target
+	*/
+	string_t* (*ReplaceDirect)(string_t *target, const char *from, const char *to);
+	
 	struct __tagStringLocaleAPI
 	{
 		size_t(*Count)(const char *str, const char *end);

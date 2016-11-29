@@ -1,6 +1,7 @@
 #if defined(_WIN32)
 #elif defined(__APPLE__) || defined(__linux__)
 #define _strdup(x) strdup(x)
+#define strcpy_s(_Destination,_SizeInBytes,_Source) strcpy(_Destination,_Source)
 #define strcat_s(_Destination,_SizeInBytes,_Source) strcat(_Destination,_Source)
 #endif
 #include <stdarg.h>
@@ -69,19 +70,81 @@ static string_t String_FormatText(const char *format, ...)
 	return s;
 }
 
-string_t String_Join(string_t str1, const char *str2) {
-	size_t len1 = strlen(str1.c_str);
+string_t String_Join(const char *str1, const char *str2) {
+	size_t len1 = strlen(str1);
 	size_t len2 = strlen(str2);
 	size_t sz = len1 + len2 + 1;
-	char *newBuf = realloc(str1.c_str, sz);
+	char *newBuf = calloc(sz, sizeof(char));
 	if (newBuf == NULL)
 	{
-		return str1;
+		return String_Create(str1);
 	}
+	strcpy_s(newBuf, sz, str1);
 	strcat_s(newBuf, sz, str2);
 	string_t s;
 	s.c_str = newBuf;
 	return s;
+}
+
+string_t *String_JoinDirect(string_t *str1, const char *str2) {
+	string_t ret = String_Join(str1->c_str, str2);
+	free(str1->c_str);
+	str1->c_str = ret.c_str;
+	return str1;
+}
+
+string_t String_Replace(const char *target, const char *from, const char *to) {
+	char *ret = NULL;
+	size_t ret_len = 0;
+	size_t from_len = strlen(from);
+	size_t to_len = strlen(to);
+
+	const char *head = target;
+	for (;;) {
+		const char *matchpos = strstr(head, from);
+		size_t copy_len = 0;
+		if (matchpos == NULL) {
+			copy_len = strlen(head);
+		} else {
+			copy_len = matchpos - head;
+		}
+		if (copy_len > 0) {
+			char *newret = realloc(ret, (ret_len + copy_len + 1) * sizeof(char));
+			if (newret == NULL) {
+				free(ret);
+				ret = NULL;
+				break;
+			}
+			memcpy(newret + ret_len, head, copy_len);
+			ret_len += copy_len;
+			ret = newret;
+			ret[ret_len] = '\0';
+			head += copy_len;
+		}
+		if (matchpos != NULL) {
+			char *newret = realloc(ret, (ret_len + to_len + 1) * sizeof(char));
+			if (newret == NULL) {
+				free(ret);
+				ret = NULL;
+				break;
+			}
+			memcpy(newret + ret_len, to, to_len);
+			ret_len += to_len;
+			ret = newret;
+			ret[ret_len] = '\0';
+			head += from_len;
+		} else {
+			break;
+		}
+	}
+	return String.Create(ret);
+}
+
+string_t* String_ReplaceDirect(string_t *target, const char *from, const char *to) {
+	string_t ret = String_Replace(target->c_str, from, to);
+	free(target->c_str);
+	target->c_str = ret.c_str;
+	return target;
 }
 
 // utf8str～endの間でUTF8とみなして文字数（notバイト数）を数える
@@ -191,6 +254,9 @@ const struct __tagStringAPI String = {
 	String_FormatText,
 	String_FormatTextV,
 	String_Join,
+	String_JoinDirect,
+	String_Replace,
+	String_ReplaceDirect,
 	{
 		String_UTF8_Count,
 		String_UTF8_Inc,

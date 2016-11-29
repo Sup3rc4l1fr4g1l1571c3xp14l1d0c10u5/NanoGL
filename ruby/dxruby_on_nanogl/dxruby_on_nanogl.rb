@@ -69,22 +69,22 @@ class Window
 
   # ファイル開くダイアログ
   def self.open_filename(filter, caption)
-    ret = NanoGL::Dialog.OpenFileDialog(caption,"")
-    if ret != nil
-      return ret
-    else
-      return ""
-    end
+    filters = filter.map { |e|
+      name = e[0]
+      exts = e[1..-1].join(";")
+      next "#{name}|#{exts}"
+    }.join("\n") if filters != nil
+    ret = NanoGL::Dialog.OpenFileDialog(caption,filters)
   end
 
   # ファイル保存ダイアログ
   def self.save_filename(filter, caption)
-    ret = NanoGL::Dialog.SaveFileDialog(caption,"")
-    if ret != nil
-      return ret
-    else
-      return ""
-    end
+    filters = filter.map { |e|
+      name = e[0]
+      exts = e[1..-1].join(";")
+      next "#{name}|#{exts}"
+    }.join("\n") if filters != nil
+    ret = NanoGL::Dialog.SaveFileDialog(caption, filter)
   end
 
 end

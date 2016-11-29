@@ -1432,15 +1432,15 @@ static void mrb_nanogl_systemmodule_install(mrb_state *mrb, struct RClass *paren
 
 static mrb_value mrb_NanoGL_Dialog_OpenFileDialog(mrb_state *mrb, mrb_value self) {
 	(void)self;
-	char *prompt;
-	int promptlen;
-	char *message;
-	int messagelen;
+	char *title;
+	int titlelen;
+	char *filter;
+	int filterlen;
 	string_t path;
 
-	mrb_get_args(mrb, "ss", &prompt, &promptlen, &message, &messagelen);
+	mrb_get_args(mrb, "ss", &title, &titlelen, &filter, &filterlen);
 
-	path = Dialog.OpenFileDialogUTF8(prompt, message);
+	path = Dialog.OpenFileDialogUTF8(title, filter);
 	if (path.c_str == NULL) {
 		return mrb_nil_value();
 	} else {
@@ -1452,15 +1452,15 @@ static mrb_value mrb_NanoGL_Dialog_OpenFileDialog(mrb_state *mrb, mrb_value self
 
 static mrb_value mrb_NanoGL_Dialog_SaveFileDialog(mrb_state *mrb, mrb_value self) {
 	(void)self;
-	char *prompt;
-	int promptlen;
-	char *message;
-	int messagelen;
+	char *title;
+	int titlelen;
+	char *filter;
+	int filterlen;
 	string_t path;
 
-	mrb_get_args(mrb, "ss", &prompt, &promptlen, &message, &messagelen);
+	mrb_get_args(mrb, "ss", &title, &titlelen, &filter, &filterlen);
 
-	path = Dialog.SaveFileDialogUTF8(prompt, message);
+	path = Dialog.SaveFileDialogUTF8(title, filter);
 	if (path.c_str == NULL) {
 		return mrb_nil_value();
 	} else {

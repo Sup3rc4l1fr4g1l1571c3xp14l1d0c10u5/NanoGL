@@ -14,8 +14,10 @@
 
 #include "../../../Debug/Debug.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER)
 #define strcasecmp _strcmpi
+#elif defined(__APPLE__) || defined(__linux__) 
+#include <strings.h>
 #endif
 
 #include "./StreamChannel.h"

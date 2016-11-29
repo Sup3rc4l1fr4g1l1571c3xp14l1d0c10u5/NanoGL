@@ -4,12 +4,13 @@
 #include <string.h>
 #include <stdbool.h>
 
-#ifdef _WIN32
+#if defined(_WIN32)
 #include <process.h>
 #include <Windows.h>
-#else
+#elif defined(__APPLE__) || defined(__linux__)
 #include <pthread.h>
 #include <unistd.h>
+#define msleep(x) usleep((x)*(1000))
 #endif
 
 #define MAX_CHANNEL 256
