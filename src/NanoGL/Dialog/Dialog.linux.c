@@ -74,6 +74,10 @@ string_t OpenFileDialog(const char *title, const char *filter) {
 	}
 	pclose(fp);
 	
+	char *last_lf = strrchr(result.c_str,'\n');
+	if (last_lf != NULL && last_lf[1] == '\0') {
+		last_lf[0] = '\0';
+	}
 	return result;
 }
 
@@ -141,6 +145,11 @@ string_t SaveFileDialog(const char *title, const char *filter) {
 		String.JoinDirect(&result, buf);
 	}
 	pclose(fp);
+	
+	char *last_lf = strrchr(result.c_str,'\n');
+	if (last_lf != NULL && last_lf[1] == '\0') {
+		last_lf[0] = '\0';
+	}
 	
 	return result;
 }

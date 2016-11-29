@@ -1,18 +1,18 @@
 # NanoGL
 
-NanoGL ‚ÍƒvƒƒOƒ‰ƒ~ƒ“ƒO‰ŠwŽÒŒü‚¯‚ÌƒVƒ“ƒvƒ‹‚ÈƒQ[ƒ€ƒvƒƒOƒ‰ƒ~ƒ“ƒO—pƒtƒŒ[ƒ€ƒ[ƒN‚Å‚·B
+NanoGL ã¯ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°åˆå­¦è€…å‘ã‘ã®ã‚·ãƒ³ãƒ—ãƒ«ãªã‚²ãƒ¼ãƒ ãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°ç”¨ãƒ•ãƒ¬ãƒ¼ãƒ ãƒ¯ãƒ¼ã‚¯ã§ã™ã€‚
 
-## ŠT—v
+## æ¦‚è¦
 
-  - ƒRƒ“ƒpƒCƒ‹‚â”z•z‚ªŽèŒy‚Å—eˆÕ
-  - IDE‚Ì—˜—p‚ð‘O’ñ‚Æ‚µ‚Ä®—‚³‚ê‚½API
-  - ‚³‚³‚â‚©‚È‚ª‚çƒNƒƒXƒvƒ‰ƒbƒgƒtƒH[ƒ€(Windows/MacOSX)‘Î‰ž
-  - ŠwK‚ÌŽQlŒü‚¯‚É‚æ‚­‚ ‚éƒQ[ƒ€‚ÌŽÀ‘•—á‚ð’ñ‹Ÿ
-  - CRuby, mruby ‚Å‚Ì—˜—p‚ª‰Â”\
+  - ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚„é…å¸ƒãŒæ‰‹è»½ã§å®¹æ˜“
+  - IDEã®åˆ©ç”¨ã‚’å‰æã¨ã—ã¦æ•´ç†ã•ã‚ŒãŸAPI
+  - ã•ã•ã‚„ã‹ãªãŒã‚‰ã‚¯ãƒ­ã‚¹ãƒ—ãƒ©ãƒƒãƒˆãƒ•ã‚©ãƒ¼ãƒ (Windows/MacOSX/Ubuntu)å¯¾å¿œ
+  - å­¦ç¿’ã®å‚è€ƒå‘ã‘ã«ã‚ˆãã‚ã‚‹ã‚²ãƒ¼ãƒ ã®å®Ÿè£…ä¾‹ã‚’æä¾›
+  - CRuby, mruby ã§ã®åˆ©ç”¨ãŒå¯èƒ½ã§ã€gemãªã©ã‚’é™¤ãã€crubyã¨mrubyã§åŒä¸€ã®ã‚³ãƒ¼ãƒ‰ãŒå‹•ä½œã—ã¾ã™ã€‚
 
-## —˜—p‹Zp
+## åˆ©ç”¨æŠ€è¡“
 
-NanoGL ‚Å‚Í‚¢‚­‚Â‚©‚ÌƒI[ƒvƒ“ƒ\[ƒXƒvƒƒWƒFƒNƒg‚ð—p‚¢‚Ä‚¢‚Ü‚·B
+NanoGL ã§ã¯ã„ãã¤ã‹ã®ã‚ªãƒ¼ãƒ—ãƒ³ã‚½ãƒ¼ã‚¹ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆã‚’ç”¨ã„ã¦ã„ã¾ã™ã€‚
 
   * [NanoVG] - Antialiased 2D vector drawing library on top of OpenGL for UI and visualizations.
   * [GLFW3] - Cross-platform library for creating windows with OpenGL contexts and receiving input and events.
@@ -21,30 +21,30 @@ NanoGL ‚Å‚Í‚¢‚­‚Â‚©‚ÌƒI[ƒvƒ“ƒ\[ƒXƒvƒƒWƒFƒNƒg‚ð—p‚¢‚Ä‚¢‚Ü‚·B
   * [libmad] - High-quality MPEG audio decoder library.
   * [stb] - Single file, public domain library.
 
-## ƒCƒ“ƒXƒg[ƒ‹‚©‚çƒTƒ“ƒvƒ‹‹N“®‚Ü‚Å
+## ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã‹ã‚‰ã‚µãƒ³ãƒ—ãƒ«èµ·å‹•ã¾ã§
 
-  * ƒRƒ“ƒpƒCƒ‹Ï‚ÝƒoƒCƒiƒŠ‚ðŽg‚¤iŽèŒy‚Å‚¨‚·‚·‚ßj
-    * nanogl-win32.zip ‚ðƒ_ƒEƒ“ƒ[ƒh‚·‚é
-    * nanogl-win32.zip ‚ð“WŠJ‚·‚é
-    * nanogl-win32 ƒtƒHƒ‹ƒ_‚ðŠJ‚­
-    * MinGW32/MSYS ‚ð—˜—p‚µ‚Ä‚¢‚éê‡
-      * msys.bat ‚ð‹N“®‚µ‚Ä ./nanogl-win32/mingw ‚ÉˆÚ“®
-      * make -f Makefile.example ‚Æ“ü—Í‚·‚é‚ÆƒTƒ“ƒvƒ‹‚ÌƒRƒ“ƒpƒCƒ‹‚ªs‚í‚ê‚Ü‚·B
-    * VisualStudio 2015 ‚ð—˜—p‚µ‚Ä‚¢‚éê‡
-      * VS2015 x86 Native Tools Command Prompt ‚ð‹N“®‚µ‚Ä ./nanogl-win32/vs14 ‚ÉˆÚ“®
-      * build-example.bat ‚ðŽÀs‚·‚é‚ÆƒTƒ“ƒvƒ‹‚ÌƒRƒ“ƒpƒCƒ‹‚ªs‚í‚ê‚Ü‚·
-    * MacOS X (el capitan) ‚ð—˜—p‚µ‚Ä‚¢‚éê‡
-      * ƒRƒ“ƒpƒCƒ‹Ï‚ÝƒoƒCƒiƒŠ‚Í—˜—p‚Å‚«‚Ü‚¹‚ñBƒ\[ƒX‚©‚çƒrƒ‹ƒh‚µ‚Ä‚­‚¾‚³‚¢
+  * ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«æ¸ˆã¿ãƒã‚¤ãƒŠãƒªã‚’ä½¿ã†ï¼ˆæ‰‹è»½ã§ãŠã™ã™ã‚ï¼‰
+    * nanogl-win32.zip ã‚’ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã™ã‚‹
+    * nanogl-win32.zip ã‚’å±•é–‹ã™ã‚‹
+    * nanogl-win32 ãƒ•ã‚©ãƒ«ãƒ€ã‚’é–‹ã
+    * MinGW32/MSYS ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹å ´åˆ
+      * msys.bat ã‚’èµ·å‹•ã—ã¦ ./nanogl-win32/mingw ã«ç§»å‹•
+      * make -f Makefile.example ã¨å…¥åŠ›ã™ã‚‹ã¨ã‚µãƒ³ãƒ—ãƒ«ã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãŒè¡Œã‚ã‚Œã¾ã™ã€‚
+    * VisualStudio 2015 ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹å ´åˆ
+      * VS2015 x86 Native Tools Command Prompt ã‚’èµ·å‹•ã—ã¦ ./nanogl-win32/vs14 ã«ç§»å‹•
+      * build-example.bat ã‚’å®Ÿè¡Œã™ã‚‹ã¨ã‚µãƒ³ãƒ—ãƒ«ã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ãŒè¡Œã‚ã‚Œã¾ã™
+    * MacOS X (el capitan) ã‚’åˆ©ç”¨ã—ã¦ã„ã‚‹å ´åˆ
+      * ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«æ¸ˆã¿ãƒã‚¤ãƒŠãƒªã¯åˆ©ç”¨ã§ãã¾ã›ã‚“ã€‚ã‚½ãƒ¼ã‚¹ã‹ã‚‰ãƒ“ãƒ«ãƒ‰ã—ã¦ãã ã•ã„
 
-## ƒ\[ƒX‚©‚çƒrƒ‹ƒh
+## ã‚½ãƒ¼ã‚¹ã‹ã‚‰ãƒ“ãƒ«ãƒ‰
 
 ### MinGW/MSYS
 
-ƒrƒ‹ƒh‚É‚ÍˆÈ‰º‚ÌŠÂ‹«‚ª•K—v‚Å‚·
+ãƒ“ãƒ«ãƒ‰ã«ã¯ä»¥ä¸‹ã®ç’°å¢ƒãŒå¿…è¦ã§ã™
 
   * MSYS 1.0.11
     * https://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/msys-1.0.11/msysCORE-1.0.11-bin.tar.gz
-    * ’Ç‰Á‚ÅˆÈ‰º‚ÌƒpƒbƒP[ƒW‚ª•K—v‚Å‚·
+    * è¿½åŠ ã§ä»¥ä¸‹ã®ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãŒå¿…è¦ã§ã™
       * https://sourceforge.net/projects/mingw/files/MSYS/Base/gettext/gettext-0.18.1.1-1/libintl-0.18.1.1-1-msys-1.0.17-dll-8.tar.lzma
       * https://sourceforge.net/projects/mingw/files/MSYS/Base/libiconv/libiconv-1.14-1/libiconv-1.14-1-msys-1.0.17-dll-2.tar.lzma
       * https://sourceforge.net/projects/mingw/files/MSYS/Base/xz/xz-4.999.9beta_20100401-1/liblzma-4.999.9beta_20100401-1-msys-1.0.13-dll-1.tar.gz
@@ -52,18 +52,18 @@ NanoGL ‚Å‚Í‚¢‚­‚Â‚©‚ÌƒI[ƒvƒ“ƒ\[ƒXƒvƒƒWƒFƒNƒg‚ð—p‚¢‚Ä‚¢‚Ü‚·B
       * https://sourceforge.net/projects/mingw/files/MSYS/Extension/zlib/zlib-1.2.7-1/zlib-1.2.7-1-msys-1.0.17-dll.tar.lzma
   * gcc version 4.8.5 (thread:win32 exception:sjlj)
     * http://nbtelecom.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/4.8.5/threads-win32/sjlj/i686-4.8.5-release-win32-sjlj-rt_v4-rev0.7z
-  * cmake (GLFW3 ‚Æ OpenAL ‚ÌƒRƒ“ƒpƒCƒ‹‚É•K—v‚Å‚·B)
+  * cmake (GLFW3 ã¨ OpenAL ã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã«å¿…è¦ã§ã™ã€‚)
     * https://cmake.org/files/v3.6/cmake-3.6.0-rc1-win32-x86.zip
-  * wget (—˜—p‚µ‚Ä‚¢‚éƒI[ƒvƒ“ƒ\[ƒXƒpƒbƒP[ƒW‚ÌŽæ“¾‚É•K—v‚Å‚·)
+  * wget (åˆ©ç”¨ã—ã¦ã„ã‚‹ã‚ªãƒ¼ãƒ—ãƒ³ã‚½ãƒ¼ã‚¹ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã®å–å¾—ã«å¿…è¦ã§ã™)
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/wget/wget-1.12-1/wget-1.12-1-msys-1.0.13-bin.tar.lzma
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/openssl/openssl-1.0.0-1/libopenssl-1.0.0-1-msys-1.0.13-dll-100.tar.lzma
-  * patch (‚¢‚­‚Â‚©‚ÌC³ƒpƒbƒ`‚Ì“K—p‚É•K—v‚Å‚·B)
+  * patch (ã„ãã¤ã‹ã®ä¿®æ­£ãƒ‘ãƒƒãƒã®é©ç”¨ã«å¿…è¦ã§ã™ã€‚)
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/patch/patch-2.6.1-1/patch-2.6.1-1-msys-1.0.13-bin.tar.lzma
-  * bsdtar (ƒ_ƒEƒ“ƒ[ƒh‚µ‚½ƒpƒbƒP[ƒW‚Ì“WŠJ‚É—˜—p‚µ‚Ü‚·B.)
+  * bsdtar (ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ãŸãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã®å±•é–‹ã«åˆ©ç”¨ã—ã¾ã™ã€‚.)
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libarchive/libarchive-2.8.3-1/libarchive-2.8.3-1-msys-1.0.13-dll-2.tar.lzma
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libarchive/libarchive-2.8.3-1/bsdtar-2.8.3-1-msys-1.0.13-bin.tar.lzma
 
-msys.bat ‚ðŠJ‚¢‚ÄˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+msys.bat ã‚’é–‹ã„ã¦ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 $ bsdtar -m -xf nanogl-current.zip
@@ -74,21 +74,21 @@ $ make example
 
 ### Visual Studio Professional 2015 / Visual Studio Community 2015
 
-ƒrƒ‹ƒh‚É‚ÍˆÈ‰º‚ÌŠÂ‹«‚ª•K—v‚Å‚·
+ãƒ“ãƒ«ãƒ‰ã«ã¯ä»¥ä¸‹ã®ç’°å¢ƒãŒå¿…è¦ã§ã™
 
   * VS2015 x86 Native Tools Command Prompt
-  * GnuWin32‚ÉŠÜ‚Ü‚ê‚éwget, patch, LibArchive (build-tools.bat‚ÅŽ©“®“I‚ÉtoolsƒfƒBƒŒƒNƒgƒŠ‚ÉƒZƒbƒgƒAƒbƒv‚³‚ê‚Ü‚·)
-    * wget (—˜—p‚µ‚Ä‚¢‚éƒI[ƒvƒ“ƒ\[ƒXƒpƒbƒP[ƒW‚ÌŽæ“¾‚É•K—v‚Å‚·)
+  * GnuWin32ã«å«ã¾ã‚Œã‚‹wget, patch, LibArchive (build-tools.batã§è‡ªå‹•çš„ã«toolsãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã•ã‚Œã¾ã™)
+    * wget (åˆ©ç”¨ã—ã¦ã„ã‚‹ã‚ªãƒ¼ãƒ—ãƒ³ã‚½ãƒ¼ã‚¹ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã®å–å¾—ã«å¿…è¦ã§ã™)
       * http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-bin.zip
       * http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-dep.zip
-    * patch (‚¢‚­‚Â‚©‚ÌC³ƒpƒbƒ`‚Ì“K—p‚É•K—v‚Å‚·B)
+    * patch (ã„ãã¤ã‹ã®ä¿®æ­£ãƒ‘ãƒƒãƒã®é©ç”¨ã«å¿…è¦ã§ã™ã€‚)
       * http://gnuwin32.sourceforge.net/downlinks/patch-bin-zip.php
       * Copy the file `./patches/patch.exe.manifest` in the same directory as the PATCH.EXE.
-    * bsdtar (ƒ_ƒEƒ“ƒ[ƒh‚µ‚½ƒpƒbƒP[ƒW‚Ì“WŠJ‚É—˜—p‚µ‚Ü‚·B.)
+    * bsdtar (ãƒ€ã‚¦ãƒ³ãƒ­ãƒ¼ãƒ‰ã—ãŸãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ã®å±•é–‹ã«åˆ©ç”¨ã—ã¾ã™ã€‚.)
       * http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-bin.zip
       * http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-dep.zip
 
-ƒXƒ^[ƒgƒƒjƒ…[‚©‚ç`VS2015 x86 Native Tools Command Prompt` ‚ðŠJ‚¢‚ÄˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+ã‚¹ã‚¿ãƒ¼ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰`VS2015 x86 Native Tools Command Prompt` ã‚’é–‹ã„ã¦ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 > bsdtar -m -xf nanogl-current.zip
@@ -99,11 +99,11 @@ $ make example
 
 ### MacOS X (el capitan)
 
-ƒrƒ‹ƒh‚É‚ÍˆÈ‰º‚ÌŠÂ‹«‚ª•K—v‚Å‚·
+ãƒ“ãƒ«ãƒ‰ã«ã¯ä»¥ä¸‹ã®ç’°å¢ƒãŒå¿…è¦ã§ã™
 
   * Apple LLVM version 7.3.0 (clang-703.0.29)
-  * homebrew‚ÌƒCƒ“ƒXƒg[ƒ‹
-  * homebrewŒo—R‚ÅˆÈ‰º‚Ìƒ‰ƒCƒuƒ‰ƒŠ‚ðƒCƒ“ƒXƒg[ƒ‹
+  * homebrewã®ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
+  * homebrewçµŒç”±ã§ä»¥ä¸‹ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«
     * glfw3
       * brew install homebrew/versions/glfw3
     * glew
@@ -111,7 +111,7 @@ $ make example
     * libmad
       * brew install libmad
     
-Terminal.app ‚ðŠJ‚¢‚ÄˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+Terminal.app ã‚’é–‹ã„ã¦ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 > bsdtar -m -xf nanogl-current.tgz
@@ -119,11 +119,11 @@ Terminal.app ‚ðŠJ‚¢‚ÄˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
 > make 
 ```
 
-## CRuby‚ÅŽg‚¤ê‡
+## CRubyã§ä½¿ã†å ´åˆ
 
-gem ‚ðƒrƒ‹ƒh‚µ‚ÄƒCƒ“ƒXƒg[ƒ‹‚·‚é‚±‚Æ‚ÅCRuby‚©‚çNanoGL‚ª—˜—p‰Â”\‚É‚È‚è‚Ü‚·B
+gem ã‚’ãƒ“ãƒ«ãƒ‰ã—ã¦ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã™ã‚‹ã“ã¨ã§CRubyã‹ã‚‰NanoGLãŒåˆ©ç”¨å¯èƒ½ã«ãªã‚Šã¾ã™ã€‚
 
-—˜—p‚É‚ÍˆÈ‰º‚ÌŠÂ‹«‚ª•K—v‚Å‚·
+åˆ©ç”¨ã«ã¯ä»¥ä¸‹ã®ç’°å¢ƒãŒå¿…è¦ã§ã™
 
   * CRuby (>= 2.0) 
   * gem bundler
@@ -131,7 +131,7 @@ gem ‚ðƒrƒ‹ƒh‚µ‚ÄƒCƒ“ƒXƒg[ƒ‹‚·‚é‚±‚Æ‚ÅCRuby‚©‚çNanoGL‚ª—˜—p‰Â”\‚É‚È‚è‚Ü‚·B
 
 ### MinGW32 or MacOS X
 
-Terminal.app ‚ðŠJ‚«AŠeOSŒü‚¯ƒfƒBƒŒƒNƒgƒŠ‚ÅˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+Terminal.app ã‚’é–‹ãã€å„OSå‘ã‘ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 $ make -f Makefile.rubygem
@@ -141,7 +141,7 @@ $ ruby ../example/00-blank.rb
 
 ### VisualStudio
 
-ƒXƒ^[ƒgƒƒjƒ…[‚©‚ç`VS2015 x86 Native Tools Command Prompt` ‚ðŠJ‚¢‚ÄVS14Œü‚¯ƒfƒBƒŒƒNƒgƒŠ‚ÅˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+ã‚¹ã‚¿ãƒ¼ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰`VS2015 x86 Native Tools Command Prompt` ã‚’é–‹ã„ã¦VS14å‘ã‘ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 > build-mrb-nanogl.bat
@@ -149,24 +149,24 @@ $ ruby ../example/00-blank.rb
 > ruby ../example/00-blank.rb
 ```
 
-## mruby‚ÅŽg‚¤ê‡
+## mrubyã§ä½¿ã†å ´åˆ
 
 ### MinGW32 
 
-ƒrƒ‹ƒh‚É‚ÍˆÈ‰º‚ÌŠÂ‹«‚ª•K—v‚Å‚·
+ãƒ“ãƒ«ãƒ‰ã«ã¯ä»¥ä¸‹ã®ç’°å¢ƒãŒå¿…è¦ã§ã™
 
   * CRuby (>= 2.0)
     * https://rubyinstaller.org/
   * bison
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/bison/bison-2.4.2-1/bison-2.4.2-1-msys-1.0.13-bin.tar.lzma
-    * ’Ç‰Á‚ÅˆÈ‰º‚ÌƒpƒbƒP[ƒW‚ª•K—v‚Å‚·
+    * è¿½åŠ ã§ä»¥ä¸‹ã®ãƒ‘ãƒƒã‚±ãƒ¼ã‚¸ãŒå¿…è¦ã§ã™
       * https://sourceforge.net/projects/mingw/files/MSYS/Extension/m4/m4-1.4.16-2/m4-1.4.16-2-msys-1.0.17-bin.tar.lzma
   * flex
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/flex/flex-2.5.35-2/flex-2.5.35-2-msys-1.0.13-bin.tar.lzma
   * git for windows
     * https://git-for-windows.github.io/
  
-msys.bat ‚ðŠJ‚¢‚ÄˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+msys.bat ã‚’é–‹ã„ã¦ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 $ make -f Makefile.mrb-nanogl
@@ -175,7 +175,7 @@ $ ./mrb-nanogl ../example/00-blank.rb
 
 ### MacOS X
 
-Terminal.app ‚ðŠJ‚«AŠeOSŒü‚¯ƒfƒBƒŒƒNƒgƒŠ‚ÅˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+Terminal.app ã‚’é–‹ãã€å„OSå‘ã‘ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 $ make -f Makefile.mrb-nanogl
@@ -184,36 +184,35 @@ $ ./mrb-nanogl ../example/00-blank.rb
 
 ### VisualStudio
 
-ƒrƒ‹ƒh‚É‚ÍˆÈ‰º‚ÌŠÂ‹«‚ª•K—v‚Å‚·
+ãƒ“ãƒ«ãƒ‰ã«ã¯ä»¥ä¸‹ã®ç’°å¢ƒãŒå¿…è¦ã§ã™
 
   * CRuby (>= 2.0)
     * https://rubyinstaller.org/
-  * GnuWin32‚ÉŠÜ‚Ü‚ê‚ébison, flex (build-tools.bat‚ÅŽ©“®“I‚ÉtoolsƒfƒBƒŒƒNƒgƒŠ‚ÉƒZƒbƒgƒAƒbƒv‚³‚ê‚Ü‚·)
-    * bison (mruby‚ÌƒRƒ“ƒpƒCƒ‹‚É•K—v‚Å‚·)
+  * GnuWin32ã«å«ã¾ã‚Œã‚‹bison, flex (build-tools.batã§è‡ªå‹•çš„ã«toolsãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ã‚»ãƒƒãƒˆã‚¢ãƒƒãƒ—ã•ã‚Œã¾ã™)
+    * bison (mrubyã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã«å¿…è¦ã§ã™)
       * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-bin.zip
       * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-dep.zip
-    * flex (mruby‚ÌƒRƒ“ƒpƒCƒ‹‚É•K—v‚Å‚·)
+    * flex (mrubyã®ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã«å¿…è¦ã§ã™)
       * http://gnuwin32.sourceforge.net/downlinks/flex-bin-zip.php
 
-ƒXƒ^[ƒgƒƒjƒ…[‚©‚ç`VS2015 x86 Native Tools Command Prompt` ‚ðŠJ‚¢‚ÄVS14Œü‚¯ƒfƒBƒŒƒNƒgƒŠ‚ÅˆÈ‰º‚ðŽÀs‚µ‚Ü‚·B
+ã‚¹ã‚¿ãƒ¼ãƒˆãƒ¡ãƒ‹ãƒ¥ãƒ¼ã‹ã‚‰`VS2015 x86 Native Tools Command Prompt` ã‚’é–‹ã„ã¦VS14å‘ã‘ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ä»¥ä¸‹ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 
 ```sh
 > build-mrb-nanogl.bat
 > mrb-nanogl.exe ../example/00-blank.rb
 ```
 
-# ƒ‰ƒCƒZƒ“ƒX
+# ãƒ©ã‚¤ã‚»ãƒ³ã‚¹
 
-  * NanoGL‚ª—˜—p‚µ‚Ä‚¢‚éƒI[ƒvƒ“ƒ\[ƒXƒvƒƒWƒFƒNƒg¬‰Ê•¨‚âƒ‰ƒCƒuƒ‰ƒŠ‚ðœ‚­ANanoGLƒ\[ƒXƒR[ƒh‚ÆexampleƒtƒHƒ‹ƒ_‚Ìì—á‚Í NYSL Version 0.9982 ‚Å‚·B
-  * OpenAL‚âlibmad‚ªGPL2 ƒ‰ƒCƒZƒ“ƒX‚Ì‚½‚ßANanoGL‚ðƒXƒ^ƒeƒBƒbƒNƒŠƒ“ƒN‚µ‚½ŽÀsƒtƒ@ƒCƒ‹‚Í GPL2 ƒ‰ƒCƒZƒ“ƒX‚É‚È‚è‚Ü‚·B‚²’ˆÓ‚­‚¾‚³‚¢B
+  * NanoGLãŒåˆ©ç”¨ã—ã¦ã„ã‚‹ã‚ªãƒ¼ãƒ—ãƒ³ã‚½ãƒ¼ã‚¹ãƒ—ãƒ­ã‚¸ã‚§ã‚¯ãƒˆæˆæžœç‰©ã‚„ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’é™¤ãã€NanoGLã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ã¨exampleãƒ•ã‚©ãƒ«ãƒ€ã®ä½œä¾‹ã¯ NYSL Version 0.9982 ã§ã™ã€‚
+  * OpenALã‚„libmadãŒGPL2 ãƒ©ã‚¤ã‚»ãƒ³ã‚¹ã®ãŸã‚ã€NanoGLã‚’ã‚¹ã‚¿ãƒ†ã‚£ãƒƒã‚¯ãƒªãƒ³ã‚¯ã—ãŸå®Ÿè¡Œãƒ•ã‚¡ã‚¤ãƒ«ã¯ GPL2 ãƒ©ã‚¤ã‚»ãƒ³ã‚¹ã«ãªã‚Šã¾ã™ã€‚ã”æ³¨æ„ãã ã•ã„ã€‚
 
-# —\’è
+# äºˆå®š
 
-  * GPL‚Ì”rœ
-    * ƒ_ƒCƒiƒ~ƒbƒNƒŠƒ“ƒN”Å‚Ìì¬
-    * MP3ƒfƒR[ƒ_‚ð“ÆŽ©ŽÀ‘•‚à‚µ‚­‚Í”pŽ~
-    * libsoundio‚âportaudio“™‚Ì”ñGPLƒ‰ƒCƒuƒ‰ƒŠ‚Ö‚ÌˆÚs
-  * Linuxƒvƒ‰ƒbƒgƒtƒH[ƒ€‚Ö‚Ì‘Î‰ž
-  * Š”Ž®‰ïŽÐ‚Ü‚¿‚Ã‚­‚èŽO‘é‚ª”­s‚µ‚Ä‚¢‚éuƒIƒuƒWƒFƒNƒgŽwŒüŒ¾ŒêuRubyƒvƒƒOƒ‰ƒ~ƒ“ƒO“ü–åvƒeƒLƒXƒgi‰SŽÒ—pjv‚Ö‚Ì‘Î‰ž
-    * —˜—p‚·‚é‚±‚Æ‚É‚È‚é dxruby on nanogl ‚Ìdxruby‘Î‰ž“x‚ðŒüã
+  * GPLã®æŽ’é™¤
+    * ãƒ€ã‚¤ãƒŠãƒŸãƒƒã‚¯ãƒªãƒ³ã‚¯ç‰ˆã®ä½œæˆ
+    * MP3ãƒ‡ã‚³ãƒ¼ãƒ€ã‚’ç‹¬è‡ªå®Ÿè£…ã‚‚ã—ãã¯å»ƒæ­¢
+    * libsoundioã‚„portaudioç­‰ã®éžGPLãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¸ã®ç§»è¡Œ
+  * æ ªå¼ä¼šç¤¾ã¾ã¡ã¥ãã‚Šä¸‰é·¹ãŒç™ºè¡Œã—ã¦ã„ã‚‹ã€Œã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆæŒ‡å‘è¨€èªžã€ŒRubyãƒ—ãƒ­ã‚°ãƒ©ãƒŸãƒ³ã‚°å…¥é–€ã€ãƒ†ã‚­ã‚¹ãƒˆï¼ˆåˆå¿ƒè€…ç”¨ï¼‰ã€ã¸ã®å¯¾å¿œ
+    * åˆ©ç”¨ã™ã‚‹ã“ã¨ã«ãªã‚‹ dxruby on nanogl ã®dxrubyå¯¾å¿œåº¦ã‚’å‘ä¸Š
 

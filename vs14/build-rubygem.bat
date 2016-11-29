@@ -43,7 +43,7 @@ cmd /C rake build
 ECHO Build finish.
 
 %CD% %BASEDIR%
-%CP% %BUILDDIR%\cruby\gem\pkg\nanogl-0.2.0.gem %BASEDIR%\nanogl-0.2.0.gem
+%CP% %BUILDDIR%\cruby\gem\pkg\nanogl-0.2.2.gem %BASEDIR%\nanogl-0.2.2.gem
 
 pause
 

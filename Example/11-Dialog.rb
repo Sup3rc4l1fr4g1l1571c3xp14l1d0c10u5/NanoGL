@@ -26,11 +26,11 @@ filename = ""
 Video.Draw do
 	# マウス左クリックでファイルを開くダイアログボックスを表示
 	if Mouse.IsLeftButtonDown
-		filename = Dialog.OpenFileDialog("ファイルを選んでください", "")
+		filename = Dialog.OpenFileDialog("ファイルを選んでください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*")
 	end
 	# マウス右クリックでファイル保存ダイアログボックスを表示
 	if Mouse.IsRightButtonDown
-		filename = Dialog.SaveFileDialog("保存先ファイル名を入力してください", "")
+		filename = Dialog.SaveFileDialog("保存先ファイル名を入力してください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*")
 	end
 
 	# テキスト描画は図形ではないのでFillColor命令でテキスト色を指定してからテキスト描画命令を用いる

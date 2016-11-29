@@ -27,12 +27,12 @@ void start(void)
 		// マウス左クリックでファイルを開くダイアログボックスを表示
 		if (Mouse.IsLeftButtonDown()) {
 			String.Free(filename);
-			filename = Dialog.OpenFileDialog("ファイルを選んでください", "");
+			filename = Dialog.OpenFileDialog("ファイルを選んでください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*");
 		}
 		// マウス右クリックでファイル保存ダイアログボックスを表示
 		if (Mouse.IsRightButtonDown()) {
 			String.Free(filename);
-			filename = Dialog.SaveFileDialog("保存先ファイル名を入力してください", "");
+			filename = Dialog.SaveFileDialog("保存先ファイル名を入力してください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*");
 		}
 
 		// テキスト描画は図形ではないのでFillColor命令でテキスト色を指定してからテキスト描画命令を用いる

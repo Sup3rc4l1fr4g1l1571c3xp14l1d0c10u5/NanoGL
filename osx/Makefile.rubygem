@@ -2,7 +2,7 @@ CC=gcc
 CP=cp
 MKDIR=mkdir
 DLL=nanogl.bundle
-VERSION=0.2.0
+VERSION=0.2.2
 GEM=nanogl-$(VERSION).gem
 SRC=nanogl.dll.c
 
