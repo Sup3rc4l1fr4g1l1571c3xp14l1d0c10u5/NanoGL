@@ -23,14 +23,26 @@ void start(void)
 	string_t filename = String.Create(NULL);
 
 	// 処理
+	int lbdown = 0;
+	int rbdown = 0;
 	while (Video.Drawing()) {
 		// マウス左クリックでファイルを開くダイアログボックスを表示
 		if (Mouse.IsLeftButtonDown()) {
+			lbdown++;
+		} else {
+			lbdown = 0;
+		}
+		if (lbdown == 1) {
 			String.Free(filename);
 			filename = Dialog.OpenFileDialog("ファイルを選んでください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*");
 		}
 		// マウス右クリックでファイル保存ダイアログボックスを表示
 		if (Mouse.IsRightButtonDown()) {
+			rbdown++;
+		} else {
+			rbdown = 0;
+		}
+		if (rbdown == 1) {
 			String.Free(filename);
 			filename = Dialog.SaveFileDialog("保存先ファイル名を入力してください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*");
 		}

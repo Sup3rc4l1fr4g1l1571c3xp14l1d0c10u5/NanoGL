@@ -23,13 +23,25 @@ Video.FontFace("font");
 filename = ""
 
 # 更新処理
+lbdown = 0
+rbdown = 0
 Video.Draw do
 	# マウス左クリックでファイルを開くダイアログボックスを表示
 	if Mouse.IsLeftButtonDown
+		lbdown += 1
+	else
+		lbdown = 0
+	end
+	if lbdown == 1
 		filename = Dialog.OpenFileDialog("ファイルを選んでください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*")
 	end
 	# マウス右クリックでファイル保存ダイアログボックスを表示
 	if Mouse.IsRightButtonDown
+		rbdown += 1
+	else
+		rbdown = 0
+	end
+	if rbdown == 1
 		filename = Dialog.SaveFileDialog("保存先ファイル名を入力してください", "JPEG|*.jpg;*jpeg\nGIF|*.gif\nすべてのファイル|*.*")
 	end
 
