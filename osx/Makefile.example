@@ -1,5 +1,6 @@
 CC=gcc
 CP=cp
+ICONV=iconv
 MKDIR=mkdir
 SRCS=$(wildcard ../Example/*.c)
 TARGET=$(subst ../Example,./Example,$(SRCS:%.c=%.exe))
@@ -14,7 +15,10 @@ all: ./Example $(TARGET)
 	if [ ! -d ./Example/Image ] ; then $(CP) -rf ../Example/Image ./Example ; fi &&\
 	if [ ! -d ./Example/Font ] ; then $(CP) -rf ../Example/Font ./Example ; fi
 
-./Example/%.exe: ../Example/%.c
+./Example/%.c: ../Example/%.c
+	$(ICONV) -f sjis -t utf8 $^ > $@
+
+./Example/%.exe: ./Example/%.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 clean:
