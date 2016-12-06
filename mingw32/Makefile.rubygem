@@ -13,7 +13,7 @@ LIB_DIR=$(CURDIR)/../lib
 RUBYSRC_DIR=$(CURDIR)/../ruby/cruby
 GEM_DIR=$(BUILDDIR)/cruby/gem
 
-CFLAGS= -shared -m32 -std=c99 -I$(NANOGL_DIR)
+CFLAGS= -shared -m32 -std=c99 -I$(NANOGL_DIR) -static
 LDFLAGS=-L$(LIB_DIR) -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt -lComdlg32
 
 all: $(GEM)

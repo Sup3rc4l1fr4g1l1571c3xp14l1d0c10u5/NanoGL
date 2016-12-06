@@ -39,34 +39,64 @@ all: download extract build copy
 ###############################################################################
 
 DOWNLOAD_TARGETS=\
-	$(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
+	$(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip \
+	$(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip \
+	$(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
 
 download: $(DOWNLOAD_TARGETS)
 
-$(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip:
+$(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip:
 	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
 	cd $(DOWNLOAD_DIR) && \
 	$(WGET) \
-		-o nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip \
-		https://github.com/memononen/nanovg/archive/b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
+		-o nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip \
+		https://github.com/memononen/nanovg/archive/cacb00b852079db23c180f2e6cbff41eef673783.zip
+
+$(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip:
+	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
+	cd $(DOWNLOAD_DIR) && \
+	$(WGET) \
+		-o stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip \
+		https://github.com/nothings/stb/archive/6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+
+$(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip:
+	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
+	cd $(DOWNLOAD_DIR) && \
+	$(WGET) \
+		-o TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip \
+		https://github.com/serge-rgb/TinyJPEG/archive/56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
 
 ###############################################################################
 # extract
 ###############################################################################
 
 EXTRACT_TARGETS=\
-	$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28
+	$(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783 \
+	$(BUILD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9 \
+	$(BUILD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0
 
 extract: $(EXTRACT_TARGETS)
 
-$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28: $(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip $(PATCH_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
+$(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783: $(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip $(PATCH_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.patch
 	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
 	cd $(BUILD_DIR) &&\
 	$(UNZIP) \
-		$(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip &&\
-	cd $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 &&\
+		$(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip &&\
+	cd $(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783 &&\
 	$(PATCH) -u -p1 < \
-		$(PATCH_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
+		$(PATCH_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.patch
+
+$(BUILD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9: $(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
+	cd $(BUILD_DIR) &&\
+	$(UNZIP) \
+		$(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+
+$(BUILD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0: $(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
+	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
+	cd $(BUILD_DIR) &&\
+	$(UNZIP) \
+		$(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
 
 ###############################################################################
 # rules for build
@@ -77,8 +107,8 @@ BUILD_TARGETS=\
 
 build: $(BUILD_TARGETS)
 
-$(BUILD_DIR)/libnanovg3.a: $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28
-	@$(CD) $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src &&\
+$(BUILD_DIR)/libnanovg3.a: $(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783
+	@$(CD) $(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783/src &&\
 	$(CC) \
 		$(PLATFORM_CFLAGS) \
 		-DNANOVG_GL3_IMPLEMENTATION \
@@ -99,7 +129,9 @@ $(BUILD_DIR)/libnanogl.0.a: $(BUILD_DIR)/nanogl-current
 		-DUNOFFICIAL_HACK_ENABLE_NEAREST_RESIZE \
 		-DUNOFFICIAL_HACK_ENABLE_TRANSFORM_WORLD \
 		-DUNOFFICIAL_HACK_FILL_COLOR_AFFECTS_THE_IMAGE_PATTERN \
-		-I$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src \
+		-I$(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783/src \
+		-I$(BUILD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9 \
+		-I$(BUILD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0 \
 		$(NANOGL_DIR)/Start.c \
 		$(NANOGL_DIR)/Sound/Sound.c  \
 		$(NANOGL_DIR)/Sound/SoundChannel/ChannelManager.c \

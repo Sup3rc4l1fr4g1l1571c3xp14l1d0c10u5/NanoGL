@@ -20,6 +20,7 @@ require_relative './NanoGL/Sound.rb'
 require_relative './NanoGL/FpsTimer.rb'
 require_relative './NanoGL/System.rb'
 require_relative './NanoGL/Dialog.rb'
+require_relative './NanoGL/Joystick.rb'
 
 if $0 == __FILE__
   require_relative './NanoGL/SpecTest.rb'

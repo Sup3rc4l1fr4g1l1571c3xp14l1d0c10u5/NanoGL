@@ -9,6 +9,9 @@ void start(void)
 	// タイトルを設定
 	Video.SetWindowTitle("[Example] 09-Sound");
 
+	// 画面を消去した際の背景色を設定
+	Video.SetClearColor(Video.RGB(128,128,255));
+
 	// プログラムの置いてあるディレクトリを基準として
 	// Sound フォルダ内の bgm.ogg というファイルを音源番号0番に読み込む
 	Sound.ChannelCreate(0, "./Sound/bgm.ogg");

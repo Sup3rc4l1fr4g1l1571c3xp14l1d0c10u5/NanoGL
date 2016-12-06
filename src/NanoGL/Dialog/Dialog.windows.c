@@ -9,10 +9,17 @@
 #pragma comment(lib,"Comdlg32.lib")
 
 static char *fixup_filter(const char *filter) {
+	if (filter == NULL) {
+		return NULL;
+	}
 	size_t len = strlen(filter) + 2U;
 	char *fixuped_filter = (char *)calloc(len,sizeof(char));
+	if (fixuped_filter == NULL)
+	{
+		return NULL;
+	}
 	strcpy_s(fixuped_filter, len, filter);
-	for (char *p = fixuped_filter; *p != '\0'; *p++) {
+	for (char *p = fixuped_filter; *p != '\0'; p++) {
 		switch (*p) {
 			case '|' : *p = '\0'; break;
 			case '\n' : *p = '\0'; break;

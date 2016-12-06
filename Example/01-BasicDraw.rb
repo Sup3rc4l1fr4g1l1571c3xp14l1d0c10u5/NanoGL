@@ -8,7 +8,7 @@ Video.SetSize(512, 512)
 Video.SetWindowTitle("[Example] 01-BasicDraw")
 
 # 画面を消去した際の背景色を設定
-Video.SetClearColor([128,128,255])
+Video.SetClearColor(Video.RGB(128,128,255))
 
 # 更新処理
 Video.Draw do
@@ -24,7 +24,7 @@ Video.Draw do
 	end
 	
 	# 塗りつぶし処理で用いる色を 赤255, 緑0, 青128, 不透明度255 に設定
-	Video.FillColor([255, 0, 128, 255])
+	Video.FillColor(Video.RGBA(255, 0, 128, 255))
 	
 	# 図形を塗りつぶす
 	Video.Fill()
@@ -41,7 +41,7 @@ Video.Draw do
 	end
 	
 	# 線の描画で用いる色を 赤0, 緑255, 青128, 不透明度255 に設定
-	Video.StrokeColor([0, 255, 128, 255])
+	Video.StrokeColor(Video.RGBA(0, 255, 128, 255))
 	
 	# 図形の輪郭線を描く
 	Video.Stroke()
@@ -63,13 +63,13 @@ Video.Draw do
 	end
 
 	# 線の描画で用いる色を 赤0, 緑255, 青0, 不透明度255 に設定
-	Video.StrokeColor([0, 255, 0, 255])
+	Video.StrokeColor(Video.RGBA(0, 255, 0, 255))
 
 	# 線の太さを3pixelに設定
 	Video.StrokeWidth(3)
 
 	# 塗りつぶし処理で用いる色を 赤255, 緑255, 青255, 不透明度255 に設定
-	Video.FillColor([255, 255, 255, 255])
+	Video.FillColor(Video.RGBA(255, 255, 255, 255))
 
 	# 図形のを塗りつぶす
 	Video.Fill()

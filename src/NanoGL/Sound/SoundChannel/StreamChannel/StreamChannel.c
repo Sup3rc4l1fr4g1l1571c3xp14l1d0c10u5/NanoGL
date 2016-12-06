@@ -137,15 +137,21 @@ static bool StreamChannel_Open(struct StreamChannel* self, const char* filename)
 		return false;
 	}
 	const char *ext = strrchr(filename, '.');
+	if (ext == NULL)
+	{
+		return false;
+	}
 	self->stream_reader = &NullReader;
 	for (const struct __tagReaderMapTable *p = ReaderMapTable; p->ext != NULL; p++)
 	{
 		if (strcasecmp(p->ext, ext) == 0)
 		{
 			self->stream_reader = p->reader;
-			break;
+			goto found;
 		}
 	}
+	return false;
+found:
 	if (self->stream_reader->openfile(&self->stream, filename) == false)
 	{
 		return false;

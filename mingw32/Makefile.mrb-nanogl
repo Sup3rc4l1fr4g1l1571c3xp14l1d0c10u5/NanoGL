@@ -30,7 +30,7 @@ RUBYPKG_DIR=$(CURDIR)/../ruby
 
 SRCS=$(RUBYPKG_DIR)/mruby/src/main.c $(RUBYPKG_DIR)/mruby/src/mrb-nanogl.c
 OBJS=$(SRCS:%.c=%.o)
-CFLAGS= -Wall -g -mwindows -std=c99 -I$(BUILD_DIR)/mruby-1.2.0/include -I$(NANOGL_DIR)
+CFLAGS= -Wall -g -mwindows -std=c99 -I$(BUILD_DIR)/mruby-1.2.0/include -I$(NANOGL_DIR) -static
 LDFLAGS=-L$(LIB_DIR) -L$(BUILD_DIR)/mruby-1.2.0/build/host/lib -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt -lmruby -lWs2_32 -lComdlg32
 
 all: $(CURDIR)/$(TARGET)

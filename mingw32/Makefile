@@ -39,7 +39,9 @@ all: download extract build copy
 ###############################################################################
 
 DOWNLOAD_TARGETS=\
-	$(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip \
+	$(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip \
+	$(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip \
+	$(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip \
 	$(DOWNLOAD_DIR)/glew-1.13.0.zip \
 	$(DOWNLOAD_DIR)/glfw-3.1.2.zip \
 	$(DOWNLOAD_DIR)/openal-soft-1.17.2.tar.bz2 \
@@ -47,13 +49,27 @@ DOWNLOAD_TARGETS=\
 
 download: $(DOWNLOAD_TARGETS)
 
-$(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip:
+$(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip:
 	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
 	cd $(DOWNLOAD_DIR) && \
 	$(WGET) \
-		-O nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip \
-		https://github.com/memononen/nanovg/archive/b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
-	
+		-O nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip \
+		https://github.com/memononen/nanovg/archive/cacb00b852079db23c180f2e6cbff41eef673783.zip
+
+$(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip:
+	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
+	cd $(DOWNLOAD_DIR) && \
+	$(WGET) \
+		-O stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip \
+		https://github.com/nothings/stb/archive/6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+
+$(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip:
+	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
+	cd $(DOWNLOAD_DIR) && \
+	$(WGET) \
+		-O TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip \
+		https://github.com/serge-rgb/TinyJPEG/archive/56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
+
 $(DOWNLOAD_DIR)/glew-1.13.0.zip:
 	@if [ ! -d "$(DOWNLOAD_DIR)" ] ; then $(MKDIR) $(DOWNLOAD_DIR) ; fi &&\
 	cd $(DOWNLOAD_DIR) && \
@@ -87,7 +103,9 @@ $(DOWNLOAD_DIR)/libmad-0.15.1b.tar.gz:
 ###############################################################################
 
 EXTRACT_TARGETS=\
-	$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 \
+	$(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783 \
+	$(BUILD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9 \
+	$(BUILD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0 \
 	$(BUILD_DIR)/glew-1.13.0 \
 	$(BUILD_DIR)/glfw-3.1.2 \
 	$(BUILD_DIR)/openal-soft-1.17.2 \
@@ -95,14 +113,26 @@ EXTRACT_TARGETS=\
 
 extract: $(EXTRACT_TARGETS)
 
-$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28: $(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip $(PATCH_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
+$(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783: $(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip $(PATCH_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.patch
 	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
 	cd $(BUILD_DIR) &&\
 	$(BSDTAR) \
-		-xf $(DOWNLOAD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip &&\
-	cd $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 &&\
+		-xf $(DOWNLOAD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip &&\
+	cd $(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783 &&\
 	$(PATCH) -u -p1 < \
-		$(PATCH_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
+		$(PATCH_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783.patch
+
+$(BUILD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9: $(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
+	cd $(BUILD_DIR) &&\
+	$(BSDTAR) \
+		-xf $(DOWNLOAD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+	
+$(BUILD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0: $(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
+	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
+	cd $(BUILD_DIR) &&\
+	$(BSDTAR) \
+		-xf $(DOWNLOAD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
 	
 $(BUILD_DIR)/glew-1.13.0: $(DOWNLOAD_DIR)/glew-1.13.0.zip
 	@if [ ! -d "$(BUILD_DIR)" ] ; then $(MKDIR) $(BUILD_DIR) ; fi &&\
@@ -157,8 +187,8 @@ $(BUILD_DIR)/libglfw3.a: $(BUILD_DIR)/glfw-3.1.2
 	make &&\
 	$(CP) ./src/libglfw3.a $(BUILD_DIR)/libglfw3.a
 
-$(BUILD_DIR)/libnanovg3.a: $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28
-	@$(CD) $(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src &&\
+$(BUILD_DIR)/libnanovg3.a: $(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783
+	@$(CD) $(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783/src &&\
 	$(CC) \
 		$(PLATFORM_CFLAGS) \
 		-DGLEW_STATIC \
@@ -200,7 +230,9 @@ $(BUILD_DIR)/libnanogl.0.a: $(BUILD_DIR)/nanogl-current
 		-I$(BUILD_DIR)/openal-soft-1.17.2/include \
 		-I$(BUILD_DIR)/glew-1.13.0/include \
 		-I$(BUILD_DIR)/glfw-3.1.2/include \
-		-I$(BUILD_DIR)/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src \
+		-I$(BUILD_DIR)/nanovg-cacb00b852079db23c180f2e6cbff41eef673783/src \
+		-I$(BUILD_DIR)/stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9 \
+		-I$(BUILD_DIR)/TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0 \
 		-L$(BUILD_DIR)/ \
 		$(NANOGL_DIR)/Start.c \
 		$(NANOGL_DIR)/Sound/Sound.c  \

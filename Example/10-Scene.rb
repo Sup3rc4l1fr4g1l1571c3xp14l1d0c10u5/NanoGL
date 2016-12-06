@@ -11,7 +11,7 @@ Video.SetSize(512, 512)
 Video.SetWindowTitle("[Example] 10-Scene")
 
 # 画面を消去した際の背景色を設定
-Video.SetClearColor([128,128,255])
+Video.SetClearColor(Video.RGB(128,128,255))
 
 # プログラムの置いてあるディレクトリを基準として
 # fontフォルダ内のIPAexfont00301フォルダからipaexg.ttfというフォントファイルを読み込み、"font"という名前を付ける
@@ -85,10 +85,10 @@ loop do
 			Video.Rect(rect_yes[:left], rect_yes[:top], rect_yes[:width], rect_yes[:height])
 			Video.Rect(rect_no[:left],   rect_no[:top], rect_no[:width], rect_no[:height])
 		end
-		Video.FillColor([255,255,255,64])
+		Video.FillColor(Video.RGBA(255,255,255,64))
 		Video.Fill()
 		Video.TextAlign(Video::AlignFlags::ALIGN_CENTER | Video::AlignFlags::ALIGN_MIDDLE)
-		Video.FillColor([0,0,0,255])
+		Video.FillColor(Video.RGBA(0,0,0,255))
 		Video.Text(rect_yes[:left]+rect_yes[:width]/2, rect_yes[:top]+rect_yes[:height]/2, "はい")
 		Video.Text(rect_no[:left]+rect_no[:width]/2, rect_no[:top]+rect_no[:height]/2, "いいえ")
 

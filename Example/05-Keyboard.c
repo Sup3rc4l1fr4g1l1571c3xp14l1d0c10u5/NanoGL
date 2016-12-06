@@ -9,6 +9,9 @@ void start(void)
 	// タイトルを設定
 	Video.SetWindowTitle("[Example] 05-Keyboard");
 
+	// 画面を消去した際の背景色を設定
+	Video.SetClearColor(Video.RGB(128,128,255));
+
 	// 画像中心座標を格納する変数を用意し、初期位置を画面中心とする
 	float x = 512 / 2.0f;
 	float y = 512 / 2.0f;

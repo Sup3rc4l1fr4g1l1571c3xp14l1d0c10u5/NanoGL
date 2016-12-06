@@ -3,7 +3,7 @@ CP=cp
 MKDIR=mkdir
 SRCS=$(wildcard ../Example/*.c)
 TARGET=$(subst ../Example,./Example,$(SRCS:%.c=%.exe))
-CFLAGS= -mwindows -std=c99 -I../src
+CFLAGS= -mwindows -std=c99 -I../src -static
 LDFLAGS=-L../lib -lmingw32 -lnanogl -lopengl32 -lgdi32 -lwinmm -lole32 -lkernel32 -lavrt -lComdlg32
 
 all: ./Example $(TARGET)

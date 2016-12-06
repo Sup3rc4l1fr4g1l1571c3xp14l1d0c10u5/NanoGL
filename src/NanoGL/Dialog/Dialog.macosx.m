@@ -47,13 +47,21 @@ string_t OpenFileDialog(const char *title, const char *filter) {
             }
         }
         if (capture != NULL) {
-            [naFileTypes addObject: [NSString stringWithUTF8String: capture]];
+            while (*capture != '.' && *capture != '\0') {
+                capture++;
+            }
+            if (*capture == '.') {
+                capture++;
+                [naFileTypes addObject: [NSString stringWithUTF8String: capture]];
+            }
             capture = NULL;
         }
         free(filter_copy);
         NSOpenPanel* openDlg = [NSOpenPanel openPanel];
         [openDlg setDirectoryURL:[NSURL fileURLWithPath: NSHomeDirectory()]];
-        [openDlg setAllowedFileTypes:naFileTypes];
+        if ([naFileTypes count] != 0) {
+            [openDlg setAllowedFileTypes:naFileTypes];
+        }
         //[openDlg setPrompt: "Open"];
         [openDlg setMessage: nsTitle];
         NSInteger ret = [openDlg runModal];
@@ -120,13 +128,21 @@ string_t SaveFileDialog(const char *title, const char *filter) {
             }
         }
         if (capture != NULL) {
-            [naFileTypes addObject: [NSString stringWithUTF8String: capture]];
+            while (*capture != '.' && *capture != '\0') {
+                capture++;
+            }
+            if (*capture == '.') {
+                capture++;
+                [naFileTypes addObject: [NSString stringWithUTF8String: capture]];
+            }
             capture = NULL;
         }
         free(filter_copy);
         NSSavePanel* openDlg = [NSSavePanel savePanel];
         [openDlg setDirectoryURL:[NSURL fileURLWithPath: NSHomeDirectory()]];
-        [openDlg setAllowedFileTypes:naFileTypes];
+        if ([naFileTypes count] != 0) {
+            [openDlg setAllowedFileTypes:naFileTypes];
+        }
         [openDlg setMessage: nsTitle];
         NSInteger ret = [openDlg runModal];
         if (ret > 0) {

@@ -20,8 +20,16 @@ set LIBDIR=%BASEDIR%..\lib
 ECHO Download Packages
 %MKDIR% %PKGDIR%
 
-IF NOT EXIST %PKGDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip (
-%WGET% -O %PKGDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip https://github.com/memononen/nanovg/archive/b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
+IF NOT EXIST %PKGDIR%\nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip (
+%WGET% -O %PKGDIR%\nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip https://github.com/memononen/nanovg/archive/cacb00b852079db23c180f2e6cbff41eef673783.zip
+)
+
+IF NOT EXIST %PKGDIR%\stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip (
+%WGET% -O %PKGDIR%\stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip https://github.com/nothings/stb/archive/6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+)
+
+IF NOT EXIST %PKGDIR%\TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip (
+%WGET% -O %PKGDIR%\TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip https://github.com/serge-rgb/TinyJPEG/archive/56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
 )
 
 IF NOT EXIST %PKGDIR%\glew-1.13.0.zip (
@@ -44,9 +52,15 @@ ECHO Extract archive
 
 %MKDIR% %BUILDDIR%
 
-%BSDTAR% -xf %PKGDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.zip
-%PATCH% -d .\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 -u -p1 < %PATCHDIR%\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28.patch
-%MV% .\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28 %BUILDDIR%\
+%BSDTAR% -xf %PKGDIR%\nanovg-cacb00b852079db23c180f2e6cbff41eef673783.zip
+%PATCH% -d .\nanovg-cacb00b852079db23c180f2e6cbff41eef673783 -u -p1 < %PATCHDIR%\nanovg-cacb00b852079db23c180f2e6cbff41eef673783.patch
+%MV% .\nanovg-cacb00b852079db23c180f2e6cbff41eef673783 %BUILDDIR%\
+
+%BSDTAR% -xf %PKGDIR%\stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9.zip
+%MV% .\stb-6e4154737c51c1298e35cc6fc387dd365cc32ac9 %BUILDDIR%\
+
+%BSDTAR% -xf %PKGDIR%\TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0.zip
+%MV% .\TinyJPEG-56b6635a23a439a86026c81a5e6c4d27c2d35cd0 %BUILDDIR%\
 
 %BSDTAR% -xf %PKGDIR%\glew-1.13.0.zip 
 %MV% .\glew-1.13.0 %BUILDDIR%\

@@ -10,7 +10,7 @@ void start(void)
 	Video.SetWindowTitle("[Example] 11-Dialog");
 
 	// 画面を消去した際の背景色を設定
-	Video.SetClearColor(Video.RGBA(128, 128, 255, 255));
+	Video.SetClearColor(Video.RGB(128,128,255));
 
 	// プログラムの置いてあるディレクトリを基準として
 	// Fontフォルダ内のIPAexfont00301フォルダからipaexg.ttfというフォントファイルを読み込み、"font"という名前を付ける

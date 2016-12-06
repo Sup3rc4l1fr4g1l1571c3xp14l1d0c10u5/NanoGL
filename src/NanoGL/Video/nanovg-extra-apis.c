@@ -1,5 +1,6 @@
 #include "nanovg-extra-apis.h"
 
+
 // html5 canvas‚Ì drawImageƒƒ\ƒbƒh‚ğ–Í‚µ‚½‚à‚Ì
 void nvgExDrawImage(NVGcontext* ctx, int image, float sx, float sy, float sw, float sh, float dx, float dy, float dw, float dh, float angle, float alpha) {
 	int w, h;

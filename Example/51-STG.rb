@@ -456,7 +456,7 @@ def FromHsv(h, s, v)
         b *= 1 - s
     end
   end
-  return [(r * 255).to_i, (g * 255).to_i, (b * 255).to_i]
+  return [r,g,b,1.0]
 end
 
 class EnemyAction
@@ -1639,7 +1639,7 @@ def start()
       Particle.draw()
 
       # ゲーム画面自体を全体的に暗くしておく
-      Video.FillColor([0, 0, 0, 128])
+      Video.FillColor(Video.RGBA(0, 0, 0, 128))
       Video.BeginPath()
       Video.Rect(SCREEN_LEFT, SCREEN_TOP, SCREEN_WIDTH, SCREEN_HEIGHT)
       Video.ClosePath()
@@ -1653,7 +1653,7 @@ def start()
       Video.Text(SCREEN_LEFT + SCREEN_WIDTH / 2, SCREEN_TOP + SCREEN_HEIGHT * 2 / 5, "Nano STG")
 
       Video.FontSize(16)
-      Video.FillColor([255, 255, 255])
+      Video.FillColor(Video.RGB(255, 255, 255))
       Video.Text(SCREEN_LEFT + SCREEN_WIDTH / 2, SCREEN_TOP + SCREEN_HEIGHT * 4 / 5, "Push Z to Start.")
 
       # Zキーが押されたらタイトル画面を抜ける
@@ -1772,7 +1772,7 @@ def start()
       Particle.draw()
 
       # ゲーム画面自体を全体的に暗くしておく
-      Video.FillColor([0, 0, 0, 128])
+      Video.FillColor(Video.RGBA(0, 0, 0, 128))
       Video.BeginPath()
       Video.Rect(SCREEN_LEFT, SCREEN_TOP, SCREEN_WIDTH, SCREEN_HEIGHT)
       Video.ClosePath()
@@ -1782,12 +1782,12 @@ def start()
       Video.TextAlign(Video::AlignFlags::ALIGN_CENTER | Video::AlignFlags::ALIGN_MIDDLE)
 
       Video.FontSize(64)
-      Video.FillColor([255, 0, 0])
+      Video.FillColor(Video.RGB(255, 0, 0))
       Video.Text(SCREEN_LEFT + SCREEN_WIDTH / 2, SCREEN_TOP + SCREEN_HEIGHT * 2 / 10, "GAME")
       Video.Text(SCREEN_LEFT + SCREEN_WIDTH / 2, SCREEN_TOP + SCREEN_HEIGHT * 4 / 10, "OVER")
 
       Video.FontSize(32)
-      Video.FillColor([255, 255, 255])
+      Video.FillColor(Video.RGB(255, 255, 255))
       Video.Text(SCREEN_LEFT + SCREEN_WIDTH / 2, SCREEN_TOP + SCREEN_HEIGHT * 6 / 10, "SCORE : #{sprintf("%5.5d", Score.score)}")
 
       # Zキーが押されたらタイトル画面を抜ける

@@ -11,7 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include=".\build\nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28\src\nanovg.c" />
+    <ClCompile Include=".\build\nanovg-cacb00b852079db23c180f2e6cbff41eef673783\src\nanovg.c" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{241CD2A5-C457-4DE4-809D-39D490066C50}</ProjectGuid>
@@ -47,7 +47,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(ProjectDir)./build/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)./build/nanovg-cacb00b852079db23c180f2e6cbff41eef673783/src;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\$(PlatformName)\lib</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\$(ProjectName)\obj</IntDir>
@@ -55,7 +55,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(ProjectDir)./build/nanovg-b83cf926525e7cea8d2483da2a75852b8c7b6d28/src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)./build/nanovg-cacb00b852079db23c180f2e6cbff41eef673783/src;$(IncludePath)</IncludePath>
     <LibraryPath>$(LibraryPath)</LibraryPath>
     <OutDir>$(SolutionDir)$(Configuration)\$(PlatformName)\lib</OutDir>
     <IntDir>$(SolutionDir)$(Configuration)\$(PlatformName)\$(ProjectName)\obj</IntDir>

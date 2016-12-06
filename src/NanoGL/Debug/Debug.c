@@ -91,7 +91,7 @@ static void DebugPopBanner(void)
 static void DebugPrintError(const char *format, ...)
 {
 	if (EnableConsole()) {
-		if (banner != NULL && banner->str != NULL) {
+		if (banner != NULL) {
 			fprintf(stderr, "%s: ", banner->str);
 		}
 		va_list args;

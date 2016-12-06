@@ -8,7 +8,7 @@ Video.SetSize(512, 512)
 Video.SetWindowTitle("[Example] 03-TransformMulti")
 
 # 画面を消去した際の背景色を設定
-Video.SetClearColor([128,128,255])
+Video.SetClearColor(Video.RGB(128,128,255))
 
 # 更新処理
 Video.Draw do
@@ -42,7 +42,7 @@ Video.Draw do
 	end
 
 	# 塗りつぶしで用いる色を 赤255, 緑0, 青0, 不透明度255 に設定
-	Video.FillColor([255, 0, 0, 255])	
+	Video.FillColor(Video.RGBA(255, 0, 0, 255))
 
 	# 図形を描く
 	Video.Fill()	

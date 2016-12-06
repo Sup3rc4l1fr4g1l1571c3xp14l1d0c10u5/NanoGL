@@ -9,6 +9,9 @@ void start(void)
 	// タイトルを設定
 	Video.SetWindowTitle("[Example] 01-BasicDraw");
 
+	// 画面を消去した際の背景色を設定
+	Video.SetClearColor(Video.RGB(128,128,255));
+
 	// 処理
 	while (Video.Drawing()) {
 
@@ -35,7 +38,7 @@ void start(void)
 		///////////////////////////////////////
 		// 丸(楕円)を描画する例
 		///////////////////////////////////////
-		
+
 		// 図形の定義を開始
 		Video.BeginPath();
 		
@@ -55,7 +58,7 @@ void start(void)
 		///////////////////////////////////////
 		// 三角形を描画する例
 		///////////////////////////////////////
-		
+
 		// 図形の定義を開始
 		Video.BeginPath();
 		

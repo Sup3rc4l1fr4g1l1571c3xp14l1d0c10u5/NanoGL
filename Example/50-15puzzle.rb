@@ -124,7 +124,7 @@ class Board
 		Video.Path do
 			Video.Rect(0.0, 0.0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT)
 		end
-		Video.FillColor([128, 128, 128])
+		Video.FillColor(Video.RGB(128, 128, 128))
 		Video.Fill()
 		
 		@tiles.each_with_index do |tile, i|
@@ -253,7 +253,7 @@ Video.Draw do
 	Video.DrawImage(imageId, 0, 0, imageWidth, imageHeight, 0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT, 0.0, 1.0)
 
 	Video.Path do
-		Video.FillColor([255, 255, 255, 128])
+		Video.FillColor(Video.RGBA(255, 255, 255, 128))
 		Video.Rect(0, (PAZZLE_BOARD_HEIGHT / 2).to_i - 24 / 2, PAZZLE_BOARD_WIDTH, 24)
 		Video.Fill()
 	end
@@ -261,7 +261,7 @@ Video.Draw do
 	# メッセージ表示
 	Video.Path do
 		Video.FontSize(24)
-		Video.FillColor([0, 0, 0])
+		Video.FillColor(Video.RGB(0, 0, 0))
 		Video.TextAlign(Video::AlignFlags::ALIGN_CENTER | Video::AlignFlags::ALIGN_MIDDLE)
 		Video.Text( (PAZZLE_BOARD_WIDTH / 2).to_i, (PAZZLE_BOARD_HEIGHT / 2).to_i, "Click To Start")
 		Video.Fill()
@@ -292,7 +292,7 @@ Video.Draw do
 
 	# メッセージ表示
 	Video.Path do
-		Video.FillColor([0, 255, 0])
+		Video.FillColor(Video.RGB(0, 255, 0))
 		Video.FontSize(80)
 		Video.Save()
 		Video.Translate((PAZZLE_BOARD_WIDTH / 2).to_i, (PAZZLE_BOARD_HEIGHT / 2).to_i)
@@ -322,7 +322,7 @@ Video.Draw do
 	if (diff > 0)
 		# メッセージ表示
 		Video.Path do
-			Video.FillColor([0, 255, 0, (diff * 255).to_i])
+			Video.FillColor(Video.RGBA(0, 255, 0, (diff * 255).to_i))
 			Video.FontSize(80)
 			Video.Save()
 			Video.Translate((PAZZLE_BOARD_WIDTH / 2).to_i, (PAZZLE_BOARD_HEIGHT / 2).to_i)
@@ -382,7 +382,7 @@ Video.Draw do
 
 	diff = [1.0, Video.GetTime() - start].min
 	Video.Path do
-		Video.FillColor([255, 255, 255, (128 * diff).to_i])
+		Video.FillColor(Video.RGBA(255, 255, 255, (128 * diff).to_i))
 		Video.Rect(0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT)
 		Video.Fill()
 	end
@@ -400,14 +400,14 @@ Video.Draw do
 	Video.DrawImage(imageId, 0, 0, imageWidth, imageHeight, 0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT, 0.0, 1.0)
 
 	Video.Path do
-		Video.FillColor([255, 255, 255, 128])
+		Video.FillColor(Video.RGBA(255, 255, 255, 128))
 		Video.Rect(0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT)
 		Video.Fill()
 	end
 
 	# メッセージ表示
 	Video.Path do
-		Video.FillColor([0, 0, 0])
+		Video.FillColor(Video.RGBA(0, 0, 0))
 		Video.TextAlign(Video::AlignFlags::ALIGN_CENTER | Video::AlignFlags::ALIGN_MIDDLE)
 
 		Video.FontSize(48)

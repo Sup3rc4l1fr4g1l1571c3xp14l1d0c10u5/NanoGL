@@ -8,7 +8,7 @@ Video.SetSize(512, 512)
 Video.SetWindowTitle("[Example] 00-Blank")
 
 # ‰æ–Ê‚ğÁ‹‚µ‚½Û‚Ì”wŒiF‚ğİ’è
-Video.SetClearColor([0,255,0])
+Video.SetClearColor(Video.RGB(0,255,0))
 
 # XVˆ—
 Video.Draw do

@@ -11,7 +11,7 @@ Video.SetSize(512, 512)
 Video.SetWindowTitle("[Example] 11-Dialog")
 
 # 画面を消去した際の背景色を設定
-Video.SetClearColor([128,128,255])
+Video.SetClearColor(Video.RGB(128,128,255))
 
 # プログラムの置いてあるディレクトリを基準として
 # Fontフォルダ内のIPAexfont00301フォルダからipaexg.ttfというフォントファイルを読み込み、"font"という名前を付ける
@@ -47,7 +47,7 @@ Video.Draw do
 
 	# テキスト描画は図形ではないのでFillColor命令でテキスト色を指定してからテキスト描画命令を用いる
 	Video.FontSize(12)								# フォントの大きさを高さ48ptに設定
-	Video.FillColor([0, 0, 255, 255])	# テキストの色を緑色に設定
+	Video.FillColor(Video.RGBA(0, 0, 255, 255))	# テキストの色を緑色に設定
 	Video.TextAlign(Video::AlignFlags::ALIGN_CENTER | Video::AlignFlags::ALIGN_MIDDLE)	# 基準位置に文字列の縦横中心がくるように設定
 	if filename != nil
 		Video.Text(512 / 2, 512 / 2, filename)

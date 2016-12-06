@@ -52,6 +52,7 @@ ECHO Build finish.
 
 %CD% %BASEDIR%
 
+REM %CP% %BASEDIR%\build\mrb-nanogl\Debug\Win32\bin\mrb-nanogld.exe %BASEDIR%
 %CP% %BASEDIR%\build\mrb-nanogl\Release\Win32\bin\mrb-nanogl.exe %BASEDIR%
 
 pause

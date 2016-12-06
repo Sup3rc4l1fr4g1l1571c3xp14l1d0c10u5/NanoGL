@@ -4,15 +4,24 @@
 #elif defined(__APPLE__) || defined(__linux__)
 #include <unistd.h>
 #define msleep(x) usleep((x)*(1000))
+#define _strcmpi strcasecmp
+#define _strdup strdup
 #endif
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include <stb_image_write.h>
+//#define UNOFFICIAL_HACK_USE_ZBUFFER
 #include <nanovg.h>
 #include <nanovg_gl.h>
+#include <nanovg_gl_utils.h>
+#define TJE_IMPLEMENTATION
+#include <tiny_jpeg.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdarg.h>
 #include <ctype.h>
+#include <string.h>
 
 #include "Video.h"
 #include "FpsTimer.h"
@@ -22,6 +31,7 @@
 #include "../String/String.h"
 #include "../String/CharCodeHelper.h"
 #include "../Math/Math.h"
+#include <stb_image.h>
 
 static GLFWwindow *glfwWindow;
 static NVGcontext *nvgContext;
@@ -95,7 +105,6 @@ static bool Video_Initialize_(void)
 		return false;
 	}
 
-
 	return true;
 }
 
@@ -104,12 +113,14 @@ static bool Video_Initialize(void)
 	Debug.PushBanner("**Error in Video.Initialize");
 	bool ret = Video_Initialize_();
 	FpsTimer.Initialize();
+	Joystick.Initialize();
 	Debug.PopBanner();
 	return ret;
 }
 
 static void Video_Finalize(void)
 {
+	Joystick.Finalize();
 	FpsTimer.Finalize();
 	if (nvgContext != NULL) {
 		nvgDeleteGL3(nvgContext);
@@ -140,9 +151,12 @@ static void Video_SetWindowTitle(const char *title)
 #endif
 }
 
-static void Video_SetSize(int width, int height)
-{
+static void Video_SetSize(int width, int height) {
 	glfwSetWindowSize(glfwWindow, max(width, 1), max(height, 1));
+}
+
+static void Video_GetSize(int *width, int *height) {
+	glfwGetWindowSize(glfwWindow, width, height);
 }
 
 static void Video_BeginDraw(void) {
@@ -165,6 +179,32 @@ static void Video_EndDraw(void) {
 	glfwSwapBuffers(glfwWindow);
 }
 
+static void Video_BeginDrawEx(void) {
+	int ww, wh;
+	glfwGetWindowSize(glfwWindow, &ww, &wh);
+	int fbw, fbh;
+	glfwGetFramebufferSize(glfwWindow, &fbw, &fbh);
+
+	glViewport(0, 0, fbw, fbh);
+
+	float pxRatio = fbw * 1.0f / ww;
+	nvgBeginFrame(nvgContext, ww, wh, pxRatio);
+	nvgReset(nvgContext);
+
+}
+
+static void Video_ResetDrawEx(void) {
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+}
+
+static void Video_EndDrawEx(void) {
+	nvgEndFrame(nvgContext);
+}
+
+static void Video_UpdateDrawEx(void) {
+	glfwSwapBuffers(glfwWindow);
+}
+
 static bool Video_Drawing(void) {
 	static bool need_finish = false;
 
@@ -173,14 +213,28 @@ static bool Video_Drawing(void) {
 		need_finish = false;
 	}
 
+	FpsTimer.WaitFrame();
 	glfwPollEvents();
+	Mouse.Update();
+	Joystick.Update();
 	if (glfwWindowShouldClose(glfwWindow) != GL_FALSE) {
 		System.Quit();
 	}
-	FpsTimer.WaitFrame();
 
 	Video_BeginDraw();
 	need_finish = true;
+
+	return true;
+}
+
+static bool Video_Loop(void) {
+	FpsTimer.WaitFrame();
+	glfwPollEvents();
+	Mouse.Update();
+	Joystick.Update();
+	if (glfwWindowShouldClose(glfwWindow) != GL_FALSE) {
+		System.Quit();
+	}
 
 	return true;
 }
@@ -240,12 +294,44 @@ static void Video_EndFrame(void) {
 	nvgEndFrame(nvgContext);
 }
 
+static void Video_GlobalCompositeOperation(enum CompositeOperation op) {
+	nvgGlobalCompositeOperation(nvgContext, op);
+}
+
+static void Video_GlobalCompositeBlendFunc(enum BlendFactor sfactor, enum BlendFactor dfactor) {
+	nvgGlobalCompositeBlendFunc(nvgContext, sfactor, dfactor);
+}
+
+static void Video_GlobalCompositeBlendFuncSeparate(enum BlendFactor srcRGB, enum BlendFactor dstRGB, enum BlendFactor srcAlpha, enum BlendFactor dstAlpha) {
+	nvgGlobalCompositeBlendFuncSeparate(nvgContext, srcRGB, dstRGB, srcAlpha, dstAlpha);
+}
+
 static Color Video_RGB(unsigned char r, unsigned char g, unsigned char b) {
 	return JugglingCast(NVGcolor,Color,nvgRGB(r, g, b));
 }
 
 static Color Video_RGBA(unsigned char r, unsigned char g, unsigned char b, unsigned char a) {
 	return JugglingCast(NVGcolor,Color,nvgRGBA(r, g, b, a));
+}
+
+static Color Video_LerpRGBA(Color c0, Color c1, float u){
+	return JugglingCast(NVGcolor, Color, nvgLerpRGBA(JugglingCast(Color, NVGcolor, c0), JugglingCast(Color, NVGcolor, c1), u));
+}
+
+static Color Video_TransRGBA(Color c0, unsigned char a) {
+	return JugglingCast(NVGcolor, Color, nvgTransRGBA(JugglingCast(Color, NVGcolor, c0), a));
+}
+
+static Color Video_TransRGBAf(Color c0, float a) {
+	return JugglingCast(NVGcolor, Color, nvgTransRGBAf(JugglingCast(Color, NVGcolor, c0), a));
+}
+
+static Color Video_HSL(float h, float s, float l) {
+	return JugglingCast(NVGcolor, Color, nvgHSL(h, s, l));
+}
+
+static Color Video_HSLA(float h, float s, float l, unsigned char a) {
+	return JugglingCast(NVGcolor, Color, nvgHSLA(h, s, l, a));
 }
 
 static void Video_Save(void) {
@@ -261,7 +347,7 @@ static void Video_Reset(void) {
 }
 
 static void Video_StrokeColor(Color color) {
-	nvgStrokeColor(nvgContext, JugglingCast(Color,NVGcolor,color));
+	nvgStrokeColor(nvgContext, JugglingCast(Color, NVGcolor, color));
 }
 
 static void Video_StrokePaint(Paint paint) {
@@ -349,6 +435,12 @@ static void Video_ScaleWorld(float x, float y) {
 static void Video_CurrentTransform(float* xform) {
 	nvgCurrentTransform(nvgContext, xform);
 }
+
+#if defined(UNOFFICIAL_HACK_USE_ZBUFFER)
+void Video_ZIndex(float order) {
+	nvgZIndex(nvgContext, order);
+}
+#endif
 
 static void Video_TransformIdentity(float* dst) {
 	nvgTransformIdentity(dst);
@@ -465,6 +557,67 @@ static int Video_CreateImage_(const char* filename, int imageFlags) {
 		return 0;
 	}
 	return ret;
+}
+
+// [red, green, blue, alpha]並び
+static unsigned char *Video_LoadImageData(const char* filename, int *width, int *height) {
+	if (filename == NULL) {
+		Debug.PrintError("The argument `filename` is NULL.");
+		return NULL;
+	}
+	stbi_set_unpremultiply_on_load(1);
+	stbi_convert_iphone_png_to_rgb(1);
+	int n;
+	unsigned char* ret = stbi_load(filename, width, height, &n, 4);
+	if (ret == NULL) {
+		return NULL;
+	}
+	return ret;
+}
+
+static unsigned char *Video_LoadImageDataUTF8_(const char* filename, int *width, int *height) {
+	if (filename == NULL) {
+		Debug.PrintError("The argument `filename` is NULL.");
+		return NULL;
+	}
+	stbi_set_unpremultiply_on_load(1);
+	stbi_convert_iphone_png_to_rgb(1);
+	int n;
+	unsigned char* ret;
+
+#if defined(_WIN32)
+	if (is_contains_not_ascii(filename, NULL)) {
+		char *sjisfilename = utf82sjis(filename, NULL);
+		ret = stbi_load(sjisfilename, width, height, &n, 4);
+		if (ret == NULL) {
+			Debug.PrintError("Failed to load image file %s. File is not exist, or not supported format.", sjisfilename);
+		}
+		free(sjisfilename);
+	} else {
+		ret = stbi_load(filename, width, height, &n, 4);
+	}
+#else
+	ret = stbi_load(filename, width, height, &n, 4);
+#endif
+
+	if (ret == NULL) {
+		Debug.PrintError("Failed to load image file %s. File is not exist, or not supported format.", filename);
+		return NULL;
+	}
+	return ret;
+}
+
+static unsigned char *Video_LoadImageDataUTF8(const char* filename, int *width, int *height) {
+	Debug.PushBanner("**Error in Video.LoadImageDataUTF8");
+	unsigned char *ret = Video_LoadImageDataUTF8_(filename, width, height);
+	Debug.PopBanner();
+	return ret;
+}
+
+static void Video_FreeImageData(unsigned char *img) {
+	if (img != NULL) {
+		stbi_image_free(img);
+	}
 }
 
 static int Video_CreateImage(const char* filename, enum ImageFlags imageFlags) {
@@ -622,6 +775,10 @@ static void Video_Rect(float x, float y, float w, float h) {
 
 static void Video_RoundedRect(float x, float y, float w, float h, float r) {
 	nvgRoundedRect(nvgContext, x, y, w, h, r);
+}
+
+static void Video_RoundedRectVarying(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft) {
+	nvgRoundedRectVarying(nvgContext, x, y, w, h, radTopLeft, radTopRight, radBottomRight, radBottomLeft);
 }
 
 static void Video_Ellipse(float cx, float cy, float rx, float ry) {
@@ -877,6 +1034,31 @@ static int Video_FindFont(const char* name) {
 #endif
 	Debug.PopBanner();
 	return ret;
+}
+
+static void Video_AddFallbackFontId(int baseFont, int fallbackFont) {
+	nvgAddFallbackFontId(nvgContext, baseFont, fallbackFont);
+}
+
+static void Video_AddFallbackFont(const char* baseFont, const char* fallbackFont) {
+	nvgAddFallbackFont(nvgContext, baseFont, fallbackFont);
+}
+
+static void Video_AddFallbackFontUTF8(const char* baseFont, const char* fallbackFont) {
+	Debug.PushBanner("**Error in Video.AddFallbackFontUTF8");
+#if defined(_WIN32)
+	if (is_contains_not_ascii(baseFont, NULL) || is_contains_not_ascii(fallbackFont, NULL)) {
+		utf8_t *utf8baseFont = sjis2utf8(baseFont, NULL);
+		utf8_t *utf8fallbackFont = sjis2utf8(fallbackFont, NULL);
+		Video_AddFallbackFont(utf8baseFont, utf8fallbackFont);
+		free(utf8baseFont);
+	} else {
+		Video_AddFallbackFont(baseFont, fallbackFont);
+	}
+#else
+	Video_AddFallbackFont(baseFont, fallbackFont);
+#endif
+	Debug.PopBanner();
 }
 
 static void Video_FontSize(float size) {
@@ -1287,21 +1469,244 @@ static void Video_FormatText(float x, float y, const char *format, ...)
 	Debug.PopBanner();
 }
 
+#if 1
+
+static void* Video_CreateFramebuffer(int w, int h, int imageFlags) {
+	return (void*)nvgluCreateFramebuffer(nvgContext, w, h, imageFlags);
+}
+
+static void Video_DrawStartFramebuffer(void* fbo) {
+	int winWidth, winHeight;
+	glfwGetWindowSize(glfwWindow, &winWidth, &winHeight);
+
+	int fbWidth, fbHeight;
+	glfwGetFramebufferSize(glfwWindow, &fbWidth, &fbHeight);
+
+	float pxRatio = (float)fbWidth / (float)winWidth;
+
+	NVGLUframebuffer* fb = (NVGLUframebuffer*)fbo;
+	int fboWidth, fboHeight;
+	nvgImageSize(nvgContext, fb->image, &fboWidth, &fboHeight);
+
+	winWidth = (int)(fboWidth / pxRatio);
+	winHeight = (int)(fboHeight / pxRatio);
+
+	nvgluBindFramebuffer(fb);
+	glViewport(0, 0, fboWidth, fboHeight);
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
+
+	nvgBeginFrame(nvgContext, winWidth, winHeight, pxRatio);
+}
+
+static void Video_DrawEndFramebuffer(void) {
+	nvgEndFrame(nvgContext);
+	nvgluBindFramebuffer(NULL);
+}
+
+static void Video_DeleteFramebuffer(void* fb) {
+	if (fb != NULL) {
+		nvgluDeleteFramebuffer((NVGLUframebuffer*)fb);
+	}
+}
+
+static int Video_GetFrameBufferImage(void* fb) {
+	if (fb != NULL) {
+		return ((NVGLUframebuffer*)fb)->image;
+	}
+	return 0;
+}
+
+
+static void unpremultiplyAlpha(unsigned char* image, int w, int h, int stride) {
+	int x, y;
+
+	// Unpremultiply
+	for (y = 0; y < h; y++) {
+		unsigned char *row = &image[y*stride];
+		for (x = 0; x < w; x++) {
+			int r = row[0], g = row[1], b = row[2], a = row[3];
+			if (a != 0) {
+				row[0] = (unsigned char)min(r * 255 / a, 255);
+				row[1] = (unsigned char)min(g * 255 / a, 255);
+				row[2] = (unsigned char)min(b * 255 / a, 255);
+			}
+			row += 4;
+		}
+	}
+
+	// Defringe
+	for (y = 0; y < h; y++) {
+		unsigned char *row = &image[y*stride];
+		for (x = 0; x < w; x++) {
+			int r = 0, g = 0, b = 0, a = row[3], n = 0;
+			if (a == 0) {
+				if (x - 1 > 0 && row[-1] != 0) {
+					r += row[-4];
+					g += row[-3];
+					b += row[-2];
+					n++;
+				}
+				if (x + 1 < w && row[7] != 0) {
+					r += row[4];
+					g += row[5];
+					b += row[6];
+					n++;
+				}
+				if (y - 1 > 0 && row[-stride + 3] != 0) {
+					r += row[-stride];
+					g += row[-stride + 1];
+					b += row[-stride + 2];
+					n++;
+				}
+				if (y + 1 < h && row[stride + 3] != 0) {
+					r += row[stride];
+					g += row[stride + 1];
+					b += row[stride + 2];
+					n++;
+				}
+				if (n > 0) {
+					row[0] = (unsigned char)(r / n);
+					row[1] = (unsigned char)(g / n);
+					row[2] = (unsigned char)(b / n);
+				}
+			}
+			row += 4;
+		}
+	}
+}
+
+static void setAlpha(unsigned char* image, int w, int h, int stride, unsigned char a) {
+	int x, y;
+	for (y = 0; y < h; y++) {
+		unsigned char* row = &image[y*stride];
+		for (x = 0; x < w; x++)
+			row[x * 4 + 3] = a;
+	}
+}
+
+static void flipHorizontal(unsigned char* image, int w, int h, int stride) {
+	int i = 0, j = h - 1, k;
+	while (i < j) {
+		unsigned char* ri = &image[i * stride];
+		unsigned char* rj = &image[j * stride];
+		for (k = 0; k < w * 4; k++) {
+			unsigned char t = ri[k];
+			ri[k] = rj[k];
+			rj[k] = t;
+		}
+		i++;
+		j--;
+	}
+}
+
+bool Video_SaveScreenShot(int l, int t, int w, int h, bool premult, const char* name) {
+	enum SaveMode
+	{
+		SM_None,
+		SM_JPEG,
+		SM_PNG,
+		SM_BMP
+	} mode = SM_None;
+	{
+		char *dot = strrchr(name, '.');
+		if (_strcmpi(dot, ".jpg") == 0) {
+			mode = SM_JPEG;
+		} else if (_strcmpi(dot, ".png") == 0) {
+			mode = SM_PNG;
+		} else if (_strcmpi(dot, ".bmp") == 0) {
+			mode = SM_BMP;
+		} else {
+			return false;
+		}
+	}
+
+	unsigned char* image = (unsigned char*)malloc(w*h * 4);
+	if (image == NULL) {
+		return false;
+	}
+	glReadPixels(l, t, w, h, GL_RGBA, GL_UNSIGNED_BYTE, image);
+	if (premult)
+		unpremultiplyAlpha(image, w, h, w * 4);
+	else
+		setAlpha(image, w, h, w * 4, 255);
+	flipHorizontal(image, w, h, w * 4);
+
+	{
+		switch (mode)
+		{
+		case SM_JPEG: 
+			tje_encode_to_file(name, w, h, 4, image);
+			break;
+		case SM_PNG:
+			stbi_write_png(name, w, h, 4, image, w * 4);
+			break;
+		case SM_BMP:
+			stbi_write_bmp(name, w, h, 0, image);
+			break;
+		default: break;
+		}
+	}
+	free(image);
+	return true;
+}
+
+bool Video_SaveScreenShotUTF8(int l, int t, int w, int h, bool premult, const char* name) {
+	bool ret = false;
+	Debug.PushBanner("**Error in Video.SaveScreenShot");
+	if (name == NULL) {
+		Debug.PrintError("The argument `name` is NULL.");
+		goto EXIT;
+	}
+#if defined(_WIN32)
+	if (is_contains_not_ascii(name, NULL)) {
+		utf8_t *utf8str = sjis2utf8(name, NULL);
+		ret = Video_SaveScreenShot(l, t, w, h, premult, utf8str);
+		free(utf8str);
+	} else {
+		ret = Video_SaveScreenShot(l, t, w, h, premult, name);
+	}
+#else
+	ret = Video_SaveScreenShot(l, t, w, h, premult, name);
+#endif
+EXIT:
+	Debug.PopBanner();
+	return ret;
+}
+
+#endif
+
 const struct __tagVideoAPI Video = {
 	Video_Initialize,
 	Video_Finalize,
 	Video_SetWindowTitleUTF8,
 	Video_SetWindowTitle,
 	Video_SetSize,
+	Video_GetSize,
 	Video_Drawing,
+	Video_BeginDraw,
+	Video_EndDraw,
+	Video_BeginDrawEx,
+	Video_ResetDrawEx,
+	Video_EndDrawEx,
+	Video_UpdateDrawEx,
+	Video_Loop,
 	Video_GetTime,
 	Video_Sleep,
 	Video_SetClearColor,
 	Video_BeginFrame,
 	Video_CancelFrame,
 	Video_EndFrame,
+	Video_GlobalCompositeOperation,
+	Video_GlobalCompositeBlendFunc,
+	Video_GlobalCompositeBlendFuncSeparate,
 	Video_RGB,
 	Video_RGBA,
+	Video_LerpRGBA,
+	Video_TransRGBA,
+	Video_TransRGBAf,
+	Video_HSL,
+	Video_HSLA,
 	Video_Save,
 	Video_Restore,
 	Video_Reset,
@@ -1329,6 +1734,9 @@ const struct __tagVideoAPI Video = {
 	Video_ScaleWorld,
 #endif
 	Video_CurrentTransform,
+#if defined(UNOFFICIAL_HACK_USE_ZBUFFER)
+	Video_ZIndex,
+#endif
 	Video_TransformIdentity,
 	Video_TransformTranslate,
 	Video_TransformRotate,
@@ -1341,6 +1749,9 @@ const struct __tagVideoAPI Video = {
 	Video_TransformPoint,
 	Video_DegToRad,
 	Video_RadToDeg,
+	Video_LoadImageData,
+	Video_LoadImageDataUTF8,
+	Video_FreeImageData,
 	Video_CreateImageUTF8,
 	Video_CreateImage,
 	Video_CreateImageMem,
@@ -1369,6 +1780,7 @@ const struct __tagVideoAPI Video = {
 	Video_Arc,
 	Video_Rect,
 	Video_RoundedRect,
+	Video_RoundedRectVarying,
 	Video_Ellipse,
 	Video_Circle,
 	Video_Fill,
@@ -1379,6 +1791,9 @@ const struct __tagVideoAPI Video = {
 	Video_CreateFontMem,
 	Video_FindFontUTF8,
 	Video_FindFont,
+	Video_AddFallbackFontId,
+	Video_AddFallbackFontUTF8,
+	Video_AddFallbackFont,
 	Video_FontSize,
 	Video_FontBlur,
 	Video_TextLetterSpacing,
@@ -1400,39 +1815,404 @@ const struct __tagVideoAPI Video = {
 	Video_TextMetrics,
 	Video_TextBreakLinesUTF8,
 	Video_TextBreakLines,
-
 	Video_DrawImage,
 	Video_DrawImageWithFillColor,
 	Video_FormatText,
+	Video_CreateFramebuffer,
+	Video_DrawStartFramebuffer,
+	Video_DrawEndFramebuffer,
+	Video_DeleteFramebuffer,
+	Video_GetFrameBufferImage,
+	Video_SaveScreenShotUTF8,
+	Video_SaveScreenShot,
 };
 
 /// input ////
 
-static bool Mouse_IsLeftButtonDown(void)
-{
-	return glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS ? true : false;
+//
+// Windows上において、glfwSetMouseButtonCallback は 
+// マウス関連のウィンドウメッセージを処理するたびに呼び出される。(win32_windows.c:405)
+// そのため、１フレーム中に複数個のマウス関連ウィンドウメッセージが送られていると、
+// 複数回呼び出される。
+// これはフレームベース駆動では都合が悪い動作の原因となるので本ライブラリ中では利用しない。
+// 
+
+typedef enum __tagButtonStatus {
+	BS_StillUp = 0,
+	BS_Down = 1,
+	BS_StillDown = 2,
+	BS_Up = 3,
+} ButtonStatus;
+
+typedef struct __tagMouseContext {
+	struct {
+		ButtonStatus Status;
+	} LeftButton, RightButton, MiddleButton;
+	struct
+	{
+		double X;
+		double Y;
+	} CursorPos;
+} MouseContext;
+
+static MouseContext mouseContext;
+
+static void UpdateButtonStatus(ButtonStatus *status, bool isDown) {
+	if (isDown) {
+		switch (*status) {
+			case BS_Up:
+			case BS_StillUp:
+			default:
+				*status = BS_Down;
+				break;
+			case BS_Down:
+			case BS_StillDown:
+				*status = BS_StillDown;
+				break;
+		}
+	} else {
+		switch (*status) {
+			case BS_Up:
+			case BS_StillUp:
+				*status = BS_StillUp;
+				break;
+			case BS_Down:
+			case BS_StillDown:
+			default:
+				*status = BS_Up;
+				break;
+		}
+	}
 }
 
-static bool Mouse_IsRightButtonDown(void)
+static void Mouse_Update(void)
 {
-	return glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS ? true : false;
+	UpdateButtonStatus(&mouseContext.LeftButton.Status, glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS);
+	UpdateButtonStatus(&mouseContext.RightButton.Status, glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS);
+	UpdateButtonStatus(&mouseContext.MiddleButton.Status, glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS);
+	glfwGetCursorPos(glfwWindow, &mouseContext.CursorPos.X, &mouseContext.CursorPos.Y);
 }
 
-static bool Mouse_IsMiddleButtonDown(void)
-{
-	return glfwGetMouseButton(glfwWindow, GLFW_MOUSE_BUTTON_MIDDLE) == GLFW_PRESS ? true : false;
+static bool Mouse_IsLeftButtonDown(void) {
+	return mouseContext.LeftButton.Status == BS_Down ||
+		mouseContext.LeftButton.Status == BS_StillDown;
+}
+
+static bool Mouse_IsRightButtonDown(void) {
+	return mouseContext.RightButton.Status == BS_Down ||
+		mouseContext.RightButton.Status == BS_StillDown;
+}
+
+static bool Mouse_IsMiddleButtonDown(void) {
+	return mouseContext.MiddleButton.Status == BS_Down ||
+		mouseContext.MiddleButton.Status == BS_StillDown;
+}
+
+static bool Mouse_IsLeftButtonPush(void) {
+	return mouseContext.LeftButton.Status == BS_Down;
+}
+
+static bool Mouse_IsRightButtonPush(void) {
+	return mouseContext.RightButton.Status == BS_Down;
+}
+
+static bool Mouse_IsMiddleButtonPush(void) {
+	return mouseContext.MiddleButton.Status == BS_Down;
+}
+
+static bool Mouse_IsLeftButtonUp(void) {
+	return mouseContext.LeftButton.Status == BS_Up ||
+		mouseContext.LeftButton.Status == BS_StillUp;
+}
+
+static bool Mouse_IsRightButtonUp(void) {
+	return mouseContext.RightButton.Status == BS_Up ||
+		mouseContext.RightButton.Status == BS_StillUp;
+}
+
+static bool Mouse_IsMiddleButtonUp(void) {
+	return mouseContext.MiddleButton.Status == BS_Up ||
+		mouseContext.MiddleButton.Status == BS_StillUp;
+}
+
+static bool Mouse_IsLeftButtonRelease(void) {
+	return mouseContext.LeftButton.Status == BS_Up;
+}
+
+static bool Mouse_IsRightButtonRelease(void) {
+	return mouseContext.RightButton.Status == BS_Up;
+}
+
+static bool Mouse_IsMiddleButtonRelease(void) {
+	return mouseContext.MiddleButton.Status == BS_Up;
 }
 
 static void Mouse_GetCursorPos(double *x, double *y)
 {
-	glfwGetCursorPos(glfwWindow, x, y);
+	*x = mouseContext.CursorPos.X;
+	*y = mouseContext.CursorPos.Y;
 }
 
 const struct __tagMouseAPI Mouse = {
+	Mouse_Update,
 	Mouse_IsLeftButtonDown,
 	Mouse_IsRightButtonDown,
 	Mouse_IsMiddleButtonDown,
+	Mouse_IsLeftButtonPush,
+	Mouse_IsRightButtonPush,
+	Mouse_IsMiddleButtonPush,
+	Mouse_IsLeftButtonUp,
+	Mouse_IsRightButtonUp,
+	Mouse_IsMiddleButtonUp,
+	Mouse_IsLeftButtonRelease,
+	Mouse_IsRightButtonRelease,
+	Mouse_IsMiddleButtonRelease,
 	Mouse_GetCursorPos,
+};
+
+typedef struct __tagJoystickInfo {
+	// ジョイスティックが接続されているかどうか
+	bool Presented;
+
+	// デバイス名
+	char *Name;
+
+	// 軸情報
+	struct {
+		int Count;
+		float *RawStatus;
+	} Axes;	
+
+	// ボタン情報
+	struct {
+		int Count;
+		unsigned char *RawStatus;
+		ButtonStatus *Status;
+	} Buttons;
+} JoystickInfo;
+
+static struct __tagJoystickContext {
+	bool Initialized;
+	JoystickInfo Joysticks[GLFW_JOYSTICK_LAST];
+} JoystickContext;
+
+static int Joystick_MaxJoystickPort(void)
+{
+	return GLFW_JOYSTICK_LAST;
+}
+
+static void Joystick_DisconnectOne(int i) {
+	if (JoystickContext.Joysticks[i].Presented) {
+		JoystickContext.Joysticks[i].Presented = false;
+		if (JoystickContext.Joysticks[i].Name != NULL) {
+			free(JoystickContext.Joysticks[i].Name);
+			JoystickContext.Joysticks[i].Name = NULL;
+		}
+		JoystickContext.Joysticks[i].Axes.Count = 0;
+		if (JoystickContext.Joysticks[i].Axes.RawStatus != NULL) {
+			free(JoystickContext.Joysticks[i].Axes.RawStatus);
+			JoystickContext.Joysticks[i].Axes.RawStatus = NULL;
+		}
+		JoystickContext.Joysticks[i].Buttons.Count = 0;
+		if (JoystickContext.Joysticks[i].Buttons.RawStatus != NULL) {
+			free(JoystickContext.Joysticks[i].Buttons.RawStatus);
+			JoystickContext.Joysticks[i].Buttons.RawStatus = NULL;
+		}
+		if (JoystickContext.Joysticks[i].Buttons.Status != NULL) {
+			free(JoystickContext.Joysticks[i].Buttons.Status);
+			JoystickContext.Joysticks[i].Buttons.Status = NULL;
+		}
+	}
+}
+
+static void Joystick_ConnectOne(int i) {
+	if (glfwJoystickPresent(i) == GL_TRUE) {
+		if (JoystickContext.Joysticks[i].Presented == true) {
+			Joystick_DisconnectOne(i);
+		}
+		JoystickContext.Joysticks[i].Presented = true;
+		// ジョイスティック名を取得
+		JoystickContext.Joysticks[i].Name = _strdup(glfwGetJoystickName(i));
+		if (JoystickContext.Joysticks[i].Name == NULL) {
+			Joystick_DisconnectOne(i);
+			return;
+		}
+		// 軸の数を取得してバッファを作成
+		int count;
+		(void)glfwGetJoystickAxes(i, &count);
+		JoystickContext.Joysticks[i].Axes.Count = count;
+		JoystickContext.Joysticks[i].Axes.RawStatus = calloc(count, sizeof(float));
+		if (JoystickContext.Joysticks[i].Axes.RawStatus == NULL) {
+			Joystick_DisconnectOne(i);
+			return;
+		}
+		// ボタンの数を取得してバッファを作成
+		(void)glfwGetJoystickButtons(GLFW_JOYSTICK_1, &count);
+		JoystickContext.Joysticks[i].Buttons.Count = count;
+		JoystickContext.Joysticks[i].Buttons.RawStatus = calloc(count, sizeof(unsigned char));
+		if (JoystickContext.Joysticks[i].Buttons.RawStatus == NULL) {
+			Joystick_DisconnectOne(i);
+			return;
+		}
+		JoystickContext.Joysticks[i].Buttons.Status = calloc(count, sizeof(ButtonStatus));
+		if (JoystickContext.Joysticks[i].Buttons.Status == NULL) {
+			Joystick_DisconnectOne(i);
+			return;
+		}
+	}
+}
+
+static void Joystick_UpdateOne(int i) {
+	if (JoystickContext.Joysticks[i].Presented == true) {
+		if (glfwJoystickPresent(i) == GL_FALSE) {
+			Joystick_DisconnectOne(i);
+			return;
+		}
+		{
+			int count;
+			const float *states = glfwGetJoystickAxes(i, &count);
+			if (JoystickContext.Joysticks[i].Axes.Count != count) {
+				Joystick_DisconnectOne(i);
+				return;
+			}
+			memcpy(JoystickContext.Joysticks[i].Axes.RawStatus, states, count * sizeof(float));
+		}
+
+		{
+			int count;
+			const unsigned char *button_states = glfwGetJoystickButtons(i, &count);
+			if (JoystickContext.Joysticks[i].Buttons.Count != count) {
+				Joystick_DisconnectOne(i);
+				return;
+			}
+			memcpy(JoystickContext.Joysticks[i].Buttons.RawStatus, button_states, count * sizeof(unsigned char));
+			for (int j = 0; j<count; j++) {
+				UpdateButtonStatus(&JoystickContext.Joysticks[i].Buttons.Status[j], JoystickContext.Joysticks[i].Buttons.RawStatus[j] != 0);
+			}
+		}
+	}
+}
+
+static void Joystick_Connect(void) {
+	for (int i = 0; i < GLFW_JOYSTICK_LAST; i++) {
+		Joystick_UpdateOne(i);
+	}
+}
+
+static void Joystick_Disconnect(void) {
+	for (int i = 0; i < GLFW_JOYSTICK_LAST; i++) {
+		Joystick_UpdateOne(i);
+	}
+}
+
+static void Joystick_Initialize(void) {
+	if (JoystickContext.Initialized == false) {
+		memset(&JoystickContext, 0, sizeof(JoystickContext));
+		Joystick_Connect();
+		JoystickContext.Initialized = true;
+	}
+}
+
+static void Joystick_Finalize(void) {
+	if (JoystickContext.Initialized == true) {
+		Joystick_Disconnect();
+		memset(&JoystickContext, 0, sizeof(JoystickContext));
+		JoystickContext.Initialized = false;
+	}
+}
+
+static void Joystick_Update(void) {
+	for (int i = 0; i < GLFW_JOYSTICK_LAST; i++) {
+		Joystick_UpdateOne(i);
+	}
+}
+
+static bool Joystick_IsPresented(int id) {
+	if (id < 0 || GLFW_JOYSTICK_LAST <= id) {
+		return false;
+	}
+	return JoystickContext.Joysticks[id].Presented;
+}
+
+static int Joystick_GetAxesCount(int id) {
+	if (Joystick_IsPresented(id) == false) {
+		return -1;
+	}
+	return JoystickContext.Joysticks[id].Axes.Count;
+}
+
+static float Joystick_GetAxesStatus(int id, int ax) {
+	if (Joystick_IsPresented(id) == false) {
+		return 0.0f;
+	}
+	if (ax < 0 || JoystickContext.Joysticks[id].Axes.Count <= ax) {
+		return 0.0f;
+	}
+	return JoystickContext.Joysticks[id].Axes.RawStatus[ax];
+}
+
+static int Joystick_GetButtonCount(int id) {
+	if (Joystick_IsPresented(id) == false) {
+		return -1;
+	}
+	return JoystickContext.Joysticks[id].Buttons.Count;
+}
+
+static bool Joystick_IsButtonDown(int id, int btn) {
+	if (Joystick_IsPresented(id) == false) {
+		return false;
+	}
+	if (btn < 0 || JoystickContext.Joysticks[id].Buttons.Count <= btn) {
+		return false;
+	}
+	return JoystickContext.Joysticks[id].Buttons.Status[btn] == BS_Down || JoystickContext.Joysticks[id].Buttons.Status[btn] == BS_StillDown;
+}
+
+static bool Joystick_IsButtonPush(int id, int btn) {
+	if (Joystick_IsPresented(id) == false) {
+		return false;
+	}
+	if (btn < 0 || JoystickContext.Joysticks[id].Buttons.Count <= btn) {
+		return false;
+	}
+	return JoystickContext.Joysticks[id].Buttons.Status[btn] == BS_Down;
+}
+
+static bool Joystick_IsButtonUp(int id, int btn) {
+	if (Joystick_IsPresented(id) == false) {
+		return false;
+	}
+	if (btn < 0 || JoystickContext.Joysticks[id].Buttons.Count <= btn) {
+		return false;
+	}
+	return JoystickContext.Joysticks[id].Buttons.Status[btn] == BS_Up || JoystickContext.Joysticks[id].Buttons.Status[btn] == BS_StillUp;
+}
+
+static bool Joystick_IsButtonRelease(int id, int btn) {
+	if (Joystick_IsPresented(id) == false) {
+		return false;
+	}
+	if (btn < 0 || JoystickContext.Joysticks[id].Buttons.Count <= btn) {
+		return false;
+	}
+	return JoystickContext.Joysticks[id].Buttons.Status[btn] == BS_Up;
+}
+
+const struct __tagJoystickAPI Joystick = {
+	Joystick_MaxJoystickPort,
+	Joystick_Initialize,
+	Joystick_Finalize,
+	Joystick_Connect,
+	Joystick_Disconnect,
+	Joystick_Update,
+	Joystick_IsPresented,
+	Joystick_GetAxesCount,
+	Joystick_GetAxesStatus,
+	Joystick_GetButtonCount,
+	Joystick_IsButtonDown,
+	Joystick_IsButtonPush,
+	Joystick_IsButtonUp,
+	Joystick_IsButtonRelease,
 };
 
 static bool Keyboard_IsKeyDown(enum Keycode key)
@@ -1443,7 +2223,6 @@ static bool Keyboard_IsKeyDown(enum Keycode key)
 const struct __tagKeyboardAPI Keyboard = {
 	Keyboard_IsKeyDown,
 };
-
 
 //
 //

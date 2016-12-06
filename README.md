@@ -8,11 +8,11 @@ NanoGL はプログラミング初学者向けのシンプルなゲームプロ�
   - IDEの利用を前提として整理されたAPI
   - ささやかながらクロスプラットフォーム(Windows/MacOSX/Ubuntu)対応
   - 学習の参考向けによくあるゲームの実装例を提供
-  - CRuby, mruby での利用が可能で、gemなどを除き、crubyとmrubyで同一のコードが動作します。
+  - CRuby, mruby での利用が可能です。言語仕様の差異に注意して実装すれば、CRubyとmrubyで同一のコードが動作します。
 
 ## 利用技術
 
-NanoGL ではいくつかのオープンソースプロジェクトを用いています。
+NanoGL ではいくつかのオープンソースプロジェクトの成果物を用いています。
 
   * [NanoVG] - Antialiased 2D vector drawing library on top of OpenGL for UI and visualizations.
   * [GLFW3] - Cross-platform library for creating windows with OpenGL contexts and receiving input and events.
@@ -20,12 +20,14 @@ NanoGL ではいくつかのオープンソースプロジェクトを用いて�
   * [GLEW] - Cross-platform open-source C/C++ extension loading library.
   * [libmad] - High-quality MPEG audio decoder library.
   * [stb] - Single file, public domain library.
+  * [TinyJPEG] - Single header lib for JPEG encoding. Public domain. C99. stb style.
 
 ## インストールからサンプル起動まで
 
-  * コンパイル済みバイナリを使う（手軽でおすすめ）
-    * nanogl-win32.zip をダウンロードする
-    * nanogl-win32.zip を展開する
+  * 現在の最新版は 0.2.2 です。
+  * github ページの release タブコンパイル済みバイナリを使う（手軽でおすすめ）
+    * NanoGL-0.2.2-Win32.zip をダウンロードする
+    * NanoGL-0.2.2-Win32.zip を展開する
     * nanogl-win32 フォルダを開く
     * MinGW32/MSYS を利用している場合
       * msys.bat を起動して ./nanogl-win32/mingw に移動
@@ -33,10 +35,14 @@ NanoGL ではいくつかのオープンソースプロジェクトを用いて�
     * VisualStudio 2015 を利用している場合
       * VS2015 x86 Native Tools Command Prompt を起動して ./nanogl-win32/vs14 に移動
       * build-example.bat を実行するとサンプルのコンパイルが行われます
-    * MacOS X (el capitan) を利用している場合
-      * コンパイル済みバイナリは利用できません。ソースからビルドしてください
+    * MacOS X (el capitan) / Ubuntu 16.04 を利用している場合
+      * コンパイル済みバイナリを提供していません。ソースからビルドしてください
 
 ## ソースからビルド
+
+  * 現在の最新版は 0.2.2 です。
+  * 以下から最新版のソースコードをダウンロードしてください
+    * https://github.com/Sup3rc4l1fr4g1l1571c3xp14l1d0c10u5/NanoGL/releases/
 
 ### MinGW/MSYS
 
@@ -66,8 +72,8 @@ NanoGL ではいくつかのオープンソースプロジェクトを用いて�
 msys.bat を開いて以下を実行します。
 
 ```sh
-$ bsdtar -m -xf nanogl-current.zip
-$ cd NanoGL-current/mingw
+$ bsdtar -m -xf NanoGL-0.2.2.zip
+$ cd ./NanoGL-0.2.2/mingw
 $ make
 $ make example
 ```
@@ -91,16 +97,17 @@ $ make example
 スタートメニューから`VS2015 x86 Native Tools Command Prompt` を開いて以下を実行します。
 
 ```sh
-> bsdtar -m -xf nanogl-current.zip
-> cd NanoGL-current/vs14
+> bsdtar -m -xf NanoGL-0.2.2.zip
+> cd ./NanoGL-0.2.2/vs14
 > build.bat
 > build-example.bat
 ```
 
-### MacOS X (el capitan)
+### MacOS X ( El Capitan / Sierra )
 
 ビルドには以下の環境が必要です
 
+  * XCode Command Line Tools
   * Apple LLVM version 7.3.0 (clang-703.0.29)
   * homebrewのインストール
   * homebrew経由で以下のライブラリをインストール
@@ -110,12 +117,14 @@ $ make example
       * brew install glew
     * libmad
       * brew install libmad
-    
+  * iconv
+    * 日本語(cp932コード)を含むソースコードをllvmでコンパイルすると文字化けや不正なメモリ参照などが発生するので、コンパイル時に文字コードをUTF8に変換します。
+
 Terminal.app を開いて以下を実行します。
 
 ```sh
-> bsdtar -m -xf nanogl-current.tgz
-> cd NanoGL-current/osx
+> bsdtar -m -xf NanoGL-0.2.2.zip
+> cd ./NanoGL-0.2.2/osx
 > make 
 ```
 
@@ -135,7 +144,7 @@ Terminal.app を開き、各OS向けディレクトリで以下を実行しま�
 
 ```sh
 $ make -f Makefile.rubygem
-$ gem install -l nanogl-<version>.gem
+$ gem install -l nanogl-0.2.2.gem
 $ ruby ../example/00-blank.rb
 ```
 
@@ -145,7 +154,7 @@ $ ruby ../example/00-blank.rb
 
 ```sh
 > build-mrb-nanogl.bat
-> gem install -l nanogl-<version>.gem
+> gem install -l nanogl-0.2.2.gem
 > ruby ../example/00-blank.rb
 ```
 
@@ -157,13 +166,13 @@ $ ruby ../example/00-blank.rb
 
   * CRuby (>= 2.0)
     * https://rubyinstaller.org/
-  * bison
+  * bison (mrubyのコンパイルに必要です)
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/bison/bison-2.4.2-1/bison-2.4.2-1-msys-1.0.13-bin.tar.lzma
     * 追加で以下のパッケージが必要です
       * https://sourceforge.net/projects/mingw/files/MSYS/Extension/m4/m4-1.4.16-2/m4-1.4.16-2-msys-1.0.17-bin.tar.lzma
-  * flex
+  * flex (mrubyのコンパイルに必要です)
     * https://sourceforge.net/projects/mingw/files/MSYS/Extension/flex/flex-2.5.35-2/flex-2.5.35-2-msys-1.0.13-bin.tar.lzma
-  * git for windows
+  * git for windows (mrubyビルド時に非標準のgemを導入するために使われます)
     * https://git-for-windows.github.io/
  
 msys.bat を開いて以下を実行します。
@@ -194,6 +203,8 @@ $ ./mrb-nanogl ../example/00-blank.rb
       * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-dep.zip
     * flex (mrubyのコンパイルに必要です)
       * http://gnuwin32.sourceforge.net/downlinks/flex-bin-zip.php
+  * git for windows (mrubyビルド時に非標準のgemを導入するために使われます)
+    * https://git-for-windows.github.io/
 
 スタートメニューから`VS2015 x86 Native Tools Command Prompt` を開いてVS14向けディレクトリで以下を実行します。
 

@@ -13,8 +13,24 @@
 // NanoGL.Video 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool ArrayToColor(mrb_state *mrb, mrb_value array, Color *color)
-{
+
+static unsigned char *ArrayToUInt8Array(mrb_state *mrb, mrb_value array) {
+	if (!mrb_array_p(array)) {
+		return NULL;
+	}
+	int len = RARRAY_LEN(array);
+	unsigned char *byte = (unsigned char *)calloc(len, sizeof(unsigned char));
+	if (byte == NULL)
+	{
+		return NULL;
+	}
+	for (int i = 0; i < len; i++) {
+		byte[i] = (uint8_t)mrb_fixnum(mrb_ary_ref(mrb, array, i));
+	}
+	return byte;
+}
+
+static bool ArrayToColor(mrb_state *mrb, mrb_value array, Color *color) {
 	if (!mrb_array_p(array)) {
 		return false;
 	}
@@ -22,11 +38,10 @@ static bool ArrayToColor(mrb_state *mrb, mrb_value array, Color *color)
 	if (len < 3) {
 		return false;
 	}
-	uint8_t r = (uint8_t)mrb_fixnum(mrb_ary_ref(mrb, array, 0));
-	uint8_t g = (uint8_t)mrb_fixnum(mrb_ary_ref(mrb, array, 1));
-	uint8_t b = (uint8_t)mrb_fixnum(mrb_ary_ref(mrb, array, 2));
-	uint8_t a = (len == 3) ? 0xFF : (uint8_t)mrb_fixnum(mrb_ary_ref(mrb, array, 3));
-	*color = Video.RGBA(r, g, b, a);
+	color->s.r = mrb_float(mrb_ary_ref(mrb, array, 0));
+	color->s.g = mrb_float(mrb_ary_ref(mrb, array, 1));
+	color->s.b = mrb_float(mrb_ary_ref(mrb, array, 2));
+	color->s.a = (len == 3) ? 1.0 : mrb_float(mrb_ary_ref(mrb, array, 3));
 	return true;
 }
 
@@ -52,10 +67,10 @@ static bool ArrayToPaint(mrb_state *mrb, mrb_value array, Paint *paint)
 	paint->radius = (float)mrb_float(mrb_ary_ref(mrb, array, n++));
 	paint->feather = (float)mrb_float(mrb_ary_ref(mrb, array, n++));
 	for (int i = 0; i < sizeof(paint->innerColor.rgba) / sizeof(paint->innerColor.rgba[0]); i++) {
-		paint->innerColor.rgba[i] = (uint8_t)mrb_fixnum(mrb_ary_ref(mrb, array, n++));
+		paint->innerColor.rgba[i] = (uint8_t)mrb_float(mrb_ary_ref(mrb, array, n++));
 	}
 	for (int i = 0; i < sizeof(paint->outerColor.rgba) / sizeof(paint->outerColor.rgba[0]); i++) {
-		paint->outerColor.rgba[i] = (uint8_t)mrb_fixnum(mrb_ary_ref(mrb, array, n++));
+		paint->outerColor.rgba[i] = (uint8_t)mrb_float(mrb_ary_ref(mrb, array, n++));
 	}
 	paint->image = mrb_fixnum(mrb_ary_ref(mrb, array, n));
 	return true;
@@ -131,11 +146,67 @@ static mrb_value mrb_NanoGL_Video_SetSize(mrb_state *mrb, mrb_value self) {
 	return mrb_nil_value();
 }
 
+static mrb_value mrb_NanoGL_Video_GetSize(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	int size[2];
+	Video.GetSize(&size[0], &size[1]);
+	return CArrayToMRBArrayI(mrb, size, 2);
+}
+
 static mrb_value mrb_NanoGL_Video_Drawing(mrb_state *mrb, mrb_value self) {
 	(void)mrb;
 	(void)self;
-	Video.Drawing();
+	mrb_bool n = Video.Drawing();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Video_BeginDraw(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Video.BeginDraw();
 	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_EndDraw(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Video.EndDraw();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_BeginDrawEx(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Video.BeginDrawEx();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_ResetDrawEx(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Video.ResetDrawEx();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_EndDrawEx(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Video.EndDrawEx();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_UpdateDrawEx(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Video.UpdateDrawEx();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_Loop(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Video.Loop();
+	return mrb_bool_value(n);
 }
 
 static mrb_value mrb_NanoGL_Video_GetTime(mrb_state *mrb, mrb_value self) {
@@ -161,6 +232,126 @@ static mrb_value mrb_NanoGL_Video_SetClearColor(mrb_state *mrb, mrb_value self) 
 		Video.SetClearColor(c);
 	}
 	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_BeginFrame(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int windowWidth, windowHeight;
+	mrb_float devicePixelRatio;
+	mrb_get_args(mrb, "iif", &windowWidth, &windowHeight, &devicePixelRatio);
+	Video.BeginFrame(windowWidth, windowHeight, devicePixelRatio);
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_CancelFrame(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	Video.CancelFrame();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_EndFrame(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	Video.EndFrame();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_GlobalCompositeOperation(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int compositeOperation;
+	mrb_get_args(mrb, "i", &compositeOperation);
+	Video.GlobalCompositeOperation((enum CompositeOperation)compositeOperation);
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_GlobalCompositeBlendFunc(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int sfactor, dfactor;
+	mrb_get_args(mrb, "ii", &sfactor, &dfactor);
+	Video.GlobalCompositeBlendFunc((enum BlendFactor)sfactor, (enum BlendFactor)dfactor);
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_GlobalCompositeBlendFuncSeparate(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int srcRGB, dstRGB, srcAlpha, dstAlpha;
+	mrb_get_args(mrb, "iiii", &srcRGB, &dstRGB, &srcAlpha, &dstAlpha);
+	Video.GlobalCompositeBlendFuncSeparate((enum BlendFactor)srcRGB, (enum BlendFactor)dstRGB, (enum BlendFactor)srcAlpha, (enum BlendFactor)dstAlpha);
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_RGB(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int r,g,b;
+	mrb_get_args(mrb, "iii", &r, &g, &b);
+	Color c = Video.RGB(r, g, b);
+	return CArrayToMRBArrayF(mrb, c.rgba, 4);
+}
+
+static mrb_value mrb_NanoGL_Video_RGBA(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int r,g,b,a;
+	mrb_get_args(mrb, "iiii", &r, &g, &b, &a);
+	Color c = Video.RGBA(r, g, b, a);
+	return CArrayToMRBArrayF(mrb, c.rgba, 4);
+}
+
+static mrb_value mrb_NanoGL_Video_LerpRGBA(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_value c0, c1;
+	mrb_float u;
+	mrb_get_args(mrb, "AAf", &c0, &c1, &u);
+	Color c, _c0, _c1;
+	if (ArrayToColor(mrb, c0, &_c0) && ArrayToColor(mrb, c1, &_c1)) {
+		c = Video.LerpRGBA(_c0, _c1, u);
+	} else {
+		memset(&c,0,sizeof(c));
+	}
+	return CArrayToMRBArrayF(mrb, c.rgba, 4);
+}
+
+static mrb_value mrb_NanoGL_Video_TransRGBA(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_value c0;
+	mrb_int a;
+	mrb_get_args(mrb, "Ai", &c0, &a);
+	Color c, _c0;
+	if (ArrayToColor(mrb, c0, &_c0)) {
+		c = Video.TransRGBA(_c0, a);
+	} else {
+		memset(&c,0,sizeof(c));
+	}
+	return CArrayToMRBArrayF(mrb, c.rgba, 4);
+}
+
+static mrb_value mrb_NanoGL_Video_TransRGBAf(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_value c0;
+	mrb_float a;
+	mrb_get_args(mrb, "Af", &c0, &a);
+	Color c, _c0;
+	if (ArrayToColor(mrb, c0, &_c0)) {
+		c = Video.TransRGBAf(_c0, a);
+	} else {
+		memset(&c,0,sizeof(c));
+	}
+	return CArrayToMRBArrayF(mrb, c.rgba, 4);
+}
+
+static mrb_value mrb_NanoGL_Video_HSL(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_float h,s,l;
+	mrb_get_args(mrb, "fff", &h, &s, &l);
+	Color c = Video.HSL(h, s, l);
+	return CArrayToMRBArrayF(mrb, c.rgba, 4);
+}
+
+static mrb_value mrb_NanoGL_Video_HSLA(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_float h,s,l;
+	mrb_int a;
+	mrb_get_args(mrb, "fffi", &h, &s, &l, &a);
+	Color c = Video.HSLA(h, s, l, a);
+	return CArrayToMRBArrayF(mrb, c.rgba, 4);
 }
 
 static mrb_value mrb_NanoGL_Video_Save(mrb_state *mrb, mrb_value self) {
@@ -374,6 +565,14 @@ static mrb_value mrb_NanoGL_Video_CurrentTransform(mrb_state *mrb, mrb_value sel
 
 }
 
+//static mrb_value mrb_NanoGL_Video_ZIndex(mrb_state *mrb, mrb_value self) {
+//	(void)self;
+//	mrb_float order;
+//	mrb_get_args(mrb, "f", &order);
+//	Video.ZIndex(order);
+//	return mrb_nil_value();
+//}
+
 static mrb_value mrb_NanoGL_Video_TransformIdentity(mrb_state *mrb, mrb_value self) {
 	(void)self;
 	float dst[6];
@@ -507,6 +706,24 @@ static mrb_value mrb_NanoGL_Video_RadToDeg(mrb_state *mrb, mrb_value self) {
 	return mrb_float_value(mrb, deg);
 }
 
+static mrb_value mrb_NanoGL_Video_LoadImageData(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	char *filename;
+	int width, height;
+	mrb_get_args(mrb, "s", &filename);
+	unsigned char *data = Video.LoadImageDataUTF8(filename, &width, &height);
+	mrb_value pixels = mrb_ary_new_capa(mrb, width * height * 4);
+	for (int i=0; i<width * height * 4; i++) {
+		mrb_ary_set(mrb, pixels, i, mrb_fixnum_value(data[i]));
+	}
+	Video.FreeImageData(data);
+	mrb_value ret = mrb_ary_new_capa(mrb, 3);
+	mrb_ary_set(mrb, ret, 0, mrb_fixnum_value(width));
+	mrb_ary_set(mrb, ret, 1, mrb_fixnum_value(height));
+	mrb_ary_set(mrb, ret, 2, pixels);
+	return ret;
+}
+
 static mrb_value mrb_NanoGL_Video_CreateImage(mrb_state *mrb, mrb_value self) {
 	(void)self;
 	char *filename;
@@ -532,20 +749,38 @@ static mrb_value mrb_NanoGL_Video_CreateImageRGBA(mrb_state *mrb, mrb_value self
 	(void)self;
 	mrb_int w, h;
 	mrb_int imageFlags;
-	unsigned char *data;
-	mrb_int datalen;
-	mrb_get_args(mrb, "iiis", &w, &h, &imageFlags, &data, &datalen);
-	int id = Video.CreateImageRGBA(w, h, imageFlags, data);
-	return mrb_fixnum_value(id);
+	mrb_value data;
+	mrb_get_args(mrb, "iiiA", &w, &h, &imageFlags, &data);
+	unsigned char *bytes = ArrayToUInt8Array(mrb, data);
+	if (bytes != NULL) {
+		int id = Video.CreateImageRGBA(w, h, imageFlags, bytes);
+		free(bytes);
+		return mrb_fixnum_value(id);
+	} else
+	{
+		return mrb_fixnum_value(0);
+	}
 }
 
 static mrb_value mrb_NanoGL_Video_UpdateImage(mrb_state *mrb, mrb_value self) {
 	(void)self;
 	mrb_int image;
-	unsigned char *data;
-	mrb_int datalen;
-	mrb_get_args(mrb, "is", &image, &data, &datalen);
-	Video.UpdateImage(image, data);
+	mrb_value data;
+	mrb_get_args(mrb, "io", &image, &data);
+	unsigned char *bytes = NULL;
+	bool need_free = false;
+	if (mrb_array_p(data)) {
+		bytes = ArrayToUInt8Array(mrb, data);
+		need_free = true;
+	} else if (mrb_string_p(data)) {
+		bytes = (unsigned char*)RSTRING_PTR(data);
+	}
+	if (bytes != NULL) {
+		Video.UpdateImage(image, bytes);
+		if (need_free) {
+			free(bytes);
+		}
+	}
 	return mrb_nil_value();
 }
 
@@ -739,6 +974,14 @@ static mrb_value mrb_NanoGL_Video_RoundedRect(mrb_state *mrb, mrb_value self) {
 	return mrb_nil_value();
 }
 
+static mrb_value mrb_NanoGL_Video_RoundedRectVarying(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_float  x, y, w, h, rlt, rrt, rrb, rlb;
+	mrb_get_args(mrb, "ffffffff", &x, &y, &w, &h, &rlt, &rrt, &rrb, &rlb);
+	Video.RoundedRectVarying((float)x, (float)y, (float)w, (float)h, (float)rlt, (float)rrt, (float)rrb, (float)rlb);
+	return mrb_nil_value();
+}
+
 static mrb_value mrb_NanoGL_Video_Ellipse(mrb_state *mrb, mrb_value self) {
 	(void)self;
 	mrb_float  cx, cy, rx, ry;
@@ -881,15 +1124,18 @@ static mrb_value mrb_NanoGL_Video_TextBounds(mrb_state *mrb, mrb_value self) {
 	char *str;
 	mrb_get_args(mrb, "ffz", &x, &y, &str);
 	float bounds[4];
-	Video.TextBoundsUTF8((float)x, (float)y, str, NULL, bounds);
+	float lx = Video.TextBoundsUTF8((float)x, (float)y, str, NULL, bounds);
 
-	mrb_value array = mrb_ary_new_capa(mrb, 4);
+	mrb_value array1 = mrb_ary_new_capa(mrb, 2);
+	mrb_value array2 = mrb_ary_new_capa(mrb, 4);
 	int n = 0;
 	for (int i = 0; i < sizeof(bounds) / sizeof(bounds[0]); i++) {
-		mrb_ary_set(mrb, array, n++, mrb_float_value(mrb, (mrb_float)bounds[i]));
+		mrb_ary_set(mrb, array2, n++, mrb_float_value(mrb, (mrb_float)bounds[i]));
 	}
 
-	return array;
+	mrb_ary_set(mrb, array1, 0, mrb_float_value(mrb, lx));
+	mrb_ary_set(mrb, array1, 1, array2);
+	return array1;
 }
 
 static mrb_value mrb_NanoGL_Video_TextBoxBounds(mrb_state *mrb, mrb_value self) {
@@ -994,15 +1240,88 @@ static mrb_value mrb_NanoGL_Video_DrawImageWithFillColor(mrb_state *mrb, mrb_val
 //  ruby の書式指定機能を使って整形したうえでText()命令を呼べばよいので不要
 //}
 
+static mrb_value mrb_NanoGL_Video_CreateFramebuffer(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int w, h, imageFlags;
+	mrb_get_args(mrb, "iii", &w, &h, &imageFlags);
+
+	void *fbptr = Video.CreateFramebuffer(w, h, imageFlags);
+	return mrb_cptr_value(mrb, fbptr);
+}
+
+static mrb_value mrb_NanoGL_Video_DrawStartFramebuffer(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_value fbptr;
+	mrb_get_args(mrb, "o", &fbptr);
+	Video.DrawStartFramebuffer(mrb_cptr(fbptr));
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_DrawEndFramebuffer(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	Video.DrawEndFramebuffer();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_DeleteFramebuffer(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_value fbptr;
+	mrb_get_args(mrb, "o", &fbptr);
+	Video.DeleteFramebuffer(mrb_cptr(fbptr));
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Video_GetFrameBufferImage(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_value fbptr;
+	mrb_get_args(mrb, "o", &fbptr);
+	int img = Video.GetFrameBufferImage(mrb_cptr(fbptr));
+	return mrb_fixnum_value(img);
+}
+
+static mrb_value mrb_NanoGL_Video_SaveScreenShot(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	int l, t, w, h;
+	mrb_bool premult;
+	const char* name;
+	mrb_get_args(mrb, "iiiibz", &l, &t, &w, &h, &premult, &name);
+	bool ret = Video.SaveScreenShotUTF8(l,t,w,h, premult,name);
+	return mrb_bool_value(ret);
+}
+
 static void mrb_nanogl_videomodule_install(mrb_state *mrb, struct RClass *parent)
 {
 	struct RClass *mNanoGL_Video = mrb_define_module_under(mrb, parent, "Video");
 	mrb_define_module_function(mrb, mNanoGL_Video, "SetWindowTitle", mrb_NanoGL_Video_SetWindowTitle, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "SetSize", mrb_NanoGL_Video_SetSize, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Video, "GetSize", mrb_NanoGL_Video_GetSize, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Video, "Drawing", mrb_NanoGL_Video_Drawing, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "BeginDraw", mrb_NanoGL_Video_BeginDraw, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "EndDraw", mrb_NanoGL_Video_EndDraw, MRB_ARGS_NONE());	
+
+	mrb_define_module_function(mrb, mNanoGL_Video, "BeginDrawEx", mrb_NanoGL_Video_BeginDrawEx, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "ResetDrawEx", mrb_NanoGL_Video_ResetDrawEx, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "UpdateDrawEx", mrb_NanoGL_Video_UpdateDrawEx, MRB_ARGS_NONE());	
+	mrb_define_module_function(mrb, mNanoGL_Video, "EndDrawEx", mrb_NanoGL_Video_EndDrawEx, MRB_ARGS_NONE());
+	
+	mrb_define_module_function(mrb, mNanoGL_Video, "Loop", mrb_NanoGL_Video_Loop, MRB_ARGS_NONE());
+
 	mrb_define_module_function(mrb, mNanoGL_Video, "GetTime", mrb_NanoGL_Video_GetTime, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Video, "Sleep", mrb_NanoGL_Video_Sleep, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "SetClearColor", mrb_NanoGL_Video_SetClearColor, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_Video, "BeginFrame", mrb_NanoGL_Video_BeginFrame, MRB_ARGS_REQ(3));
+	mrb_define_module_function(mrb, mNanoGL_Video, "CancelFrame", mrb_NanoGL_Video_CancelFrame, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "EndFrame", mrb_NanoGL_Video_EndFrame, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "GlobalCompositeOperation", mrb_NanoGL_Video_GlobalCompositeOperation, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_Video, "GlobalCompositeBlendFunc", mrb_NanoGL_Video_GlobalCompositeBlendFunc, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Video, "GlobalCompositeBlendFuncSeparate", mrb_NanoGL_Video_GlobalCompositeBlendFuncSeparate, MRB_ARGS_REQ(4));
+	mrb_define_module_function(mrb, mNanoGL_Video, "RGB", mrb_NanoGL_Video_RGB, MRB_ARGS_REQ(3));
+	mrb_define_module_function(mrb, mNanoGL_Video, "RGBA", mrb_NanoGL_Video_RGBA, MRB_ARGS_REQ(4));
+	mrb_define_module_function(mrb, mNanoGL_Video, "LerpRGBA", mrb_NanoGL_Video_LerpRGBA, MRB_ARGS_REQ(3));
+	mrb_define_module_function(mrb, mNanoGL_Video, "TransRGBA", mrb_NanoGL_Video_TransRGBA, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Video, "TransRGBAf", mrb_NanoGL_Video_TransRGBAf, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Video, "HSL", mrb_NanoGL_Video_HSL, MRB_ARGS_REQ(3));
+	mrb_define_module_function(mrb, mNanoGL_Video, "HSLA", mrb_NanoGL_Video_HSLA, MRB_ARGS_REQ(4));
 	mrb_define_module_function(mrb, mNanoGL_Video, "Save", mrb_NanoGL_Video_Save, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Video, "Restore", mrb_NanoGL_Video_Restore, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Video, "Reset", mrb_NanoGL_Video_Reset, MRB_ARGS_NONE());
@@ -1028,6 +1347,7 @@ static void mrb_nanogl_videomodule_install(mrb_state *mrb, struct RClass *parent
 	mrb_define_module_function(mrb, mNanoGL_Video, "SkewYWorld", mrb_NanoGL_Video_SkewYWorld, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "ScaleWorld", mrb_NanoGL_Video_ScaleWorld, MRB_ARGS_REQ(2));
 	mrb_define_module_function(mrb, mNanoGL_Video, "CurrentTransform", mrb_NanoGL_Video_CurrentTransform, MRB_ARGS_NONE());
+	//mrb_define_module_function(mrb, mNanoGL_Video, "ZIndex", mrb_NanoGL_Video_ZIndex, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "TransformIdentity", mrb_NanoGL_Video_TransformIdentity, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Video, "TransformTranslate", mrb_NanoGL_Video_TransformTranslate, MRB_ARGS_REQ(2));
 	mrb_define_module_function(mrb, mNanoGL_Video, "TransformRotate", mrb_NanoGL_Video_TransformRotate, MRB_ARGS_REQ(1));
@@ -1040,6 +1360,7 @@ static void mrb_nanogl_videomodule_install(mrb_state *mrb, struct RClass *parent
 	mrb_define_module_function(mrb, mNanoGL_Video, "TransformPoint", mrb_NanoGL_Video_TransformPoint, MRB_ARGS_REQ(3));
 	mrb_define_module_function(mrb, mNanoGL_Video, "DegToRad", mrb_NanoGL_Video_DegToRad, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "RadToDeg", mrb_NanoGL_Video_RadToDeg, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_Video, "LoadImageData", mrb_NanoGL_Video_LoadImageData, MRB_ARGS_REQ(1));
 	mrb_define_module_function(mrb, mNanoGL_Video, "CreateImage", mrb_NanoGL_Video_CreateImage, MRB_ARGS_REQ(2));
 	mrb_define_module_function(mrb, mNanoGL_Video, "CreateImageMem", mrb_NanoGL_Video_CreateImageMem, MRB_ARGS_REQ(3));
 	mrb_define_module_function(mrb, mNanoGL_Video, "CreateImageRGBA", mrb_NanoGL_Video_CreateImageRGBA, MRB_ARGS_REQ(4));
@@ -1065,6 +1386,7 @@ static void mrb_nanogl_videomodule_install(mrb_state *mrb, struct RClass *parent
 	mrb_define_module_function(mrb, mNanoGL_Video, "Arc", mrb_NanoGL_Video_Arc, MRB_ARGS_REQ(6));
 	mrb_define_module_function(mrb, mNanoGL_Video, "Rect", mrb_NanoGL_Video_Rect, MRB_ARGS_REQ(4));
 	mrb_define_module_function(mrb, mNanoGL_Video, "RoundedRect", mrb_NanoGL_Video_RoundedRect, MRB_ARGS_REQ(5));
+	mrb_define_module_function(mrb, mNanoGL_Video, "RoundedRectVarying", mrb_NanoGL_Video_RoundedRectVarying, MRB_ARGS_REQ(8));
 	mrb_define_module_function(mrb, mNanoGL_Video, "Ellipse", mrb_NanoGL_Video_Ellipse, MRB_ARGS_REQ(4));
 	mrb_define_module_function(mrb, mNanoGL_Video, "Circle", mrb_NanoGL_Video_Circle, MRB_ARGS_REQ(3));
 	mrb_define_module_function(mrb, mNanoGL_Video, "Fill", mrb_NanoGL_Video_Fill, MRB_ARGS_NONE());
@@ -1089,6 +1411,14 @@ static void mrb_nanogl_videomodule_install(mrb_state *mrb, struct RClass *parent
 	mrb_define_module_function(mrb, mNanoGL_Video, "DrawImage", mrb_NanoGL_Video_DrawImage, MRB_ARGS_REQ(10));
 	mrb_define_module_function(mrb, mNanoGL_Video, "DrawImageWithFillColor", mrb_NanoGL_Video_DrawImageWithFillColor, MRB_ARGS_REQ(9));
 	//mrb_define_module_function(mrb, mNanoGL_Video, "FormatText", mrb_NanoGL_Video_FormatText, MRB_ARGS_REQ(2));
+
+	mrb_define_module_function(mrb, mNanoGL_Video, "CreateFramebuffer", mrb_NanoGL_Video_CreateFramebuffer, MRB_ARGS_REQ(3));
+	mrb_define_module_function(mrb, mNanoGL_Video, "DrawStartFramebuffer", mrb_NanoGL_Video_DrawStartFramebuffer, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_Video, "DrawEndFramebuffer", mrb_NanoGL_Video_DrawEndFramebuffer, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Video, "DeleteFramebuffer", mrb_NanoGL_Video_DeleteFramebuffer, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_Video, "GetFrameBufferImage", mrb_NanoGL_Video_GetFrameBufferImage, MRB_ARGS_REQ(1));
+
+	mrb_define_module_function(mrb, mNanoGL_Video, "SaveScreenShot", mrb_NanoGL_Video_SaveScreenShot, MRB_ARGS_REQ(6));
 
 	struct RClass *mNanoGL_Video_ImageFlags = mrb_define_module_under(mrb, mNanoGL_Video, "ImageFlags");
 	mrb_define_const(mrb, mNanoGL_Video_ImageFlags, "IMAGE_GENERATE_MIPMAPS", mrb_fixnum_value(IMAGE_GENERATE_MIPMAPS));
@@ -1122,11 +1452,44 @@ static void mrb_nanogl_videomodule_install(mrb_state *mrb, struct RClass *parent
 	mrb_define_const(mrb, mNanoGL_Video_AlignFlags, "ALIGN_BOTTOM", mrb_fixnum_value(ALIGN_BOTTOM));
 	mrb_define_const(mrb, mNanoGL_Video_AlignFlags, "ALIGN_BASELINE", mrb_fixnum_value(ALIGN_BASELINE));
 
+	struct RClass *mNanoGL_Video_BlendFactor = mrb_define_module_under(mrb, mNanoGL_Video, "BlendFactor");
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "ZERO", mrb_fixnum_value(ZERO));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "ONE", mrb_fixnum_value(ONE));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "SRC_COLOR", mrb_fixnum_value(SRC_COLOR));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "ONE_MINUS_SRC_COLOR", mrb_fixnum_value(ONE_MINUS_SRC_COLOR));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "DST_COLOR", mrb_fixnum_value(DST_COLOR));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "ONE_MINUS_DST_COLOR", mrb_fixnum_value(ONE_MINUS_DST_COLOR));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "SRC_ALPHA", mrb_fixnum_value(SRC_ALPHA));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "ONE_MINUS_SRC_ALPHA", mrb_fixnum_value(ONE_MINUS_SRC_ALPHA));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "DST_ALPHA", mrb_fixnum_value(DST_ALPHA));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "ONE_MINUS_DST_ALPHA", mrb_fixnum_value(ONE_MINUS_DST_ALPHA));
+	mrb_define_const(mrb, mNanoGL_Video_BlendFactor, "SRC_ALPHA_SATURATE", mrb_fixnum_value(SRC_ALPHA_SATURATE));
+
+	struct RClass *mNanoGL_Video_CompositeOperation = mrb_define_module_under(mrb, mNanoGL_Video, "CompositeOperation");
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "SOURCE_OVER", mrb_fixnum_value(SOURCE_OVER));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "SOURCE_IN", mrb_fixnum_value(SOURCE_IN));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "SOURCE_OUT", mrb_fixnum_value(SOURCE_OUT));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "ATOP", mrb_fixnum_value(ATOP));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "DESTINATION_OVER", mrb_fixnum_value(DESTINATION_OVER));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "DESTINATION_IN", mrb_fixnum_value(DESTINATION_IN));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "DESTINATION_OUT", mrb_fixnum_value(DESTINATION_OUT));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "DESTINATION_ATOP", mrb_fixnum_value(DESTINATION_ATOP));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "LIGHTER", mrb_fixnum_value(LIGHTER));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "COPY", mrb_fixnum_value(COPY));
+	mrb_define_const(mrb, mNanoGL_Video_CompositeOperation, "XOR", mrb_fixnum_value(XOR));
+
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // NanoGL.Mouse
 ////////////////////////////////////////////////////////////////////////////////
+
+static mrb_value mrb_NanoGL_Mouse_Update(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Mouse.Update();
+	return mrb_nil_value();
+}
 
 static mrb_value mrb_NanoGL_Mouse_IsLeftButtonDown(mrb_state *mrb, mrb_value self) {
 	(void)mrb;
@@ -1149,6 +1512,69 @@ static mrb_value mrb_NanoGL_Mouse_IsMiddleButtonDown(mrb_state *mrb, mrb_value s
 	return mrb_bool_value(n);
 }
 
+static mrb_value mrb_NanoGL_Mouse_IsLeftButtonPush(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsLeftButtonPush();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsRightButtonPush(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsRightButtonPush();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsMiddleButtonPush(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsMiddleButtonPush();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsLeftButtonUp(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsLeftButtonUp();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsRightButtonUp(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsRightButtonUp();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsMiddleButtonUp(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsMiddleButtonUp();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsLeftButtonRelease(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsLeftButtonRelease();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsRightButtonRelease(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsRightButtonRelease();
+	return mrb_bool_value(n);
+}
+
+static mrb_value mrb_NanoGL_Mouse_IsMiddleButtonRelease(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	mrb_bool n = Mouse.IsMiddleButtonRelease();
+	return mrb_bool_value(n);
+}
+
 static mrb_value mrb_NanoGL_Mouse_GetCursorPos(mrb_state *mrb, mrb_value self) {
 	(void)mrb;
 	(void)self;
@@ -1163,9 +1589,25 @@ static mrb_value mrb_NanoGL_Mouse_GetCursorPos(mrb_state *mrb, mrb_value self) {
 static void mrb_nanogl_mousemodule_install(mrb_state *mrb, struct RClass *parent)
 {
 	struct RClass *mNanoGL_Mouse = mrb_define_module_under(mrb, parent, "Mouse");
+
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "Update", mrb_NanoGL_Mouse_Update, MRB_ARGS_NONE());
+	
 	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsRightButtonDown", mrb_NanoGL_Mouse_IsRightButtonDown, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsLeftButtonDown", mrb_NanoGL_Mouse_IsLeftButtonDown, MRB_ARGS_NONE());
 	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsMiddleButtonDown", mrb_NanoGL_Mouse_IsMiddleButtonDown, MRB_ARGS_NONE());
+	
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsRightButtonPush", mrb_NanoGL_Mouse_IsRightButtonPush, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsLeftButtonPush", mrb_NanoGL_Mouse_IsLeftButtonPush, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsMiddleButtonPush", mrb_NanoGL_Mouse_IsMiddleButtonPush, MRB_ARGS_NONE());
+	
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsRightButtonUp", mrb_NanoGL_Mouse_IsRightButtonUp, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsLeftButtonUp", mrb_NanoGL_Mouse_IsLeftButtonUp, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsMiddleButtonUp", mrb_NanoGL_Mouse_IsMiddleButtonUp, MRB_ARGS_NONE());
+	
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsRightButtonRelease", mrb_NanoGL_Mouse_IsRightButtonRelease, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsLeftButtonRelease", mrb_NanoGL_Mouse_IsLeftButtonRelease, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Mouse, "IsMiddleButtonRelease", mrb_NanoGL_Mouse_IsMiddleButtonRelease, MRB_ARGS_NONE());
+
 	mrb_define_module_function(mrb, mNanoGL_Mouse, "GetCursorPos", mrb_NanoGL_Mouse_GetCursorPos, MRB_ARGS_NONE());
 }
 
@@ -1321,42 +1763,42 @@ static void mrb_nanogl_keyboardmodule_install(mrb_state *mrb, struct RClass *par
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// NanoGL.FrameRate
+// NanoGL.FpsTimer
 ////////////////////////////////////////////////////////////////////////////////
 
-static mrb_value mrb_NanoGL_FrameRate_SetFrameRate(mrb_state *mrb, mrb_value self) {
+static mrb_value mrb_NanoGL_FpsTimer_SetFPS(mrb_state *mrb, mrb_value self) {
 	(void)self;
 	mrb_int fps;
 	mrb_get_args(mrb, "i", &fps);
-	FrameRate.SetFrameRate(fps);
+	FpsTimer.SetFPS(fps);
 	return mrb_nil_value();
 }
 
-static mrb_value mrb_NanoGL_FrameRate_GetFrameRate(mrb_state *mrb, mrb_value self) {
+static mrb_value mrb_NanoGL_FpsTimer_GetFPS(mrb_state *mrb, mrb_value self) {
 	(void)self;
-	unsigned int rate = FrameRate.GetFrameRate();
+	unsigned int rate = FpsTimer.GetFPS();
 	return mrb_fixnum_value(rate);
 }
 
-static mrb_value mrb_NanoGL_FrameRate_GetRealFrameRate(mrb_state *mrb, mrb_value self) {
+static mrb_value mrb_NanoGL_FpsTimer_GetRealFPS(mrb_state *mrb, mrb_value self) {
 	(void)self;
-	mrb_float rate = (mrb_float)FrameRate.GetRealFrameRate();
+	mrb_float rate = (mrb_float)FpsTimer.GetRealFPS();
 	return mrb_float_value(mrb, rate);
 }
 
-static mrb_value mrb_NanoGL_FrameRate_GetCPUPower(mrb_state *mrb, mrb_value self) {
+static mrb_value mrb_NanoGL_FpsTimer_GetCPUPower(mrb_state *mrb, mrb_value self) {
 	(void)self;
 	unsigned int rate = FrameRate.GetCPUPower();
 	return mrb_fixnum_value(rate);
 }
 
-static void mrb_nanogl_frameratemodule_install(mrb_state *mrb, struct RClass *parent)
+static void mrb_nanogl_fpstimermodule_install(mrb_state *mrb, struct RClass *parent)
 {
-	struct RClass *mNanoGL_FrameRate = mrb_define_module_under(mrb, parent, "FrameRate");
-	mrb_define_module_function(mrb, mNanoGL_FrameRate, "SetFrameRate", mrb_NanoGL_FrameRate_SetFrameRate, MRB_ARGS_REQ(1));
-	mrb_define_module_function(mrb, mNanoGL_FrameRate, "GetFrameRate", mrb_NanoGL_FrameRate_GetFrameRate, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, mNanoGL_FrameRate, "GetRealFrameRate", mrb_NanoGL_FrameRate_GetRealFrameRate, MRB_ARGS_NONE());
-	mrb_define_module_function(mrb, mNanoGL_FrameRate, "GetCPUPower", mrb_NanoGL_FrameRate_GetCPUPower, MRB_ARGS_NONE());
+	struct RClass *mNanoGL_FpsTimer = mrb_define_module_under(mrb, parent, "FpsTimer");
+	mrb_define_module_function(mrb, mNanoGL_FpsTimer, "SetFrameRate", mrb_NanoGL_FpsTimer_SetFPS, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_FpsTimer, "GetFrameRate", mrb_NanoGL_FpsTimer_GetFPS, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_FpsTimer, "GetRealFPS", mrb_NanoGL_FpsTimer_GetRealFPS, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_FpsTimer, "GetCPUPower", mrb_NanoGL_FpsTimer_GetCPUPower, MRB_ARGS_NONE());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1470,11 +1912,138 @@ static mrb_value mrb_NanoGL_Dialog_SaveFileDialog(mrb_state *mrb, mrb_value self
 	}
 }
 
-static void mrb_nanogl_dialogmodule_install(mrb_state *mrb, struct RClass *parent)
-{
+static void mrb_nanogl_dialogmodule_install(mrb_state *mrb, struct RClass *parent) {
 	struct RClass *mNanoGL_Dialog = mrb_define_module_under(mrb, parent, "Dialog");
 	mrb_define_module_function(mrb, mNanoGL_Dialog, "OpenFileDialog", mrb_NanoGL_Dialog_OpenFileDialog, MRB_ARGS_REQ(2));
 	mrb_define_module_function(mrb, mNanoGL_Dialog, "SaveFileDialog", mrb_NanoGL_Dialog_SaveFileDialog, MRB_ARGS_REQ(2));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// NanoGL.Joystick
+////////////////////////////////////////////////////////////////////////////////
+
+static mrb_value mrb_NanoGL_Joystick_MaxJoystickPort(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	return mrb_fixnum_value(Joystick.MaxJoystickPort());
+}
+
+static mrb_value mrb_NanoGL_Joystick_Initialize(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Joystick.Initialize();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Joystick_Finalize(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Joystick.Finalize();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Joystick_Connect(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Joystick.Connect();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Joystick_Disconnect(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Joystick.Disconnect();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Joystick_Update(mrb_state *mrb, mrb_value self) {
+	(void)mrb;
+	(void)self;
+	Joystick.Update();
+	return mrb_nil_value();
+}
+
+static mrb_value mrb_NanoGL_Joystick_IsPresented(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id;
+	mrb_get_args(mrb, "i", &id);
+	bool b = Joystick.IsPresented(id);
+	return mrb_bool_value(b);
+}
+
+static mrb_value mrb_NanoGL_Joystick_GetAxesCount(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id;
+	mrb_get_args(mrb, "i", &id);
+	int c = Joystick.GetAxesCount(id);
+	return mrb_fixnum_value(c);
+}
+
+static mrb_value mrb_NanoGL_Joystick_GetAxesStatus(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id, ax;
+	mrb_get_args(mrb, "ii", &id, &ax);
+	float v = Joystick.GetAxesStatus(id, ax);
+	return mrb_float_value(mrb, v);
+}
+
+static mrb_value mrb_NanoGL_Joystick_GetButtonCount(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id;
+	mrb_get_args(mrb, "i", &id);
+	int c = Joystick.GetButtonCount(id);
+	return mrb_fixnum_value(c);
+}
+
+static mrb_value mrb_NanoGL_Joystick_IsButtonDown(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id, btn;
+	mrb_get_args(mrb, "ii", &id, &btn);
+	bool b = Joystick.IsButtonDown(id, btn);
+	return mrb_bool_value(b);
+}
+
+static mrb_value mrb_NanoGL_Joystick_IsButtonPush(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id, btn;
+	mrb_get_args(mrb, "ii", &id, &btn);
+	bool b = Joystick.IsButtonPush(id, btn);
+	return mrb_bool_value(b);
+}
+
+static mrb_value mrb_NanoGL_Joystick_IsButtonUp(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id, btn;
+	mrb_get_args(mrb, "ii", &id, &btn);
+	bool b = Joystick.IsButtonUp(id, btn);
+	return mrb_bool_value(b);
+}
+
+static mrb_value mrb_NanoGL_Joystick_IsButtonRelease(mrb_state *mrb, mrb_value self) {
+	(void)self;
+	mrb_int id, btn;
+	mrb_get_args(mrb, "ii", &id, &btn);
+	bool b = Joystick.IsButtonRelease(id, btn);
+	return mrb_bool_value(b);
+}
+
+static void mrb_nanogl_joystickmodule_install(mrb_state *mrb, struct RClass *parent) {
+	struct RClass *mNanoGL_Joystick = mrb_define_module_under(mrb, parent, "Joystick");
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "MaxJoystickPort", mrb_NanoGL_Joystick_MaxJoystickPort, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "Initialize", mrb_NanoGL_Joystick_Initialize, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "Finalize", mrb_NanoGL_Joystick_Finalize, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "Connect", mrb_NanoGL_Joystick_Connect, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "Disconnect", mrb_NanoGL_Joystick_Disconnect, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "Update", mrb_NanoGL_Joystick_Update, MRB_ARGS_NONE());
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "IsPresented", mrb_NanoGL_Joystick_IsPresented, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "GetAxesCount", mrb_NanoGL_Joystick_GetAxesCount, MRB_ARGS_REQ(1));
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "GetAxesStatus", mrb_NanoGL_Joystick_GetAxesStatus, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "GetButtonCount", mrb_NanoGL_Joystick_GetButtonCount, MRB_ARGS_REQ(1));
+
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "IsButtonDown", mrb_NanoGL_Joystick_IsButtonDown, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "IsButtonPush", mrb_NanoGL_Joystick_IsButtonPush, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "IsButtonUp", mrb_NanoGL_Joystick_IsButtonUp, MRB_ARGS_REQ(2));
+	mrb_define_module_function(mrb, mNanoGL_Joystick, "IsButtonRelease", mrb_NanoGL_Joystick_IsButtonRelease, MRB_ARGS_REQ(2));
 }
 
 //////////////////////////////////////////////////////////////////////////////////
@@ -1498,14 +2067,18 @@ void mrb_nanogl_gem_init(mrb_state* mrb)
 	// NanoGL.Sound
 	mrb_nanogl_soundmodule_install(mrb, mNanoGL);
 	
-	// NanoGL.FrameRate
-	mrb_nanogl_frameratemodule_install(mrb, mNanoGL);
+	// NanoGL.FpsTimer
+	mrb_nanogl_fpstimermodule_install(mrb, mNanoGL);
 
 	// NanoGL.System
 	mrb_nanogl_systemmodule_install(mrb, mNanoGL);
 
 	// NanoGL.Dialog
 	mrb_nanogl_dialogmodule_install(mrb, mNanoGL);
+
+	// NanoGL.Joystick
+	mrb_nanogl_joystickmodule_install(mrb, mNanoGL);
+
 }
 
 void mrb_nanogl_gem_final(mrb_state *mrb) {	

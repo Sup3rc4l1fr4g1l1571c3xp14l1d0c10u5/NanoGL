@@ -12,7 +12,7 @@ diff -uprN ./mruby-1.2.0/build_config.rb mruby-1.2.0-patched/build_config.rb
    else
      toolchain :gcc
    end
-@@ -19,6 +23,20 @@
+@@ -19,6 +23,22 @@
    # conf.gem :github => 'masuidrive/mrbgems-example', :checksum_hash => '76518e8aecd131d047378448ac8055fa29d974a9'
    # conf.gem :git => 'git@github.com:masuidrive/mrbgems-example.git', :branch => 'master', :options => '-v'
  
@@ -29,6 +29,8 @@ diff -uprN ./mruby-1.2.0/build_config.rb mruby-1.2.0-patched/build_config.rb
 +      sh "patch -N -p1 < ../../../patches/mruby-require-vc14.patch"
 +    end
 +  end
++  conf.gem :git => 'https://github.com/iij/mruby-pack'
++  conf.gem :git => 'https://github.com/monochromegane/mruby-time-strftime'
 +
    # include the default GEMs
    conf.gembox 'default'

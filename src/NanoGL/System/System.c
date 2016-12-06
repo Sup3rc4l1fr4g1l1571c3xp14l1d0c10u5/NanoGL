@@ -108,7 +108,7 @@ EXIT1:
 		while (!_kbhit()) {
 			Sleep(100);
 		}
-		_getch();
+		(void)_getch();
 #endif
 		Debug.DisableConsole();
 	}

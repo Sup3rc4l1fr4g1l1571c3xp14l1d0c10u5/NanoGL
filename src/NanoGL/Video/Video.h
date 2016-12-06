@@ -13,7 +13,7 @@ union Color {
 };
 
 /**
- * @brief 色をRGBA各256階調で表現
+ * @brief 色をRGBA各0.0..1.0で表現
  */
 typedef union Color Color;
 
@@ -93,6 +93,51 @@ enum Align {
 };
 
 /**
+* @brief 色合成要素
+*/
+enum BlendFactor {
+	ZERO = 1 << 0,
+	ONE = 1 << 1,
+	SRC_COLOR = 1 << 2,
+	ONE_MINUS_SRC_COLOR = 1 << 3,
+	DST_COLOR = 1 << 4,
+	ONE_MINUS_DST_COLOR = 1 << 5,
+	SRC_ALPHA = 1 << 6,
+	ONE_MINUS_SRC_ALPHA = 1 << 7,
+	DST_ALPHA = 1 << 8,
+	ONE_MINUS_DST_ALPHA = 1 << 9,
+	SRC_ALPHA_SATURATE = 1 << 10,
+};
+
+/**
+* @brief 色合成演算子
+*/
+enum CompositeOperation {
+	SOURCE_OVER,
+	SOURCE_IN,
+	SOURCE_OUT,
+	ATOP,
+	DESTINATION_OVER,
+	DESTINATION_IN,
+	DESTINATION_OUT,
+	DESTINATION_ATOP,
+	LIGHTER,
+	COPY,
+	XOR,
+};
+
+/**
+* @brief 画像合成用の情報
+*/
+struct CompositeOperationState {
+	int srcRGB;
+	int dstRGB;
+	int srcAlpha;
+	int dstAlpha;
+};
+typedef struct CompositeOperationState CompositeOperationState;
+
+/**
  * @brief フォントのグリフ位置情報
  */
 struct GlyphPosition {
@@ -154,22 +199,58 @@ extern const struct __tagVideoAPI {
 	void(*SetWindowTitle)(const char *title);
 
 	/**
-	 * @brief 画面サイズを設定する
-	 * @param width  幅 
-	 * @param height 高さ
-	 *
-	 * 単位はピクセル
-	 */
+	* @brief 画面サイズを設定する
+	* @param width  幅
+	* @param height 高さ
+	*
+	* 単位はピクセル
+	*/
 	void(*SetSize)(int width, int height);
 
 	/**
-	 * @brief ゲームの状態更新・描画処理などが可能なるまで待つ
-	 * @return この関数は便宜上常にtrueを返す
-	 *
-	 * while (Video.Drawing()) { ゲームの状態更新・描画処理 } のように用いる
-	 * 画面が閉じられた場合にはプログラムは自動的に終了する
-	 */
+	* @brief 画面サイズを取得する
+	* @param width  幅
+	* @param height 高さ
+	*
+	* 単位はピクセル
+	*/
+	void(*GetSize)(int *width, int *height);
+
+	/**
+	* @brief ゲームの状態更新・描画処理などが可能なるまで待つ
+	* @return この関数は便宜上常にtrueを返す
+	*
+	* while (Video.Drawing()) { ゲームの状態更新・描画処理 } のように用いる
+	* 画面が閉じられた場合にはプログラムは自動的に終了する
+	*/
 	bool(*Drawing)(void);
+
+	/**
+	* @brief Video.Loop内で明示的に画面上への描画を開始する際に呼び出す。
+	*/
+	void(*BeginDraw)(void);
+
+	/**
+	* @brief Video.Loop内で明示的に画面上への描画を終了する際に呼び出す。
+	*/
+	void(*EndDraw)(void);
+
+
+	void (*BeginDrawEx)(void);
+	void (*ResetDrawEx)(void);
+	void (*EndDrawEx)(void);
+	void (*UpdateDrawEx)(void);
+
+	/**
+	* @brief ゲームの状態更新が可能なるまで待つ
+	* @return この関数は便宜上常にtrueを返す
+	*
+	* Drawing同様にwhile (Video.Loop()) { ゲームの状態更新・描画処理 } のように用いることができるが
+	* 画面への描画処理は明示的に BeginDraw, EndDrawの間で行う必要がある。
+	* フレームバッファオブジェクトを用いて実行中にテクスチャへのレンダリングや複数の合成演算を切り替えて描画を行う際に用いる。
+	* 画面が閉じられた場合にはプログラムは自動的に終了する
+	*/
+	bool(*Loop)(void);
 
 	/**
 	 * @brief プログラム起動時からの経過秒数を取得
@@ -212,6 +293,37 @@ extern const struct __tagVideoAPI {
 	void(*EndFrame)(void);
 	
 	/**
+	 * @brief BeginFrameからEndFrameの間で画像描画の際に使う合成処理を設定する。
+	 * @param op 利用する合成処理 (意味はHTML5 CanvasのglobalCompositeOperationと同じ)
+	 * @note 合成処理をBeginFrameからEndFrameまでの間で変更すると、予期しない描画結果になる。
+	 * 理由は描画命令は一旦命令バッファにキャッシュされ、EndFrameが呼ばれるか蓄積された命令が閾値を超えた際に実行される。
+	 * 合成処理はこの実行に適用されるので、途中で合成処理を変更すると変更前にキャッシュされている命令にまで影響が及ぶため。
+	 */
+	void (*GlobalCompositeOperation)(enum CompositeOperation op);
+
+	/**
+	* @brief BeginFrameからEndFrameの間で画像描画の際に使う転送元ピクセルと転送先ピクセルの合成で使う演算を設定する。
+	* @param sfactor 転送元ピクセルの演算方法(意味はOpenGLのglBlendFuncと同じ)
+	* @param dfactor 転送先ピクセルの演算方法(意味はOpenGLのglBlendFuncと同じ)
+	* @note 合成処理をBeginFrameからEndFrameまでの間で変更すると、予期しない描画結果になる。
+	* 理由は描画命令は一旦命令バッファにキャッシュされ、EndFrameが呼ばれるか蓄積された命令が閾値を超えた際に実行される。
+	* 合成処理はこの実行に適用されるので、途中で合成処理を変更すると変更前にキャッシュされている命令にまで影響が及ぶため。
+	*/
+	void(*GlobalCompositeBlendFunc)(enum BlendFactor sfactor, enum BlendFactor dfactor);
+
+	/**
+	* @brief BeginFrameからEndFrameの間で画像描画の際に使う転送元ピクセルと転送先ピクセルの合成で使う演算を色(RGB)とα値(A)を別々に設定する。
+	* @param srcRGB 転送元ピクセルのRGB部分の演算方法(意味はOpenGLのglBlendFuncと同じ)
+	* @param dstRGB 転送先ピクセルのRGB部分の演算方法(意味はOpenGLのglBlendFuncと同じ)
+	* @param srcAlpha 転送元ピクセルのα部分の演算方法(意味はOpenGLのglBlendFuncと同じ)
+	* @param dstAlpha 転送先ピクセルのα部分の演算方法(意味はOpenGLのglBlendFuncと同じ)
+	* @note 合成処理をBeginFrameからEndFrameまでの間で変更すると、予期しない描画結果になる。
+	* 理由は描画命令は一旦命令バッファにキャッシュされ、EndFrameが呼ばれるか蓄積された命令が閾値を超えた際に実行される。
+	* 合成処理はこの実行に適用されるので、途中で合成処理を変更すると変更前にキャッシュされている命令にまで影響が及ぶため。
+	*/
+	void(*GlobalCompositeBlendFuncSeparate)(enum BlendFactor srcRGB, enum BlendFactor dstRGB, enum BlendFactor srcAlpha, enum BlendFactor dstAlpha);
+
+	/**
 	 * @brief 色をRGB各256階調で指定して作成する。A(半透明度)は255固定となる
 	 * @param r 赤の階調
 	 * @param g 緑の階調
@@ -229,7 +341,50 @@ extern const struct __tagVideoAPI {
 	 * @return 作成した色データ
 	 */
 	Color(*RGBA)(unsigned char r, unsigned char g, unsigned char b, unsigned char a);
-	
+
+	/**
+	* @brief 色c0と色c1を比率 u:1-u で合成した色を作成する。
+	* @param c0 色1
+	* @param c1 色2
+	* @return 作成した色データ
+	*/
+	Color(*LerpRGBA)(Color c0, Color c1, float u);
+
+	/**
+	* @brief 色c0のα値をaに変えた色を作成する。
+	* @param c0 色
+	* @param a  α値(0..255)
+	* @return 作成した色データ
+	*/
+	Color(*TransRGBA)(Color c0, unsigned char a);
+
+	/**
+	* @brief 色c0のα値をaに変えた色を作成する。
+	* @param c0 色
+	* @param a  α値(0.0..1.0)
+	* @return 作成した色データ
+	*/
+	Color(*TransRGBAf)(Color c0, float a);
+
+	/**
+	* @brief 色をHSL各(0.0 .. 1.0)で指定して作成する。
+	* @param h 色相(0.0 .. 1.0)
+	* @param s 彩度(0.0 .. 1.0)
+	* @param l 輝度(0.0 .. 1.0)
+	* @return 作成した色データ
+	*/
+	Color(*HSL)(float h, float s, float l);
+
+	/**
+	* @brief 色をHSL各(0.0 .. 1.0)で指定して作成する。
+	* @param h 色相(0.0 .. 1.0)
+	* @param s 彩度(0.0 .. 1.0)
+	* @param l 輝度(0.0 .. 1.0)
+	* @param a 不透明度(255は完全不透明、0は完全透明)
+	* @return 作成した色データ
+	*/
+	Color(*HSLA)(float h, float s, float l, unsigned char a);
+
 	/**
 	 * @brief 現在の描画設定をコピーしてスタックに積む
 	 * @note  Video.Drawing()を呼び出すと描画設定もスタック状態もリセットされる
@@ -447,6 +602,17 @@ extern const struct __tagVideoAPI {
 	 */
 	void(*CurrentTransform)(float* xform);
 
+
+#if defined(UNOFFICIAL_HACK_USE_ZBUFFER)
+	/*
+	 * @brief 描画要素の z-order を設定する
+	 * @param order z-order値(値が小さいほど手前になる）
+	 * @note  デフォルトは０
+	 *
+	 */
+	void (*ZIndex)(float order);
+#endif
+
 	/**
 	 * @brief 配列 dst に単位行列を設定
 	 * @param dst 6要素以上の配列。 
@@ -573,6 +739,20 @@ extern const struct __tagVideoAPI {
 	float(*RadToDeg)(float rad);
 
 	/**
+	* @brief 画像を読み取ってRGBA配列とサイズを返す
+	*/
+	unsigned char* (*LoadImageData)(const char* filename, int *width, int *height);
+	/**
+	* @brief LoadImageDataのUTF8版
+	*/
+	unsigned char* (*LoadImageDataUTF8)(const char* filename, int *width, int *height);
+
+	/**
+	* @brief LoadImageDataで読み取ったデータを解放する
+	*/
+	void (*FreeImageData)(unsigned char *img);
+
+	/**
 	 * @brief CreateImageのUTF8版
 	 */
 	int(*CreateImageUTF8)(const char* filename, enum ImageFlags imageFlags);
@@ -595,7 +775,6 @@ extern const struct __tagVideoAPI {
 	 * @retval   > 0 画像ID
 	 */
 	int(*CreateImageMem)(enum ImageFlags imageFlags, unsigned char* data, int ndata);
-
 
 	/**
 	 * @brief 32bitRGBA画像データを読み込む
@@ -807,7 +986,7 @@ extern const struct __tagVideoAPI {
 	void(*Rect)(float x, float y, float w, float h);
 
 	/**
-	 * @brief 左上座標(x,y) 幅 w 高さ h 角hを半径 r で丸めた矩形を描画する
+	 * @brief 左上座標(x,y) 幅 w 高さ h の矩形を半径 r で丸めた矩形を描画する
 	 * @param x 矩形の左上点のX座標
 	 * @param y 矩形の左上点のY座標
 	 * @param w 矩形の幅
@@ -815,6 +994,19 @@ extern const struct __tagVideoAPI {
 	 * @param r 矩形の角の丸め半径
 	 */
 	void(*RoundedRect)(float x, float y, float w, float h, float r);
+
+	/**
+	* @brief 左上座標(x,y) 幅 w 高さ h の矩形それぞれの角をradTopLeft, radTopRight, radBottomRight, radBottomLeft で丸めた矩形を描画する
+	* @param x 矩形の左上点のX座標
+	* @param y 矩形の左上点のY座標
+	* @param w 矩形の幅
+	* @param h 矩形の高さ
+	* @param radTopLeft 矩形の左上の丸め半径
+	* @param radTopRight 矩形の右上の丸め半径
+	* @param radBottomRight 矩形の左下の丸め半径
+	* @param radBottomLeft 矩形の右下の丸め半径
+	*/
+	void(*RoundedRectVarying)(float x, float y, float w, float h, float radTopLeft, float radTopRight, float radBottomRight, float radBottomLeft);
 
 	/**
 	 * @brief 中心点 (cx, cy) で横半径 rx 縦半径 ry の楕円を描く
@@ -887,6 +1079,27 @@ extern const struct __tagVideoAPI {
 	 * @retval >=  0 見つかったフォントに割り当てられているフォントID
 	 */
 	int(*FindFont)(const char* name);
+
+	/**
+	* @brief baseFontの代替えフォントをfallbackFontに設定する
+	* @param baseFont ベースとするフォントのID
+	* @param fallbackFont 代替えフォントとするフォントのID
+	*/
+	void (*AddFallbackFontId)(int baseFont, int fallbackFont);
+
+	/**
+	* @brief AddFallbackFontのUTF8版
+	* @param baseFont ベースとするフォントの名前
+	* @param fallbackFont 代替えフォントとするフォントの名前
+	*/
+	void(*AddFallbackFontUTF8)(const char* baseFont, const char* fallbackFont);
+
+	/**
+	* @brief baseFontの代替えフォントをfallbackFontに設定する
+	* @param baseFont ベースとするフォントの名前
+	* @param fallbackFont 代替えフォントとするフォントの名前
+	*/
+	void(*AddFallbackFont)(const char* baseFont, const char* fallbackFont);
 
 	/**
 	 * @brief 描画する文字のサイズを設定する
@@ -1080,6 +1293,66 @@ extern const struct __tagVideoAPI {
 	*/
 	void(*FormatText)(float x, float y, const char *str, ... );
 
+	/**
+	 * @brief レンダリング対象として使えるフレームバッファオブジェクトを作る
+	 * @param w 幅
+	 * @param h 高さ
+	 * @param imageFlags 画像を描画で用いる際のオプションを enum ImageFlags のゼロ個以上の組み合わせで指定
+	 * @retval フレームバッファオブジェクトのハンドル（DeleteFramebufferで解放が必要）
+	 */
+	void* (*CreateFramebuffer)(int w, int h, int imageFlags);
+
+	/**
+	* @brief フレームバッファオブジェクト fb への描画を開始する。
+	* @param fb レンダリング対象とするフレームバッファオブジェクトのハンドル
+	*/
+	void(*DrawStartFramebuffer)(void* fbo);
+
+	/**
+	* @brief フレームバッファオブジェクト fb への描画を開始する。
+	* @param fb レンダリング対象とするフレームバッファオブジェクトのハンドル
+	*/
+	void(*DrawEndFramebuffer)(void);
+
+	/**
+	 * @brief フレームバッファオブジェクトを解放する
+	 * @param fb 解放するフレームバッファオブジェクトのハンドル
+	 */
+	void(*DeleteFramebuffer)(void* fb);
+
+	/**
+	 * @brief フレームバッファオブジェクトに対応するDrawImageなどで使える画像ハンドルを取得する
+	 * @param fb フレームバッファオブジェクトのハンドル
+	 * @retval DrawImageなどで使える画像ハンドル
+	 */
+	int (*GetFrameBufferImage)(void* fb);
+
+	/**
+	* @brief SaveScreenShot関数のUTF8版
+	* @param l スクリーンショット範囲の左座標
+	* @param t スクリーンショット範囲の上座標
+	* @param w スクリーンショット範囲の幅
+	* @param h スクリーンショット範囲の高さ
+	* @param premult プレマルチプライド方式を前提とした出力にするかどうか
+	* @param name 保存するファイル名(拡張子で保存フォーマットを選択する)
+	* @retval true 保存成功
+	* @retval false 保存失敗
+	*/
+	bool(*SaveScreenShotUTF8)(int l, int t, int w, int h, bool premult, const char* name);
+
+	/**
+	* @brief 画面の座標(l,t)から幅w,高さhの範囲をスクリーンショットで保存する
+	* @param l スクリーンショット範囲の左座標
+	* @param t スクリーンショット範囲の上座標
+	* @param w スクリーンショット範囲の幅
+	* @param h スクリーンショット範囲の高さ
+	* @param premult プレマルチプライド方式を前提とした出力にするかどうか
+	* @param name 保存するファイル名(拡張子で保存フォーマットを選択する)
+	* @retval true 保存成功
+	* @retval false 保存失敗
+	*/
+	bool(*SaveScreenShot)(int l, int t, int w, int h, bool premult, const char* name);
+
 } Video;
 
 /**
@@ -1087,10 +1360,16 @@ extern const struct __tagVideoAPI {
  */
 extern const struct __tagMouseAPI {
 	/**
-	 * @brief マウスの左ボタンが押されているかどうか調べる
-	 * @retval true 押されている
-	 * @retval false 押されていない
-	 */
+	* @brief Video.Drawing()を使わずに入力を管理する場合に用いるマウス情報の更新命令。
+	* @note ライブラリの内部で利用されているため通常は利用者が呼び出す必要は無い。
+	*/
+	void (*Update)(void);
+
+	/**
+	* @brief マウスの左ボタンが押されているかどうか調べる
+	* @retval true 押されている
+	* @retval false 押されていない
+	*/
 	bool(*IsLeftButtonDown)(void);
 
 	/**
@@ -1108,12 +1387,172 @@ extern const struct __tagMouseAPI {
 	bool(*IsMiddleButtonDown)(void);
 
 	/**
+	* @brief マウスの左ボタンが押された瞬間かどうか調べる
+	* @retval true 押された瞬間である
+	* @retval false 押された瞬間ではない
+	*/
+	bool(*IsLeftButtonPush)(void);
+
+	/**
+	* @brief マウスの右ボタンが押された瞬間かどうか調べる
+	* @retval true 押された瞬間である
+	* @retval false 押された瞬間ではない
+	*/
+	bool(*IsRightButtonPush)(void);
+
+	/**
+	* @brief マウスのホイールが押された瞬間かどうか調べる
+	* @retval true 押された瞬間である
+	* @retval false 押された瞬間ではない
+	*/
+	bool(*IsMiddleButtonPush)(void);
+
+	/**
+	* @brief マウスの左ボタンが離されているかどうか調べる
+	* @retval true 離されている
+	* @retval false 離されていない
+	*/
+	bool(*IsLeftButtonUp)(void);
+
+	/**
+	* @brief マウスの右ボタンが離されているかどうか調べる
+	* @retval true 離されている
+	* @retval false 離されていない
+	*/
+	bool(*IsRightButtonUp)(void);
+
+	/**
+	* @brief マウスのホイールが離されているかどうか調べる
+	* @retval true 離されている
+	* @retval false 離されていない
+	*/
+	bool(*IsMiddleButtonUp)(void);
+
+	/**
+	* @brief マウスの左ボタンが離された瞬間かどうか調べる
+	* @retval true 離された瞬間である
+	* @retval false 離された瞬間ではない
+	*/
+	bool(*IsLeftButtonRelease)(void);
+
+	/**
+	* @brief マウスの右ボタンが離された瞬間かどうか調べる
+	* @retval true 離された瞬間である
+	* @retval false 離された瞬間ではない
+	*/
+	bool(*IsRightButtonRelease)(void);
+
+	/**
+	* @brief マウスのホイールが離された瞬間かどうか調べる
+	* @retval true 離された瞬間である
+	* @retval false 離された瞬間ではない
+	*/
+	bool(*IsMiddleButtonRelease)(void);
+
+	/**
 	* @brief 画面上におけるカーソルの位置を得る
 	* @param x カーソルのx座標が格納される変数のポインタ
 	* @param y カーソルのy座標が格納される変数のポインタ
 	*/
 	void(*GetCursorPos)(double *x, double *y);
 } Mouse;
+
+/**
+* @brief ジョイスティック情報
+*/
+extern const struct __tagJoystickAPI {
+	/**
+	 * @brief ジョイスティックポート数を取得
+	 * @retval ジョイスティックポート数
+	 */
+	int(*MaxJoystickPort)(void);
+
+	/**
+	* @brief ジョイスティック管理を初期化する
+	*/
+	void(*Initialize)(void);
+
+	/**
+	* @brief ジョイスティック管理を解放する
+	*/
+	void(*Finalize)(void);
+
+	/**
+	* @brief 接続されているジョイスティックを管理下に入れる
+	*/
+	void(*Connect)(void);
+
+	/**
+	* @brief 管理下にあるジョイスティックを全て管理下から外す
+	*/
+	void(*Disconnect)(void);
+
+	/**
+	* @brief 管理下のジョイスティックの情報を更新する
+	*/
+	void(*Update)(void);
+
+	/**
+	* @brief ポートid番にジョイスティックが接続されているかどうかを調べる
+	* @param id 調べるポート番号
+	* @retval true 接続されている
+	* @retval false 接続されていない
+	*/
+	bool(*IsPresented)(int id);
+
+	/**
+	* @brief ポートid番のジョイスティックが提供する軸の数を調べる
+	* @param id 調べるポート番号
+	* @retval >= 0 軸の数
+	* @retval <  0 ジョイスティックが接続されていない
+	*/
+	int(*GetAxesCount)(int id);
+
+	/**
+	* @brief ポートid番のジョイスティックが提供する軸axの状態を調べる
+	* @param id 調べるポート番号
+	* @param ax 調べる軸番号
+	* @retval 軸の状態が[-1.0..1.0]の範囲で返る
+	*/
+	float(*GetAxesStatus)(int id, int ax);
+
+	/**
+	* @brief ポートid番のジョイスティックが提供するボタンの数を調べる
+	* @param id 調べるポート番号
+	* @retval >= 0 ボタンの数
+	* @retval <  0 ジョイスティックが接続されていない
+	*/
+	int(*GetButtonCount)(int id);
+
+	/**
+	* @brief ポートid番のジョイスティックが提供するボタンbtnが押されているかどうか調べる
+	* @retval true 押されている
+	* @retval false 押されていない
+	*/
+	bool(*IsButtonDown)(int id, int btn);
+
+	/**
+	* @brief ポートid番のジョイスティックが提供するボタンbtnが押された瞬間かどうか調べる
+	* @retval true 押された瞬間である
+	* @retval false 押された瞬間ではない
+	*/
+	bool(*IsButtonPush)(int id, int btn);
+
+	/**
+	* @brief ポートid番のジョイスティックが提供するボタンbtnが離されているかどうか調べる
+	* @retval true 離されている
+	* @retval false 離されていない
+	*/
+	bool(*IsButtonUp)(int id, int btn);
+
+	/**
+	* @brief ポートid番のジョイスティックが提供するボタンbtnが離された瞬間かどうか調べる
+	* @retval true 離された瞬間である
+	* @retval false 離された瞬間ではない
+	*/
+	bool(*IsButtonRelease)(int id, int btn);
+} Joystick;
+
 /*
  * キーボードのキーを示すコード
  */

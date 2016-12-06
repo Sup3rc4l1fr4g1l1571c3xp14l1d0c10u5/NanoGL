@@ -9,6 +9,9 @@ void start(void)
 	// タイトルを設定
 	Video.SetWindowTitle("[Example] 03-TransformMulti");
 
+	// 画面を消去した際の背景色を設定
+	Video.SetClearColor(Video.RGB(128,128,255));
+
 	// 処理
 	while (Video.Drawing()) {
 

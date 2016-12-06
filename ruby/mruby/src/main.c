@@ -99,7 +99,7 @@ end\n \
 class << self\n \
 	alias :original_require :require\n \
 	def require(s)\n \
-		if (s.casecmp('NanoGL') == 0) \n \
+		if ['NanoGL', 'tempfile', 'io', 'dir'].any? { |name| s.casecmp(name) == 0 } \n \
 			return false\n \
 		else\n \
 			original_require(s)\n \
@@ -108,6 +108,10 @@ class << self\n \
 	def require_relative(s)\n \
 		begin\n \
 			cur = Dir.pwd\n \
+	        real = File.expand_path(s, cur)\n \
+			newdir = File.dirname(real)\n \
+	        s = './' + real[newdir.length .. -1]\n \
+			Dir.chdir(newdir)\n \
 			original_require(s)\n \
 		ensure\n \
 			Dir.chdir(cur)\n \
@@ -138,7 +142,7 @@ end\n \
 		char *p = strrchr(tp.c_str, '.');
 		if (p != NULL) {
 			*p = '\0';
-			tp = String.Join(tp, ".rb");
+			String.JoinDirect(&tp, ".rb");
 			path = strdup(tp.c_str);
 			String.Free(tp);
 		}
@@ -162,15 +166,23 @@ end\n \
 	}
 }
 
+static void check_exc(void)
+{
+	if (mrb->exc) {
+		mrb_value exc = mrb_obj_value(mrb->exc);
+		mrb_value backtrace = mrb_get_backtrace(mrb, exc);
+		Debug.PrintError("%s", mrb_str_to_cstr(mrb, mrb_inspect(mrb, backtrace)));
+		mrb_value inspect = mrb_inspect(mrb, exc);
+		Debug.PrintError("%s", mrb_str_to_cstr(mrb, inspect));
+		mrb->exc = NULL;
+	}
+
+}
+
 NanoGL_Finalize() {
 	if (mrb != NULL) {
-		if (mrb->exc) {
-			mrb_value exc = mrb_obj_value(mrb->exc);
-			mrb_value backtrace = mrb_get_backtrace(mrb, exc);
-			Debug.PrintError("%s", mrb_str_to_cstr(mrb, mrb_inspect(mrb, backtrace)));
-			mrb_value inspect = mrb_inspect(mrb, exc);
-			Debug.PrintError("%s", mrb_str_to_cstr(mrb, mrb_inspect(mrb, inspect)));
-		}
+		check_exc();
+
 		if (c != NULL) {
 			mrbc_context_free(mrb, c);
 		}
@@ -190,6 +202,7 @@ void start(void)
 {
 	if (mrb != NULL && fp != NULL && c != NULL) {
 		mrb_load_file_cxt(mrb, fp, c);
+		check_exc();
 	}
 }
 	

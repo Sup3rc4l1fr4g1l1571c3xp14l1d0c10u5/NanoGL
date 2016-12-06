@@ -6,6 +6,9 @@ void start(void)
 	// 画面サイズを縦横 512 ピクセル に 設定
 	Video.SetSize(512, 512);
 
+	// 画面を消去した際の背景色を設定
+	Video.SetClearColor(Video.RGB(128,128,255));
+
 	// タイトルを設定
 	Video.SetWindowTitle("[Example] 06-Mouse");
 

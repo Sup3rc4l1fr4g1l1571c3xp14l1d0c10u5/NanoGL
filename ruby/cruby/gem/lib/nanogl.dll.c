@@ -19,6 +19,11 @@ const struct __tagMouseAPI *GetMouseVTable(void) {
 }
 
 __declspec(dllexport) 
+const struct __tagJoystickAPI *GetJoystickVTable(void) {
+	return &Joystick;
+}
+
+__declspec(dllexport) 
 const struct __tagKeyboardAPI *GetKeyboardVTable(void) {
 	return &Keyboard;
 }
