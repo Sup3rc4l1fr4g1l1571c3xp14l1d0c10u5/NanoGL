@@ -15,6 +15,10 @@ module NanoGL
           6.times.inject(Array.new) { |s, x| s[x] = self[:m][x]; s }
         end
 
+        def dup()
+          6.times.inject(Matrix.new) { |s, x| s[:m][x] = self[:m][x]; s }
+        end
+
         def to_s()
           "Matrix(#{self.to_a.join(', ')})"
         end
@@ -314,7 +318,7 @@ module NanoGL
                :ArcTo, callback([:float, :float, :float, :float, :float], :void),
                :ClosePath, callback([], :void),
                :PathWinding, callback([Solidity], :void),
-               :ArcTo, callback([:float, :float, :float, :float, :float, Winding], :void),
+               :Arc, callback([:float, :float, :float, :float, :float, Winding], :void),
                :Rect, callback([:float, :float, :float, :float], :void),
                :RoundedRect, callback([:float, :float, :float, :float, :float], :void),
                :RoundedRectVarying, callback([:float, :float, :float, :float, :float, :float, :float, :float], :void),
@@ -719,7 +723,7 @@ module NanoGL
       # @return 作成した色データ
       #
       def HSLA(h, s, l, a);
-        VTABLE[:HSL].call(h, s, l, a).to_a
+        VTABLE[:HSLA].call(h, s, l, a).to_a
       end
 
       #
@@ -1080,7 +1084,7 @@ module NanoGL
       # t = tan(angle)
       # dst = [1,t,0,1,0,0]
       #
-      def TransformSkewY(dst, a)
+      def TransformSkewY(a)
         dst = VideoImpl::Matrix.new
         VTABLE[:TransformSkewY].call(dst, a)
         return dst
@@ -1097,7 +1101,7 @@ module NanoGL
       # | 0, 0, 1 |
       # dst = [x,0,0,y,0,0]
       #
-      def TransformScale(dst, sx, sy)
+      def TransformScale(sx, sy)
         dst = VideoImpl::Matrix.new
         VTABLE[:TransformScale].call(dst, sx, sy)
         return dst
@@ -1285,7 +1289,7 @@ module NanoGL
       # @return 作成された塗りつぶしパターン
       #
       def LinearGradient(sx, sy, ex, ey, icol, ocol)
-        VTABLE[:LinearGradient].call(sx, sy, ex, ey, icol, ocol)
+        VTABLE[:LinearGradient].call(sx, sy, ex, ey, VideoImpl::Color.from_a(icol), VideoImpl::Color.from_a(ocol))
       end
 
       #
@@ -1301,7 +1305,7 @@ module NanoGL
       # @return 作成された塗りつぶしパターン
       #
       def BoxGradient(x, y, w, h, r, f, icol, ocol)
-        VTABLE[:BoxGradient].call(x, y, w, h, r, f, icol, ocol)
+        VTABLE[:BoxGradient].call(x, y, w, h, r, f, VideoImpl::Color.from_a(icol), VideoImpl::Color.from_a(ocol))
       end
 
       #
@@ -1315,7 +1319,7 @@ module NanoGL
       # @return 作成された塗りつぶしパターン
       #
       def RadialGradient(cx, cy, inr, outr, icol, ocol)
-        VTABLE[:RadialGradient].call(cx, cy, inr, outr, icol, ocol)
+        VTABLE[:RadialGradient].call(cx, cy, inr, outr, VideoImpl::Color.from_a(icol), VideoImpl::Color.from_a(ocol))
       end
 
       #
