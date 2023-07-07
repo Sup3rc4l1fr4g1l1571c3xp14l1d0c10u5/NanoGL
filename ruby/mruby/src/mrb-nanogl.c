@@ -1,4 +1,4 @@
-#include <NanoGL/NanoGL.h>
+#include <NanoGL.h>
 #include <string.h>
 
 #include <mruby.h>
@@ -1237,7 +1237,7 @@ static mrb_value mrb_NanoGL_Video_DrawImageWithFillColor(mrb_state *mrb, mrb_val
 }
 
 //static mrb_value mrb_NanoGL_Video_FormatText(mrb_state *mrb, mrb_value self) {
-//  ruby ‚Ì‘®w’è‹@”\‚ğg‚Á‚Ä®Œ`‚µ‚½‚¤‚¦‚ÅText()–½—ß‚ğŒÄ‚×‚Î‚æ‚¢‚Ì‚Å•s—v
+//  ruby ï¿½Ìï¿½ï¿½ï¿½ï¿½wï¿½ï¿½@ï¿½\ï¿½ï¿½ï¿½gï¿½ï¿½ï¿½Äï¿½ï¿½`ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Text()ï¿½ï¿½ï¿½ß‚ï¿½ï¿½Ä‚×‚Î‚æ‚¢ï¿½Ì‚Å•sï¿½v
 //}
 
 static mrb_value mrb_NanoGL_Video_CreateFramebuffer(mrb_state *mrb, mrb_value self) {

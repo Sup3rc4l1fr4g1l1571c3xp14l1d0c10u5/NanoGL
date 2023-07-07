@@ -1,50 +1,50 @@
-#include <NanoGL/NanoGL.h>
+#include <NanoGL.h>
 
-// ƒQ[ƒ€‚ÌƒƒCƒ“ˆ—
+// ã‚²ãƒ¼ãƒ ã®ãƒ¡ã‚¤ãƒ³å‡¦ç†
 void start(void)
 {
-	// ‰æ–ÊƒTƒCƒY‚ðc‰¡ 512 ƒsƒNƒZƒ‹ ‚É Ý’è
+	// ç”»é¢ã‚µã‚¤ã‚ºã‚’ç¸¦æ¨ª 512 ãƒ”ã‚¯ã‚»ãƒ« ã« è¨­å®š
 	Video.SetSize(512, 512);
 
-	// ‰æ–Ê‚ðÁ‹Ž‚µ‚½Û‚Ì”wŒiF‚ðÝ’è
+	// ç”»é¢ã‚’æ¶ˆåŽ»ã—ãŸéš›ã®èƒŒæ™¯è‰²ã‚’è¨­å®š
 	Video.SetClearColor(Video.RGB(128,128,255));
 
-	// ƒ^ƒCƒgƒ‹‚ðÝ’è
+	// ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
 	Video.SetWindowTitle("[Example] 06-Mouse");
 
-	// ˆ—
+	// å‡¦ç†
 	while (Video.Drawing()) {
-		// ƒ}ƒEƒX‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ðŽæ“¾
+		// ãƒžã‚¦ã‚¹ã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å–å¾—
 		double x, y;
 		Mouse.GetCursorPos(&x, &y);
 
-		// ƒ}ƒEƒX‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ÉŽlŠpŒ`‚ð•\Ž¦‚·‚é
+		// ãƒžã‚¦ã‚¹ã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã«å››è§’å½¢ã‚’è¡¨ç¤ºã™ã‚‹
 		Video.BeginPath();
 		Video.Rect(x - 25, y - 25, 50, 50);
 		Video.ClosePath();
 
-		// ƒ}ƒEƒX‚Ì‰Ÿ‰º‚É‰ž‚¶‚ÄF‚ð•Ï‚¦‚é
+		// ãƒžã‚¦ã‚¹ã®æŠ¼ä¸‹ã«å¿œã˜ã¦è‰²ã‚’å¤‰ãˆã‚‹
 		if (Mouse.IsLeftButtonDown()) {
-			// ¶ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é
+			// å·¦ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹
 			Video.FillColor(Video.RGBA(255, 0, 0, 255));
 		}
 		else if (Mouse.IsRightButtonDown()) {
-			// ‰Eƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é
+			// å³ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹
 			Video.FillColor(Video.RGBA(0, 0, 255, 255));
 		}
 		else if (Mouse.IsMiddleButtonDown()) {
-			// ^‚ñ’†ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é
+			// çœŸã‚“ä¸­ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹
 			Video.FillColor(Video.RGBA(0, 255, 0, 255));
 		}
 		else
 		{
-			// ‚È‚É‚àƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢
+			// ãªã«ã‚‚ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„
 			Video.FillColor(Video.RGBA(255, 255, 255, 255));
 		}
 
 		Video.Fill();
 	}
 
-	// ˆ—‚ªI‚Á‚½‚Ì‚Å‰½‚à‚·‚é‚±‚Æ‚ª‚È‚¢
+	// å‡¦ç†ãŒçµ‚ã£ãŸã®ã§ä½•ã‚‚ã™ã‚‹ã“ã¨ãŒãªã„
 
 }

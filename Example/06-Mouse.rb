@@ -1,36 +1,36 @@
 require 'NanoGL'
 include NanoGL
 
-# ‰æ–ÊƒTƒCƒY‚ðc‰¡ 512 ƒsƒNƒZƒ‹ ‚É Ý’è
+# ç”»é¢ã‚µã‚¤ã‚ºã‚’ç¸¦æ¨ª 512 ãƒ”ã‚¯ã‚»ãƒ« ã« è¨­å®š
 Video.SetSize(512, 512)
 
-# ƒ^ƒCƒgƒ‹‚ðÝ’è
+# ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
 Video.SetWindowTitle("[Example] 06-Mouse")
 
-# ‰æ–Ê‚ðÁ‹Ž‚µ‚½Û‚Ì”wŒiF‚ðÝ’è
+# ç”»é¢ã‚’æ¶ˆåŽ»ã—ãŸéš›ã®èƒŒæ™¯è‰²ã‚’è¨­å®š
 Video.SetClearColor(Video.RGB(128,128,255))
 
-# XVˆ—
+# æ›´æ–°å‡¦ç†
 Video.Draw do
-	# ƒ}ƒEƒX‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ðŽæ“¾
+	# ãƒžã‚¦ã‚¹ã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã‚’å–å¾—
 	(x, y) = Mouse.GetCursorPos()
 
-	# ƒ}ƒEƒX‚Ì‰Ÿ‰º‚É‰ž‚¶‚ÄF‚ð•Ï‚¦‚é
+	# ãƒžã‚¦ã‚¹ã®æŠ¼ä¸‹ã«å¿œã˜ã¦è‰²ã‚’å¤‰ãˆã‚‹
 	if Mouse.IsLeftButtonDown()
-		# ¶ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é
+		# å·¦ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹
 		color = Video.RGBA(255, 0, 0, 255)
 	elsif Mouse.IsRightButtonDown()
-		# ‰Eƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é
+		# å³ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹
 		color = Video.RGBA(0, 0, 255, 255)
 	elsif Mouse.IsMiddleButtonDown()
-		# ^‚ñ’†ƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚é
+		# çœŸã‚“ä¸­ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ã‚‹
 		color = Video.RGBA(0, 255, 0, 255)
 	else
-		# ‚È‚É‚àƒ{ƒ^ƒ“‚ª‰Ÿ‚³‚ê‚Ä‚¢‚È‚¢
+		# ãªã«ã‚‚ãƒœã‚¿ãƒ³ãŒæŠ¼ã•ã‚Œã¦ã„ãªã„
 		color = Video.RGBA(255, 255, 255, 255)
 	end
 
-	# ƒ}ƒEƒX‚ÌƒJ[ƒ\ƒ‹ˆÊ’u‚ÉŽlŠpŒ`‚ð•\Ž¦‚·‚é
+	# ãƒžã‚¦ã‚¹ã®ã‚«ãƒ¼ã‚½ãƒ«ä½ç½®ã«å››è§’å½¢ã‚’è¡¨ç¤ºã™ã‚‹
 	Video.Path do
 		Video.Rect(x - 25, y - 25, 50, 50);
 	end

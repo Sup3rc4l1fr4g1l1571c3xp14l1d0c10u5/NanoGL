@@ -2,11 +2,11 @@ require 'ffi'
 
 module NanoGL
   if FFI::Platform.mac?
-    SHARED_LIB_PATH = File.expand_path('../nanogl.bundle', __FILE__)
+    SHARED_LIB_PATH = File.expand_path('../libnanogl.bundle', __FILE__)
   elsif FFI::Platform.windows?
-    SHARED_LIB_PATH = File.expand_path('../nanogl.dll', __FILE__)
+    SHARED_LIB_PATH = File.expand_path('../libnanogl.dll', __FILE__)
   elsif FFI::Platform.unix?
-    SHARED_LIB_PATH = File.expand_path('../nanogl.so', __FILE__)
+    SHARED_LIB_PATH = File.expand_path('../libnanogl.so', __FILE__)
   else
     raise "NanoGL is not supported in this platform."
   end

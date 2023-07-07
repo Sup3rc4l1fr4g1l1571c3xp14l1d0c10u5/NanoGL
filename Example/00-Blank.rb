@@ -1,16 +1,16 @@
 require 'NanoGL'
 include NanoGL
 
-# ‰æ–ÊƒTƒCƒY‚ğc‰¡ 512 ƒsƒNƒZƒ‹ ‚É İ’è
+# ç”»é¢ã‚µã‚¤ã‚ºã‚’ç¸¦æ¨ª 512 ãƒ”ã‚¯ã‚»ãƒ« ã« è¨­å®š
 Video.SetSize(512, 512)
 
-# ƒ^ƒCƒgƒ‹‚ğİ’è
+# ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
 Video.SetWindowTitle("[Example] 00-Blank")
 
-# ‰æ–Ê‚ğÁ‹‚µ‚½Û‚Ì”wŒiF‚ğİ’è
+# ç”»é¢ã‚’æ¶ˆå»ã—ãŸéš›ã®èƒŒæ™¯è‰²ã‚’è¨­å®š
 Video.SetClearColor(Video.RGB(0,255,0))
 
-# XVˆ—
+# æ›´æ–°å‡¦ç†
 Video.Draw do
 
 end

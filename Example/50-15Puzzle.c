@@ -3,62 +3,62 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include "NanoGL/NanoGL.h"
+#include <NanoGL.h>
 
-// �p�Y���̔Ֆʂ̑傫��
+// パズルの盤面の大きさ
 #define PAZZLE_BOARD_WIDTH   512
 #define PAZZLE_BOARD_HEIGHT  512
 
-// �X���C�h�A�j���̑��x
+// スライドアニメの速度
 #define SLIDE_SPEED_X (PAZZLE_BOARD_WIDTH / 32)	
 #define SLIDE_SPEED_Y (PAZZLE_BOARD_HEIGHT / 32)	
 
-// ��l�����𐶐�
+// 一様乱数を生成
 static double urandom(void) {
 	return ((double)rand() + 1.0) / ((double)RAND_MAX + 2.0);
 }
 
-// �Ֆʏ�̃^�C�����Ǘ�����
+// 盤面上のタイルを管理する
 //
-// �ȉ��̂悤�ɔՖʂ̃}�X�ɂ͔ԍ����U���Ă���
-// ������������������
-// �� 0�� 1�� 2�� 3��
-// ������������������
-// �� 4�� 5�� 6�� 7��
-// ������������������
-// �� 8�� 9��10��11��
-// ������������������
-// ��12��13��14��15��
-// ������������������
-// 9�Ԃ̃}�X�ɂ���^�C���̐�����ǂݏ����������ꍇ�� board[9] ��ǂݏ�������
+// 以下のように盤面のマスには番号が振られている
+// ┌─┬─┬─┬─┐
+// │ 0│ 1│ 2│ 3│
+// ├─┼─┼─┼─┤
+// │ 4│ 5│ 6│ 7│
+// ├─┼─┼─┼─┤
+// │ 8│ 9│10│11│
+// ├─┼─┼─┼─┤
+// │12│13│14│15│
+// └─┴─┴─┴─┘
+// 9番のマスにあるタイルの数字を読み書きしたい場合は board[9] を読み書きする
 static int board[16];
 
-// �^�C�����}�X�̒��S����㉺���E�ɂǂꂾ������Ă��邩���Ǘ�����
-// �A�j���[�V���������Ŏg��
-static int board_x[16];	// �l�� 0 �̏ꍇ�� ���E�ǂ���ɂ�����Ă��Ȃ��@���̏ꍇ�̓^�C���͍��ɂ���Ă���A���̏ꍇ�̓^�C���͉E�ɂ���Ă���
-static int board_y[16];	// �l�� 0 �̏ꍇ�� �㉺�ǂ���ɂ�����Ă��Ȃ��@���̏ꍇ�̓^�C���͏�ɂ���Ă���A���̏ꍇ�̓^�C���͉��ɂ���Ă���
+// タイルがマスの中心から上下左右にどれだけずれているかを管理する
+// アニメーション処理で使う
+static int board_x[16];	// 値が 0 の場合は 左右どちらにもずれていない　負の場合はタイルは左にずれている、正の場合はタイルは右にずれている
+static int board_y[16];	// 値が 0 の場合は 上下どちらにもずれていない　負の場合はタイルは上にずれている、正の場合はタイルは下にずれている
 
-// �^�C���̉摜��ID�ƕ��A����
+// タイルの画像のIDと幅、高さ
 static int imageId;
 static int imageWidth, imageHeight;
 
 //
-// �ŏ��̔Ֆʂ��쐬����B
-// �����_���ɏ����z�u���쐬����Ɖ����Ȃ��ՖʂƂȂ邱�Ƃ�����̂�
-// �����Ȃ��Ֆʂ̂Ƃ��͉�����ՖʂɂȂ�悤���삷��
+// 最初の盤面を作成する。
+// ランダムに初期配置を作成すると解けない盤面となることがあるので
+// 解けない盤面のときは解ける盤面になるよう操作する
 // 
 void init_board(void)
 {
 
-	// �Ֆʏ��0����15(��)�܂ł̃^�C�����Z���̔ԍ����ɕ��ׂ�
-	// �܂��A�^�C���̂���͂Ȃ��Ƃ���B
+	// 盤面上に0から15(空き)までのタイルをセルの番号順に並べる
+	// また、タイルのずれはなしとする。
 	for (int i = 0; i < 16; i++) {
 		board[i] = i;
 		board_x[i] = 0;
 		board_y[i] = 0;
 	}
 
-	// Fisher-Yates shuffle�A���S���Y���ŃV���b�t�����s��
+	// Fisher-Yates shuffleアルゴリズムでシャッフルを行う
 	for (int i = 16; i > 1; --i) {
 		int a = i - 1;
 		int b = (int)floor(urandom() * (i + 1));
@@ -67,8 +67,8 @@ void init_board(void)
 		board[b] = tmp;
 	}
 
-	// �V���b�t����̃^�C���̔z�u�����̏�Ԃɖ߂�i�܂蓚�������邩�H�j�𔻒�
-	// �u����p��������� http://hp.vector.co.jp/authors/VA010128/math/puzzle/P15-1.html
+	// シャッフル後のタイルの配置が元の状態に戻る（つまり答えがあるか？）を判定
+	// 置換を用いた解説は http://hp.vector.co.jp/authors/VA010128/math/puzzle/P15-1.html
 	int sum = 0;
 	for (int i = 0; i < 16; i++) {
 		int base = board[i];
@@ -86,8 +86,8 @@ void init_board(void)
 		}
 	}
 
-	// �����̂Ȃ��^�C���z�u�̏ꍇ�A�^�C���̔z�u�����E���]������Ɠ����̂���z�u�ɂȂ邱�Ƃ��m���Ă���
-	// (�t�ɓ����̂���^�C���̔z�u�����E���]������Ɖ����Ȃ��Ȃ�)
+	// 答えのないタイル配置の場合、タイルの配置を左右反転させると答えのある配置になることが知られている
+	// (逆に答えのあるタイルの配置を左右反転させると解けなくなる)
 	if ((sum % 2) == 1) {
 		for (int y = 0; y < 4; y++) {
 			for (int x = 0; x < 2; x++) {
@@ -99,7 +99,7 @@ void init_board(void)
 	}
 }
 
-// �Ֆʂ���ʏ�ɕ`�悷��
+// 盤面を画面上に描画する
 void draw_board(void)
 {
 	Video.BeginPath();
@@ -131,7 +131,7 @@ void draw_board(void)
 	}
 }
 
-// �Ֆʂ��N���b�N���ꂽ�Ƃ��Ƀ^�C���𓮂���
+// 盤面をクリックされたときにタイルを動かす
 bool click_board(int x, int y)
 {
 	int cx = x * 4 / PAZZLE_BOARD_WIDTH;
@@ -151,9 +151,9 @@ bool click_board(int x, int y)
 	int blankCellY = blankCell / 4;
 
 	if (cx != blankCellX && cy == blankCellY) {
-		// �󔒃Z���Ɛ�����������v����Z�����ړ�
+		// 空白セルと水平方向が一致するセルを移動
 		if (cx > blankCellX) {
-			// �E���獶�Ɉړ�
+			// 右から左に移動
 			for (int i = blankCellX; i < cx; i++) {
 				board_x[blankCellY * 4 + i] = PAZZLE_BOARD_WIDTH / 4;
 				board[blankCellY * 4 + i] = board[blankCellY * 4 + i + 1];
@@ -162,7 +162,7 @@ bool click_board(int x, int y)
 			return true;
 		}
 		else if (cx < blankCellX) {
-			// ������E�Ɉړ�
+			// 左から右に移動
 			for (int i = blankCellX; i > cx; i--) {
 				board_x[blankCellY * 4 + i] = -PAZZLE_BOARD_WIDTH / 4;
 				board[blankCellY * 4 + i] = board[blankCellY * 4 + i - 1];
@@ -172,9 +172,9 @@ bool click_board(int x, int y)
 		}
 	}
 	else if (cx == blankCellX && cy != blankCellY) {
-		// �󔒃Z���Ɛ�����������v����Z�����ړ�
+		// 空白セルと垂直方向が一致するセルを移動
 		if (cy > blankCellY) {
-			// �������Ɉړ�
+			// 下から上に移動
 			for (int i = blankCellY; i < cy; i++) {
 				board_y[i * 4 + blankCellX] = PAZZLE_BOARD_HEIGHT / 4;
 				board[i * 4 + blankCellX] = board[(i + 1) * 4 + blankCellX];
@@ -183,7 +183,7 @@ bool click_board(int x, int y)
 			return true;
 		}
 		else if (cy < blankCellY) {
-			// �ォ�牺�Ɉړ�
+			// 上から下に移動
 			for (int i = blankCellY; i > cy; i--) {
 				board_y[i * 4 + blankCellX] = -PAZZLE_BOARD_HEIGHT / 4;
 				board[i * 4 + blankCellX] = board[(i - 1) * 4 + blankCellX];
@@ -195,7 +195,7 @@ bool click_board(int x, int y)
 	return false;
 }
 
-// �Ֆʂ��������������肷��
+// 盤面が完成したか判定する
 bool is_complete_board()
 {
 	for (int i = 0; i < 16; i++) {
@@ -206,10 +206,10 @@ bool is_complete_board()
 	return true;
 }
 
-// �Ֆʂ̃A�j���[�V�������s��
+// 盤面のアニメーションを行う
 bool animate_board()
 {
-	// �^�C���̂���ʂ��O�ɋ߂Â���
+	// タイルのずれ量を０に近づける
 	for (int i = 0; i < 16; i++) {
 		if (board_x[i] > 0) {
 			board_x[i] = max(board_x[i] - SLIDE_SPEED_X, 0);
@@ -225,7 +225,7 @@ bool animate_board()
 		}
 	}
 
-	// ���ׂĂ̂���ʂ��O�ɂȂ�����A�j���[�V��������
+	// すべてのずれ量が０になったらアニメーション完了
 	for (int i = 0; i < 16; i++) {
 		if (board_x[i] || board_y[i]) {
 			return true;
@@ -234,36 +234,36 @@ bool animate_board()
 	return false;
 }
 
-// �Q�[���̃��C������
+// ゲームのメイン処理
 void start(void)
 {
-	// ��ʃT�C�Y���c�� 512 �s�N�Z�� �� �ݒ�
+	// 画面サイズを縦横 512 ピクセル に 設定
 	Video.SetSize(512, 512);
 
-	// �^�C�g����ݒ�
+	// タイトルを設定
 	Video.SetWindowTitle("[Example] 50-15Puzzle");
 
-	// ���ʉ������[�h
+	// 効果音をロード
 	Sound.ChannelCreate(0, "./Sound/beep.mp3");
 	
-	// TrueType�t�H���g�����[�h����"ipa"�Ƃ������O�����蓖��
+	// TrueTypeフォントをロードして"ipa"という名前を割り当て
 	Video.CreateFont("ipa", "./Font/IPAexfont00301/ipaexg.ttf");
-	// ���O"ipa"���w�肵�ĕ`��Ɏg�p����t�H���g�Ɏw��
+	// 名前"ipa"を指定して描画に使用するフォントに指定
 	Video.FontFace("ipa");
 
-	// �摜�t�@�C����ǂݍ��݁A�T�C�Y���擾
+	// 画像ファイルを読み込み、サイズを取得
 	imageId = Video.CreateImage("./Image/Image.png", IMAGE_RESIZE_NEAREST);
 	Video.ImageSize(imageId, &imageWidth, &imageHeight);
 
-	// �Ֆʍ쐬
+	// 盤面作成
 	init_board();
 
-	// �{�^�������J�E���^��p�ӂ��ď�����
+	// ボタン押下カウンタを用意して初期化
 	int btn = 0;
 
 	while (Video.Drawing())
 	{
-		// �Ֆʕ`��
+		// 盤面描画
 		Video.DrawImage(imageId, 0, 0, imageWidth, imageHeight, 0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT, 0.0f, 1.0f);
 
 		Video.BeginPath();
@@ -272,7 +272,7 @@ void start(void)
 		Video.Fill();
 		Video.ClosePath();
 
-		// ���b�Z�[�W�\��
+		// メッセージ表示
 		Video.BeginPath();
 		Video.FontSize(24);
 		Video.FillColor(Video.RGB(0, 0, 0));
@@ -281,7 +281,7 @@ void start(void)
 		Video.Fill();
 		Video.ClosePath();
 
-		// �N���b�N���ꂽ��J��
+		// クリックされたら遷移
 		if (Mouse.IsLeftButtonDown()) {
 			btn++;
 		}
@@ -297,18 +297,18 @@ void start(void)
 
 	}
 
-	// �X�e�[�W�J�n�O�̃A�j���[�V����
+	// ステージ開始前のアニメーション
 	double start = Video.GetTime();
 	while (Video.Drawing())
 	{
-		// �Ֆʕ`��
+		// 盤面描画
 		draw_board();
 
-		// ��Ɍ��摜��\��
+		// 上に元画像を表示
 		float diff = 1.0f - (float)min(1.0, Video.GetTime() - start);
 		Video.DrawImage(imageId, 0, 0, imageWidth, imageHeight, 0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT, 0.0f, diff);
 
-		// ���b�Z�[�W�\��
+		// メッセージ表示
 		Video.BeginPath();
 		Video.FillColor(Video.RGB(0, 255, 0));
 		Video.FontSize(80);
@@ -320,7 +320,7 @@ void start(void)
 		Video.Restore();
 		Video.ClosePath();
 
-		// 1�b�o�߂�����J��
+		// 1秒経過したら遷移
 		if (Video.GetTime() - start >= 1.0) {
 
 			break;
@@ -329,19 +329,19 @@ void start(void)
 	}
 
 
-	// �Q�[����
+	// ゲーム中
 	start = Video.GetTime();
 	int step = 0;
 	while (Video.Drawing())
 	{
 		float diff = 1.0f - (float)min(1.0, Video.GetTime() - start);
 
-		// �Ֆʕ`��
+		// 盤面描画
 		draw_board();
 
 		if (diff > 0)
 		{
-			// ���b�Z�[�W�\��
+			// メッセージ表示
 			Video.BeginPath();
 			Video.FillColor(Video.RGBA(0, 255, 0, (uint8_t)(diff * 255)));
 			Video.FontSize(80);
@@ -370,7 +370,7 @@ void start(void)
 				break;
 			}
 			else if (btn == 1) {
-				// �N���b�N���ꂽ��p�l���𓮂���
+				// クリックされたらパネルを動かす
 				double xpos, ypos;
 				Mouse.GetCursorPos(&xpos, &ypos);
 				if (click_board((int)xpos, (int)ypos))
@@ -383,32 +383,32 @@ void start(void)
 
 	}
 
-	// �N���A��ʑO�̃A�j���[�V����
+	// クリア画面前のアニメーション
 	start = Video.GetTime();
 	while (Video.Drawing())
 	{
-		// �Ֆʕ`��
+		// 盤面描画
 		draw_board();
 
-		// ��Ɍ��摜��\��
+		// 上に元画像を表示
 		float diff = (float)min(1.0, Video.GetTime() - start);
 		Video.DrawImage(imageId, 0, 0, imageWidth, imageHeight, 0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT, 0.0f, diff);
 
-		// 1�b�o�߂�����J��
+		// 1秒経過したら遷移
 		if (Video.GetTime() - start >= 1.0) {
 			break;
 		}
 
 	}
 
-	// �N���A��ʑO�̃A�j���[�V����(2)
+	// クリア画面前のアニメーション(2)
 	start = Video.GetTime();
 	while (Video.Drawing())
 	{
-		// �Ֆʕ`��
+		// 盤面描画
 		draw_board();
 
-		// ��Ɍ��摜��\��
+		// 上に元画像を表示
 		Video.DrawImage(imageId, 0, 0, imageWidth, imageHeight, 0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT, 0.0f, 1.0);
 
 		float diff = (float)min(1.0, Video.GetTime() - start);
@@ -418,7 +418,7 @@ void start(void)
 		Video.Fill();
 		Video.ClosePath();
 
-		// 2�b�o�߂�����J��
+		// 2秒経過したら遷移
 		if (Video.GetTime() - start >= 1.0) {
 
 			break;
@@ -426,10 +426,10 @@ void start(void)
 
 	}
 
-	// �N���A���
+	// クリア画面
 	while (Video.Drawing())
 	{
-		// ���摜��\��
+		// 元画像を表示
 		Video.DrawImage(imageId, 0, 0, imageWidth, imageHeight, 0, 0, PAZZLE_BOARD_WIDTH, PAZZLE_BOARD_HEIGHT, 0.0f, 1.0f);
 
 		Video.BeginPath();
@@ -438,7 +438,7 @@ void start(void)
 		Video.Fill();
 		Video.ClosePath();
 
-		// ���b�Z�[�W�\��
+		// メッセージ表示
 		Video.BeginPath();
 		Video.FillColor(Video.RGB(0, 0, 0));
 		Video.TextAlign(ALIGN_CENTER | ALIGN_MIDDLE);
@@ -447,11 +447,11 @@ void start(void)
 		Video.Text(PAZZLE_BOARD_WIDTH / 2, PAZZLE_BOARD_HEIGHT / 2 - 50, "Complete!", NULL);
 
 		Video.FontSize(24);
-		Video.FormatText(PAZZLE_BOARD_WIDTH / 2, PAZZLE_BOARD_HEIGHT / 2 + 50, "�N���A�萔 %d ��", step);
+		Video.FormatText(PAZZLE_BOARD_WIDTH / 2, PAZZLE_BOARD_HEIGHT / 2 + 50, "クリア手数 %d 回", step);
 
 		Video.ClosePath();
 
-		// �N���b�N���ꂽ��J��
+		// クリックされたら遷移
 		if (Mouse.IsLeftButtonDown()) {
 			btn++;
 		}
@@ -463,5 +463,5 @@ void start(void)
 
 	}
 
-	// ����ȏ�Ȃ��̂ŏI��
+	// これ以上ないので終了
 }

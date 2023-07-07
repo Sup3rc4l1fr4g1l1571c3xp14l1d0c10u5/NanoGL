@@ -1,66 +1,66 @@
-#include <NanoGL/NanoGL.h>
+#include <NanoGL.h>
 
-// �{�[���̏���\������\����
+// ボールの情報を表現する構造体
 struct ball
 {
-	float x;	// �{�[����X���W
-	float y;	// �{�[����Y���W
-	float sx;	// �{�[����X�����ړ����x
-	float sy;	// �{�[����Y�����ړ����x
+	float x;	// ボールのX座標
+	float y;	// ボールのY座標
+	float sx;	// ボールのX方向移動速度
+	float sy;	// ボールのY方向移動速度
 };
 
-// �{�[������1000���
+// ボール情報を1000個作る
 struct ball balls[1000];
 
-// �Q�[���̃��C������
+// ゲームのメイン処理
 void start(void)
 {
-	// ��ʃT�C�Y���c�� 512 �s�N�Z�� �� �ݒ�
+	// 画面サイズを縦横 512 ピクセル に 設定
 	Video.SetSize(512, 512);
 
-	// �^�C�g����ݒ�
+	// タイトルを設定
 	Video.SetWindowTitle("[Example] 08-Sprite");
 
-	// �v���O�����̒u���Ă���f�B���N�g������Ƃ���
-	// Image �t�H���_���� ball.png �Ƃ����t�@�C����ǂݍ��݁A�摜ID�� img_ball�ɐݒ肷��
-	// �摜�I�v�V�����͎w�肵�Ȃ��̂� 0 ������
+	// プログラムの置いてあるディレクトリを基準として
+	// Image フォルダ内の ball.png というファイルを読み込み、画像IDを img_ballに設定する
+	// 画像オプションは指定しないので 0 を入れる
 	int img_ball = Video.CreateImage("./Image/ball.png", 0);
 
-	// �摜�T�C�Y���擾���ĕϐ� width �� �ϐ� height �ɓ����
+	// 画像サイズを取得して変数 width と 変数 height に入れる
 	int width, height;
 	Video.ImageSize(img_ball, &width, &height);
 
-	// �{�[���̈ʒu�ƈړ�������ݒ肷��
+	// ボールの位置と移動方向を設定する
 	for (int i=0; i<1000; i++)
 	{
-		// �ړ����������W�A���ŎZ�o
+		// 移動方向をラジアンで算出
 		float rad = Video.DegToRad(360.0f * i / 1000);
 
 		balls[i].x = 512 / 2;
 		balls[i].y = 512 / 2;
-		balls[i].sx = (float)cos(rad) * 2.0f;	// �ړ����������ɉ������ړ��ʂ�cos�֐��ŎZ�o���A���x����Z
-		balls[i].sy = (float)sin(rad) * 2.0f;	// �ړ����������ɏc�����ړ��ʂ�sin�֐��ŎZ�o���A���x����Z
+		balls[i].sx = (float)cos(rad) * 2.0f;	// 移動方向を元に横方向移動量をcos関数で算出し、速度を乗算
+		balls[i].sy = (float)sin(rad) * 2.0f;	// 移動方向を元に縦方向移動量をsin関数で算出し、速度を乗算
 	}
 
-	// ����
+	// 処理
 	while (Video.Drawing()) {
 
-		// �{�[���ЂƂÂړ��������s��
+		// ボールひとつづつ移動処理を行う
 		for (int i = 0; i<1000; i++)
 		{
-			// �{�[���̌��݈ʒu�Ɉړ����x�����Z���Ď��̈ʒu�Ɉړ�
+			// ボールの現在位置に移動速度を加算して次の位置に移動
 			balls[i].x = balls[i].x + balls[i].sx;
 			balls[i].y = balls[i].y + balls[i].sy;
 
-			//��ʂ���͂ݏo�����Ƃ��Ă���{�[���͕����𔽓]�����邱�Ƃňړ��������t�ɂ��ĕǂŔ��˂����悤�Ɍ�����
+			//画面からはみ出そうとしているボールは符号を反転させることで移動方向を逆にして壁で反射したように見せる
 
-			// ��ʂ̍��E����͂ݏo���Ă���ꍇ
+			// 画面の左右からはみ出している場合
 			if ((balls[i].x < 0) || (512 <= balls[i].x))
 			{
 				balls[i].sx = balls[i].sx * -1;
 			}
 
-			// ��ʂ̏㉺����͂ݏo���Ă���ꍇ
+			// 画面の上下からはみ出している場合
 			if ((balls[i].y < 0) || (512 <= balls[i].y))
 			{
 				balls[i].sy = balls[i].sy * -1;
@@ -68,14 +68,14 @@ void start(void)
 		}
 
 
-		// �{�[���ЂƂÂ`�悷��
+		// ボールひとつづつ描画する
 		for (int i = 0; i < 1000; i++)
 		{
-			// �{�[���̈ʒu�Ƀ{�[���̉摜�̒��S������悤�Ɉʒu�𒲐����ĕ`��
+			// ボールの位置にボールの画像の中心がくるように位置を調整して描画
 			Video.DrawImage(img_ball, 0, 0, width, height, balls[i].x - width / 2, balls[i].y - height / 2, width, height, 0, 1.0f);
 		}
 	}
 
-	// �������I�����̂ŉ������邱�Ƃ��Ȃ�
+	// 処理が終ったので何もすることがない
 
 }

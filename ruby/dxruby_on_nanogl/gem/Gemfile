@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+
+# Specify your gem's dependencies in dxruby_on_nanogl.gemspec
+gemspec
+
+gem 'nanogl',  ">= 0.3.0"

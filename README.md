@@ -4,226 +4,124 @@ NanoGL はプログラミング初学者向けのシンプルなゲームプロ�
 
 ## 概要
 
-  - コンパイルや配布が手軽で容易
-  - IDEの利用を前提として整理されたAPI
-  - ささやかながらクロスプラットフォーム(Windows/MacOSX/Ubuntu)対応
-  - 学習の参考向けによくあるゲームの実装例を提供
-  - CRuby, mruby での利用が可能です。言語仕様の差異に注意して実装すれば、CRubyとmrubyで同一のコードが動作します。
+- コンパイルや配布が手軽で容易
+- IDEの利用を前提として整理された単純なAPI
+- ささやかながらクロスプラットフォーム(Windows/MacOSX/Ubuntu)対応
+- 学習の参考向けによくあるゲームの実装例を提供
+- CRuby, mruby での利用が可能です。言語仕様の差異に注意して実装すれば、CRubyとmrubyで同一のコードが動作します。
 
 ## 利用技術
 
 NanoGL ではいくつかのオープンソースプロジェクトの成果物を用いています。
 
-  * [NanoVG] - Antialiased 2D vector drawing library on top of OpenGL for UI and visualizations.
-  * [GLFW3] - Cross-platform library for creating windows with OpenGL contexts and receiving input and events.
-  * [OpenAL-Soft] - Cross-platform library implementation of the OpenAL 3D audio API.
-  * [GLEW] - Cross-platform open-source C/C++ extension loading library.
-  * [libmad] - High-quality MPEG audio decoder library.
-  * [stb] - Single file, public domain library.
-  * [TinyJPEG] - Single header lib for JPEG encoding. Public domain. C99. stb style.
+* [NanoVG] - Antialiased 2D vector drawing library on top of OpenGL for UI and visualizations.
+* [GLFW3] - Cross-platform library for creating windows with OpenGL contexts and receiving input and events.
+* [miniaudio] - An audio playback and capture library in a single source file.
+* [glad] - Multi-Language Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator.
+* [stb] - Single file, public domain library.
 
-## インストールからサンプル起動まで
+## `libnanogl.a`ビルド方法
 
-  * 現在の最新版は 0.2.2 です。
-  * github ページの release タブコンパイル済みバイナリを使う（手軽でおすすめ）
-    * NanoGL-0.2.2-Win32.zip をダウンロードする
-    * NanoGL-0.2.2-Win32.zip を展開する
-    * nanogl-win32 フォルダを開く
-    * MinGW32/MSYS を利用している場合
-      * msys.bat を起動して ./nanogl-win32/mingw に移動
-      * make -f Makefile.example と入力するとサンプルのコンパイルが行われます。
-    * VisualStudio 2015 を利用している場合
-      * VS2015 x86 Native Tools Command Prompt を起動して ./nanogl-win32/vs14 に移動
-      * build-example.bat を実行するとサンプルのコンパイルが行われます
-    * MacOS X (el capitan) / Ubuntu 16.04 を利用している場合
-      * コンパイル済みバイナリを提供していません。ソースからビルドしてください
+### Windows環境の場合
+1. MSYS32 を導入してください。
+   - 32bit環境向けの場合
+     - https://repo.msys2.org/distrib/i686/msys2-base-i686-20210705.sfx.exe
+   - 64bit環境向けの場合
+     - https://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20230526.sfx.exe
 
-## ソースからビルド
+2. 追加パッケージを導入します
+   1. msys.bat を起動します。
+   2. 以下のコマンドを実行し、追加パッケージを導入します。
+      ```shell
+      $ pacman -S git
+      $ pacman -S python3
+      $ pacman -S python3-pip
+      ```
 
-  * 現在の最新版は 0.2.2 です。
-  * 以下から最新版のソースコードをダウンロードしてください
-    * https://github.com/Sup3rc4l1fr4g1l1571c3xp14l1d0c10u5/NanoGL/releases/
+3. ビルドを行います。
+   1. `msys.bat` を起動して `./nanogl/` に移動
+   2. `make all` を実行
 
-### MinGW/MSYS
+### Mac環境の場合
 
-ビルドには以下の環境が必要です
+1. `XCode Command Line Tools` を導入してください。
+    1. Appstoreから `XCode` を導入します。
+    2. ターミナルを開き以下のコマンドを実行して`XCode Command Line Tools` を導入します。
+       ```shell
+       $ xcode-select --install
+       ```
+2. Homebrew を導入してください。
+3. 以下のコマンドを入力し、追加パッケージを導入します。
+   ```shell
+   $ brew install python3
+   ```
+4. ビルドを行います。
+   1. ターミナル上で `./nanogl/` に移動
+   2. `make all` を実行
 
-  * MSYS 1.0.11
-    * https://sourceforge.net/projects/mingw/files/MSYS/Base/msys-core/msys-1.0.11/msysCORE-1.0.11-bin.tar.gz
-    * 追加で以下のパッケージが必要です
-      * https://sourceforge.net/projects/mingw/files/MSYS/Base/gettext/gettext-0.18.1.1-1/libintl-0.18.1.1-1-msys-1.0.17-dll-8.tar.lzma
-      * https://sourceforge.net/projects/mingw/files/MSYS/Base/libiconv/libiconv-1.14-1/libiconv-1.14-1-msys-1.0.17-dll-2.tar.lzma
-      * https://sourceforge.net/projects/mingw/files/MSYS/Base/xz/xz-4.999.9beta_20100401-1/liblzma-4.999.9beta_20100401-1-msys-1.0.13-dll-1.tar.gz
-      * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libxml2/libxml2-2.7.6-1/libxml2-2.7.6-1-msys-1.0.13-dll-2.tar.lzma
-      * https://sourceforge.net/projects/mingw/files/MSYS/Extension/zlib/zlib-1.2.7-1/zlib-1.2.7-1-msys-1.0.17-dll.tar.lzma
-  * gcc version 4.8.5 (thread:win32 exception:sjlj)
-    * http://nbtelecom.dl.sourceforge.net/project/mingw-w64/Toolchains%20targetting%20Win32/Personal%20Builds/mingw-builds/4.8.5/threads-win32/sjlj/i686-4.8.5-release-win32-sjlj-rt_v4-rev0.7z
-  * cmake (GLFW3 と OpenAL のコンパイルに必要です。)
-    * https://cmake.org/files/v3.6/cmake-3.6.0-rc1-win32-x86.zip
-  * wget (利用しているオープンソースパッケージの取得に必要です)
-    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/wget/wget-1.12-1/wget-1.12-1-msys-1.0.13-bin.tar.lzma
-    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/openssl/openssl-1.0.0-1/libopenssl-1.0.0-1-msys-1.0.13-dll-100.tar.lzma
-  * patch (いくつかの修正パッチの適用に必要です。)
-    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/patch/patch-2.6.1-1/patch-2.6.1-1-msys-1.0.13-bin.tar.lzma
-  * bsdtar (ダウンロードしたパッケージの展開に利用します。.)
-    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libarchive/libarchive-2.8.3-1/libarchive-2.8.3-1-msys-1.0.13-dll-2.tar.lzma
-    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/libarchive/libarchive-2.8.3-1/bsdtar-2.8.3-1-msys-1.0.13-bin.tar.lzma
+### Ubuntu環境の場合
 
-msys.bat を開いて以下を実行します。
+（動作確認がとれしたい追記予定）
 
-```sh
-$ bsdtar -m -xf NanoGL-0.2.2.zip
-$ cd ./NanoGL-0.2.2/mingw
-$ make
-$ make example
-```
+## サンプルのビルド
 
-### Visual Studio Professional 2015 / Visual Studio Community 2015
+1. 事前に `libnanogl.a` をビルドしてください。 
+2. msys.bat もしくは ターミナルを起動し、`./example/` に移動
+3. `make all` を実行
 
-ビルドには以下の環境が必要です
+## 各言語からの利用
 
-  * VS2015 x86 Native Tools Command Prompt
-  * GnuWin32に含まれるwget, patch, LibArchive (build-tools.batで自動的にtoolsディレクトリにセットアップされます)
-    * wget (利用しているオープンソースパッケージの取得に必要です)
-      * http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-bin.zip
-      * http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-dep.zip
-    * patch (いくつかの修正パッチの適用に必要です。)
-      * http://gnuwin32.sourceforge.net/downlinks/patch-bin-zip.php
-      * Copy the file `./patches/patch.exe.manifest` in the same directory as the PATCH.EXE.
-    * bsdtar (ダウンロードしたパッケージの展開に利用します。.)
-      * http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-bin.zip
-      * http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-dep.zip
+### C言語から利用する場合
 
-スタートメニューから`VS2015 x86 Native Tools Command Prompt` を開いて以下を実行します。
+- `src`フォルダを`include`パスに追加してください。
+- リンク時に`libnanogl.a`を追加してください。
+- プラットフォームごとに追加のコンパイル設定をしてください。
 
-```sh
-> bsdtar -m -xf NanoGL-0.2.2.zip
-> cd ./NanoGL-0.2.2/vs14
-> build.bat
-> build-example.bat
-```
+#### Windows環境でのコンパイル設定
+- リンクする￥ライブラリに `mingw32`, `winmm`, `Avrt`, `OpenGL32`, `Gdi32` を追加してください。
+- コンパイル時のフラグに `-mwindows` を追加してください。
+- CソースをUTF8で記述している場合はコンパイル時のフラグに `-finput-charset=utf-8 -fexec-charset=cp932` を追加してください。  
 
-### MacOS X ( El Capitan / Sierra )
+#### macOS環境でのコンパイル設定
+- リンクするフレームワークに `OpenGL`, `Foundation`, `IOKit`, `CoreAudio`, `Cocoa`, `AppKit` を追加してください。
 
-ビルドには以下の環境が必要です
+### `CRuby`から利用する場合
 
-  * XCode Command Line Tools
-  * Apple LLVM version 7.3.0 (clang-703.0.29)
-  * homebrewのインストール
-  * homebrew経由で以下のライブラリをインストール
-    * glfw3
-      * brew install homebrew/versions/glfw3
-    * glew
-      * brew install glew
-    * libmad
-      * brew install libmad
-  * iconv
-    * 日本語(cp932コード)を含むソースコードをllvmでコンパイルすると文字化けや不正なメモリ参照などが発生するので、コンパイル時に文字コードをUTF8に変換します。
+`CRuby`向けに`nanogl`の`gem`を提供しています。
 
-Terminal.app を開いて以下を実行します。
+1. 事前に `libnanogl.a` をビルドしてください。 
+2. msys.bat もしくは ターミナルを起動し、`./ruby/cruby/gem/` に移動
+3. `make all` を実行
+4. `rake build` を実行
+5. `gem install -l ./pkg/nanogl-<version>.gem`で作成した`gem`をインストール
 
-```sh
-> bsdtar -m -xf NanoGL-0.2.2.zip
-> cd ./NanoGL-0.2.2/osx
-> make 
-```
+インストール後、`./example/`フォルダ内の `*.rb` が実行できるようになります。
 
-## CRubyで使う場合
 
-gem をビルドしてインストールすることでCRubyからNanoGLが利用可能になります。
+### mruby に組み込んで利用する場合
 
-利用には以下の環境が必要です
+(ここは古い手順になっています。動作が確認され次第記載しなおします。)
 
-  * CRuby (>= 2.0) 
-  * gem bundler
-  * gem ffi
+ビルドには`CRuby`と以下の追加パッケージが必要です
+手元の環境に応じて導入してください。
 
-### MinGW32 or MacOS X
+  - `bison`
+  - `flex`
+  - `git`
 
-Terminal.app を開き、各OS向けディレクトリで以下を実行します。
-
-```sh
-$ make -f Makefile.rubygem
-$ gem install -l nanogl-0.2.2.gem
-$ ruby ../example/00-blank.rb
-```
-
-### VisualStudio
-
-スタートメニューから`VS2015 x86 Native Tools Command Prompt` を開いてVS14向けディレクトリで以下を実行します。
-
-```sh
-> build-mrb-nanogl.bat
-> gem install -l nanogl-0.2.2.gem
-> ruby ../example/00-blank.rb
-```
-
-## mrubyで使う場合
-
-### MinGW32 
-
-ビルドには以下の環境が必要です
-
-  * CRuby (>= 2.0)
-    * https://rubyinstaller.org/
-  * bison (mrubyのコンパイルに必要です)
-    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/bison/bison-2.4.2-1/bison-2.4.2-1-msys-1.0.13-bin.tar.lzma
-    * 追加で以下のパッケージが必要です
-      * https://sourceforge.net/projects/mingw/files/MSYS/Extension/m4/m4-1.4.16-2/m4-1.4.16-2-msys-1.0.17-bin.tar.lzma
-  * flex (mrubyのコンパイルに必要です)
-    * https://sourceforge.net/projects/mingw/files/MSYS/Extension/flex/flex-2.5.35-2/flex-2.5.35-2-msys-1.0.13-bin.tar.lzma
-  * git for windows (mrubyビルド時に非標準のgemを導入するために使われます)
-    * https://git-for-windows.github.io/
- 
-msys.bat を開いて以下を実行します。
 
 ```sh
 $ make -f Makefile.mrb-nanogl
 $ ./mrb-nanogl ../example/00-blank.rb
 ```
 
-### MacOS X
+## ライセンス
 
-Terminal.app を開き、各OS向けディレクトリで以下を実行します。
+-  NanoGLが利用しているオープンソースプロジェクト成果物やライブラリを除く、NanoGLソースコードとexampleフォルダの作例は NYSL Version 0.9982 です。
+- 0.3.0以前はGPLライセンスのライブラリに依存していましたが、0.3.0からはGPLライセンスのライブラリが不要になりました。
 
-```sh
-$ make -f Makefile.mrb-nanogl
-$ ./mrb-nanogl ../example/00-blank.rb
-```
+## 予定
 
-### VisualStudio
-
-ビルドには以下の環境が必要です
-
-  * CRuby (>= 2.0)
-    * https://rubyinstaller.org/
-  * GnuWin32に含まれるbison, flex (build-tools.batで自動的にtoolsディレクトリにセットアップされます)
-    * bison (mrubyのコンパイルに必要です)
-      * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-bin.zip
-      * http://downloads.sourceforge.net/gnuwin32/bison-2.4.1-dep.zip
-    * flex (mrubyのコンパイルに必要です)
-      * http://gnuwin32.sourceforge.net/downlinks/flex-bin-zip.php
-  * git for windows (mrubyビルド時に非標準のgemを導入するために使われます)
-    * https://git-for-windows.github.io/
-
-スタートメニューから`VS2015 x86 Native Tools Command Prompt` を開いてVS14向けディレクトリで以下を実行します。
-
-```sh
-> build-mrb-nanogl.bat
-> mrb-nanogl.exe ../example/00-blank.rb
-```
-
-# ライセンス
-
-  * NanoGLが利用しているオープンソースプロジェクト成果物やライブラリを除く、NanoGLソースコードとexampleフォルダの作例は NYSL Version 0.9982 です。
-  * OpenALやlibmadがGPL2 ライセンスのため、NanoGLをスタティックリンクした実行ファイルは GPL2 ライセンスになります。ご注意ください。
-
-# 予定
-
-  * GPLの排除
-    * ダイナミックリンク版の作成
-    * MP3デコーダを独自実装もしくは廃止
-    * libsoundioやportaudio等の非GPLライブラリへの移行
-  * 株式会社まちづくり三鷹が発行している「オブジェクト指向言語「Rubyプログラミング入門」テキスト（初心者用）」への対応
-    * 利用することになる dxruby on nanogl のdxruby対応度を向上
+- 株式会社まちづくり三鷹が発行している「オブジェクト指向言語「Rubyプログラミング入門」テキスト（初心者用）」への対応
+- 利用することになる dxruby on nanogl のdxruby対応度を向上
 

@@ -1,21 +1,21 @@
-#include <NanoGL/NanoGL.h>
+#include <NanoGL.h>
 
-// ƒQ[ƒ€‚ÌƒƒCƒ“ˆ—
+// ã‚²ãƒ¼ãƒ ã®ãƒ¡ã‚¤ãƒ³å‡¦ç†
 void start(void)
 {
-	// ‰æ–ÊƒTƒCƒY‚ðc‰¡ 512 ƒsƒNƒZƒ‹ ‚É Ý’è
+	// ç”»é¢ã‚µã‚¤ã‚ºã‚’ç¸¦æ¨ª 512 ãƒ”ã‚¯ã‚»ãƒ« ã« è¨­å®š
 	Video.SetSize(512, 512);
 
-	// ƒ^ƒCƒgƒ‹‚ðÝ’è
+	// ã‚¿ã‚¤ãƒˆãƒ«ã‚’è¨­å®š
 	Video.SetWindowTitle("[Example] 00-Blank");
 
-	// ‰æ–Ê‚ðÁ‹Ž‚µ‚½Û‚Ì”wŒiF‚ðÝ’è
+	// ç”»é¢ã‚’æ¶ˆåŽ»ã—ãŸéš›ã®èƒŒæ™¯è‰²ã‚’è¨­å®š
 	Video.SetClearColor(Video.RGB(0,255,0));
 
-	// ˆ—
+	// å‡¦ç†
 	while (Video.Drawing()) {
 	}
 	
-	// ˆ—‚ªI‚Á‚½‚Ì‚Å‰½‚à‚·‚é‚±‚Æ‚ª‚È‚¢
+	// å‡¦ç†ãŒçµ‚ã£ãŸã®ã§ä½•ã‚‚ã™ã‚‹ã“ã¨ãŒãªã„
 
 }

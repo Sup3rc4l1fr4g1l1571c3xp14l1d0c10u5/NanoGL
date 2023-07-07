@@ -1,79 +1,79 @@
-#include <NanoGL/NanoGL.h>
+#include <NanoGL.h>
 
-// �Q�[���̃��C������
+// ゲームのメイン処理
 void start(void)
 {
-	// ��ʃT�C�Y���c�� 512 �s�N�Z�� �� �ݒ�
+	// 画面サイズを縦横 512 ピクセル に 設定
 	Video.SetSize(512, 512);
 
-	// �^�C�g����ݒ�
+	// タイトルを設定
 	Video.SetWindowTitle("[Example] 05-Keyboard");
 
-	// ��ʂ����������ۂ̔w�i�F��ݒ�
+	// 画面を消去した際の背景色を設定
 	Video.SetClearColor(Video.RGB(128,128,255));
 
-	// �摜���S���W���i�[����ϐ���p�ӂ��A�����ʒu����ʒ��S�Ƃ���
+	// 画像中心座標を格納する変数を用意し、初期位置を画面中心とする
 	float x = 512 / 2.0f;
 	float y = 512 / 2.0f;
-	// �摜�̉�]�p�x�ƃT�C�Y������ϐ���p�ӂ���
+	// 画像の回転角度とサイズを入れる変数を用意する
 	float degree = 0;
 	float scale = 1;
 
-	// �v���O�����̒u���Ă���f�B���N�g������Ƃ���
-	// image �t�H���_���� Image.png �Ƃ����t�@�C����ǂݍ��݁A�摜ID�� image	�ɐݒ肷��
-	// �摜�I�v�V�����͎w�肵�Ȃ��̂� 0 ������
+	// プログラムの置いてあるディレクトリを基準として
+	// image フォルダ内の Image.png というファイルを読み込み、画像IDを image	に設定する
+	// 画像オプションは指定しないので 0 を入れる
 	int image = Video.CreateImage("./image/Image.png", 0);
 
-	// �摜�T�C�Y���擾���ĕϐ� width �� �ϐ� height �ɓ����
+	// 画像サイズを取得して変数 width と 変数 height に入れる
 	int width, height;
 	Video.ImageSize(image, &width, &height);
 
-	// ����
+	// 処理
 	while (Video.Drawing()) {
 
-		// �L�[���͂����o
+		// キー入力を検出
 		if (Keyboard.IsKeyDown(KBKEY_UP))
 		{
-			// ��L�[��������Ă���̂ŉ�ʏ������Y���W���X�V
+			// 上キーが押されているので画面上方向にY座標を更新
 			y -= 1.0f;
 		}
 		if (Keyboard.IsKeyDown(KBKEY_DOWN))
 		{
-			// ���L�[��������Ă���̂ŉ�ʉ�������Y���W���X�V
+			// 下キーが押されているので画面下方向にY座標を更新
 			y += 1.0f;
 		}
 		if (Keyboard.IsKeyDown(KBKEY_LEFT))
 		{
-			// ���L�[��������Ă���̂ŉ�ʍ�������X���W���X�V
+			// 左キーが押されているので画面左方向にX座標を更新
 			x -= 1.0f;
 		}
 		if (Keyboard.IsKeyDown(KBKEY_RIGHT))
 		{
-			// �E�L�[��������Ă���̂ŉ�ʉE������X���W���X�V
+			// 右キーが押されているので画面右方向にX座標を更新
 			x += 1.0f;
 		}
 		if (Keyboard.IsKeyDown('Z'))
 		{
-			// Z�L�[��������Ă���̂Ŕ����v���ɉ�]
+			// Zキーが押されているので反時計回りに回転
 			degree -= 1;
 		}
 		if (Keyboard.IsKeyDown('X'))
 		{
-			// X�L�[��������Ă���̂Ŏ��v���ɉ�]
+			// Xキーが押されているので時計回りに回転
 			degree += 1;
 		}
 		if (Keyboard.IsKeyDown('A'))
 		{
-			// A�L�[��������Ă���̂Ŋg�傷��
+			// Aキーが押されているので拡大する
 			scale = min(scale + 0.1, 5);
 		}
 		if (Keyboard.IsKeyDown('S'))
 		{
-			// X�L�[��������Ă���̂ŏk������
+			// Xキーが押されているので縮小する
 			scale = max(scale - 0.1, 0.1);
 		}
 
-		// �摜�ʒu(x,y)�ɕό`���݂ŕ`�悷��
+		// 画像位置(x,y)に変形込みで描画する
 		Video.BeginPath();
 
 		Video.Reset();
@@ -85,6 +85,6 @@ void start(void)
 		Video.ClosePath();
 	}
 
-	// �������I�����̂ŉ������邱�Ƃ��Ȃ�
+	// 処理が終ったので何もすることがない
 
 }

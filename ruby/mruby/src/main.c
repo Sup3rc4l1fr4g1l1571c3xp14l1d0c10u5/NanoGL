@@ -1,4 +1,4 @@
-#include <NanoGL/NanoGL.h>
+#include <NanoGL.h>
 #include <string.h>
 #include <stdio.h>
 

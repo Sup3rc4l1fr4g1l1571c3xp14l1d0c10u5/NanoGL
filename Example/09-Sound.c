@@ -1,46 +1,46 @@
-#include <NanoGL/NanoGL.h>
+#include <NanoGL.h>
 
-// �Q�[���̃��C������
+// ゲームのメイン処理
 void start(void)
 {
-	// ��ʃT�C�Y���c�� 512 �s�N�Z�� �� �ݒ�
+	// 画面サイズを縦横 512 ピクセル に 設定
 	Video.SetSize(512, 512);
 
-	// �^�C�g����ݒ�
+	// タイトルを設定
 	Video.SetWindowTitle("[Example] 09-Sound");
 
-	// ��ʂ����������ۂ̔w�i�F��ݒ�
+	// 画面を消去した際の背景色を設定
 	Video.SetClearColor(Video.RGB(128,128,255));
 
-	// �v���O�����̒u���Ă���f�B���N�g������Ƃ���
-	// Sound �t�H���_���� bgm.ogg �Ƃ����t�@�C���������ԍ�0�Ԃɓǂݍ���
+	// プログラムの置いてあるディレクトリを基準として
+	// Sound フォルダ内の bgm.ogg というファイルを音源番号0番に読み込む
 	Sound.ChannelCreate(0, "./Sound/bgm.ogg");
 
-	// �v���O�����̒u���Ă���f�B���N�g������Ƃ���
-	// Sound �t�H���_���� beep.mp3 �Ƃ����t�@�C���������ԍ�1�Ԃɓǂݍ���
+	// プログラムの置いてあるディレクトリを基準として
+	// Sound フォルダ内の beep.mp3 というファイルを音源番号1番に読み込む
 	Sound.ChannelCreate(1, "./Sound/beep.mp3");
 
-	// BGM���Đ�
-	// ���[�v�Đ�������̂Ń��[�v�t���O�� true �Ƃ���
+	// BGMを再生
+	// ループ再生させるのでループフラグは true とする
 	Sound.ChannelPlay(0, true);
 
-	// �ЂƂO�̎��_�ł̃}�E�X�{�^���̏�Ԃ����Ă����ϐ���p��
+	// ひとつ前の時点でのマウスボタンの状態を入れておく変数を用意
 	bool IsLeftButtonDowned = false;
 
-	// ����
+	// 処理
 	while (Video.Drawing()) {
 
-		// �}�E�X���N���b�N���ꂽ�i����������ꂽ�u�ԁj�������ʉ���炷
+		// マウスがクリックされた（押し下げられた瞬間）だけ効果音を鳴らす
 		if (Mouse.IsLeftButtonDown() && IsLeftButtonDowned == false)
 		{
-			// ���ʉ����Đ�
-			// ���[�v�����Ȃ��̂Ń��[�v�t���O�� false �Ƃ���
+			// 効果音を再生
+			// ループさせないのでループフラグは false とする
 			Sound.ChannelPlay(1, false);
 		}
 		IsLeftButtonDowned = Mouse.IsLeftButtonDown();
 
 	}
 
-	// �������I�����̂ŉ������邱�Ƃ��Ȃ�
+	// 処理が終ったので何もすることがない
 
 }

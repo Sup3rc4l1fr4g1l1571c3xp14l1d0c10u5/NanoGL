@@ -1,0 +1,9 @@
+.DS_Store
+.a
+.dll
+.o
+.obj
+.dylib
+.so
+.exe
+

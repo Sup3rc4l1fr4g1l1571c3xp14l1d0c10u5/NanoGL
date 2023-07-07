@@ -1,146 +1,129 @@
+(I’m sorry that my poor English confuses you.)
+
 # NanoGL
 
-NanoGL is a simple game programming framework for programming beginners.
+NanoGL is a simple game programming framework for beginning programmers.
 
-## Concept
+## Overview
 
-  - Easy to build and distribute.
-  - Simple and organized API.
-  - Cross platform and portable.
+- Simple and easy to compile and distribute
+- Simple API organized for use with IDEs
+- Modest cross-platform (Windows/MacOSX/Ubuntu) support
+- Provides examples of common game implementations for learning reference
+- Available in CRuby and mruby. If you implement it with attention to the differences in language specifications, the same code will work in CRuby and mruby.
 
-## Tech
+## Utilized Technologies
 
-NanoGL uses a number of open source projects to work properly:
+NanoGL uses artifacts from several open source projects.
 
-  * [NanoVG] - Antialiased 2D vector drawing library on top of OpenGL for UI and visualizations.
-  * [GLFW3] - Cross-platform library for creating windows with OpenGL contexts and receiving input and events.
-  * [OpenAL-Soft] - Cross-platform library implementation of the OpenAL 3D audio API.
-  * [GLEW] - Cross-platform open-source C/C++ extension loading library.
-  * [libmad] - High-quality MPEG audio decoder library.
-  * [stb] - Single file, public domain library.
+* [NanoVG] - Antialiased 2D vector drawing library on top of OpenGL for UI and visualizations.
+* [GLFW3] - Cross-platform library for creating windows with OpenGL contexts and receiving input and events.
+* [miniaudio] - An audio playback and capture library in a single source file.
+* [glad] - Multi-Language Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator.
+* [stb] - Single file, public domain library.
 
-## Installation and Startup
+## How to build `libnanogl.a
 
-  * Download nanogl-current.zip
-  * Extract nanogl-current.zip.
-  * Open nanogl-current.zip
-  * If you use MinGW32.
-    * move to ./nanogl-current/mingw32/
-    * run `make example`
-  * If you use VisualStudio.
-    * open "VS2015 x86 Native Tools Command Prompt"
-    * move to ./nanogl-current/vs14/ 
-    * run `build-example.bat`
-  * If you use MacOS X
-    * Install libraries from homebrew (glfw3, glew, libmad)
-    * move to ./nanogl-current/osx/
-    * run `make example`
+### For Windows environment
 
-## Build
+1. Install MSYS32.
+   - For 32bit environment
+     - https://repo.msys2.org/distrib/i686/msys2-base-i686-20210705.sfx.exe
+   - For 64bit environment
+     - https://repo.msys2.org/distrib/x86_64/msys2-base-x86_64-20230526.sfx.exe
 
-### MinGW32
+2. Install additional packages
+   1. Run msys.bat.
+   2. Execute the following command to install the additional packages.
+      ```shell
+      $ pacman -S git
+      $ pacman -S python3
+      $ pacman -S python3-pip
+      ````
 
-requires to build
+3. Build.
+   1. Start `msys.bat` and go to `./nanogl/`.
+   2. Execute `make all`.
 
-  * gcc version 4.7.2 (rubenvb-4.7.2-release)
-    Thread model: win32
-    * Don't use the 4.9.x of gcc, because it produces the wrong code.
-      That's way I don't like gcc.
-  * cmake (used to build GLFW3 and OpenAL)
-  * wget (used to download packages.)
-  * patch (used to patch unofficial nanovg hack.)
-  * bsdtar (used to extract downloaded package.)
+### For Mac environment
 
-```sh
-$ bsdtar -m -xf nanogl-current.zip
-$ cd NanoGL-current/mingw
-$ make
-$ make example
-```
+1. Install the `XCode Command Line Tools`.
+    1. Install `XCode` from the Appstore.
+    2. Open a terminal and execute the following command to install `XCode Command Line Tools`.
+       ```shell
+       $ xcode-select --install
+       ````
+2. Install Homebrew.
+3. Install additional packages by entering the following command.
+   ```shell
+   $ brew install python3
+   ````
+4. Perform the build.
+   (1). On the terminal, go to `./nanogl/` on the terminal 2.
+   (2). Execute `make all`.
 
-### Visual Studio Professional 2015 / Visual Studio Community 2015
+### In Ubuntu environment
 
-requires to build
+(We will add a note when we have confirmed that it works)
 
-  * VS2015 x86 Native Tools Command Prompt
-  * GnuWin32 (Include this archive.)
-    * wget(used to download packages.)
-      * http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-bin.zip
-      * http://downloads.sourceforge.net/gnuwin32/wget-1.11.4-1-dep.zip
-    * patch (used to patch unofficial nanovg hack.)
-      * http://gnuwin32.sourceforge.net/downlinks/patch-bin-zip.php
-      * Copy the file `./patches/patch.exe.manifest` in the same directory as the PATCH.EXE.
-    * LibArchive (badtar: used to extract downloaded package.)
-      * http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-bin.zip
-      * http://downloads.sourceforge.net/gnuwin32/libarchive-2.4.12-1-dep.zip
+## Build the sample
 
-open `VS2015 x86 Native Tools Command Prompt` from start menu
-```sh
-> bsdtar -m -xf nanogl-current.zip
-> cd NanoGL-current/vs14
-> build.bat
-> build-example.bat
-```
+1. Build `libnanogl.a` beforehand.
+2. Run `msys.bat` or terminal and go to `./example/`.
+3. Execute `make all`.
 
-### MacOS X (el capitan)
+## Using from various languages
 
-requires to build
+### Using from C language
 
-  * Apple LLVM version 7.3.0 (clang-703.0.29)
-  * Install homebrew
-  * Install libraries from homebrew
-    * brew install homebrew/versions/glfw3
-    * brew install glew
-    * brew install libmad
-    
-```sh
-> bsdtar -m -xf nanogl-current.tgz
-> cd NanoGL-current
-> make -f Makefile.osx
-```
+- Add the `src` folder to your `include` path.
+- Add `libnanogl.a` when linking.
+- Please make additional compile settings for each platform.
 
-## Using from CRuby
+#### Compile settings in Windows environment
 
-  * Install CRuby (>= 2.0)
-  * Install ffi from mrubygem
+- Please add `mingw32`, `winmm`, `Avrt`, `OpenGL32`, `Gdi32` to the ³ library you link.
+- Add `-mwindows` to the compile-time flags.
+- If your C source is written in UTF8, please add `-finput-charset=utf-8 -fexec-charset=cp932` to the compile-time flags.  
 
-### MinGW32 or MacOS X
-```sh
-$ make -f Makefile.rubygem
-$ gem install -l nanogl-<version>.gem
-$ ruby ../ruby/example/00-blank.rb
-```sh
+#### Compile settings in macOS environment
 
-### VisualStudio
-```sh
-> build-mrb-nanogl.bat
-> gem install -l nanogl-<version>.gem
-> ruby ../ruby/example/00-blank.rb
-```
+- Add `OpenGL`, `Foundation`, `IOKit`, `CoreAudio`, `Cocoa`, `AppKit` to linked frameworks.
 
-## Using from MRuby
+### For use from `CRuby`.
 
-  * Install CRuby (>= 2.0)
+We provide `nanogl` `gem` for `CRuby`.
 
-### MinGW32 or MacOS X
+1. Please build `libnanogl.a` beforehand. 
+2. Run msys.bat or Terminal, and type `./ruby/cruby/gem/`.
+3. Execute `make all`.
+4. Run `rake build`.
+5. Run `gem install -l . Install the `gem` created by `/pkg/nanogl-<version>.gem`.
+
+After installation, you will find the `gem` in the `../example/` folder, `*.rb` will be executable.
+
+### If you want to integrate it into `mruby` and use it.
+
+(This is an old procedure. We will update this page as soon as we confirm that it works)
+
+`CRuby` and the following additional packages are required to build.
+Please install them according to your environment.
+
+- `bison` (for the build)
+- `flex`
+- `git`
+
 ```sh
 $ make -f Makefile.mrb-nanogl
-$ ./mrb-nanogl ../ruby/example/00-blank.rb
-```sh
-
-### VisualStudio
-```sh
-> build-mrb-nanogl.bat
-> mrb-nanogl.exe ../ruby/mruby/example/00-blank.rb
+$ ./mrb-nanogl ./example/00-blank.rb
 ```
 
-License
-----
+## License.
 
-  * NanoGL library and example's source code is MIT License
+- Except for the open source project artifacts and libraries used in NanoGL, the NanoGL source code and examples in the examples folder are NYSL version 0.9982.
+- Prior to version 0.3.0, NanoGL relied on GPL-licensed libraries; as of 0.3.0, GPL-licensed libraries are no longer required.
 
-Todo
-----
+## Schedule
 
-  * I want to eliminate GPL code in the future. :-)
-
+- Compatible with "Introduction to the Object-Oriented Language 'Ruby Programming' Text (Introductory Edition)" (published by City Planning Mitaka Co.
+- Improved `dxruby` support in `nanogl`.

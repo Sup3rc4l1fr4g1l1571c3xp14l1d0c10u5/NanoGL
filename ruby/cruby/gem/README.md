@@ -2,15 +2,28 @@
 
 NanoGL for cruby.
 
+## Build
+
+Build `libnanogl.a` beforehand.
+
+In this folder, enter the following command.
+
+```shell
+$ make all
+$ rake build
+```
+
 ## Installation
 
-    download this package.
+In this folder, enter the following command.
 
-    $ gem install -l nanogl-<version>.gem
+```shell
+$ gem install -l pkg/nanogl-<version>.gem
+```
 
 ## Usage
 
-Please view some examples.
+Please see *.rb file in the example folder.
 
 ## Contributing
 

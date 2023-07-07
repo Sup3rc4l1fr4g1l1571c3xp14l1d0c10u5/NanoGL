@@ -3,4 +3,5 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in nanogl.gemspec
 gemspec
 
-gem 'ffi'
+gem 'bundler', "~> 1.10"
+gem 'ffi',  ">= 1.15.5"
